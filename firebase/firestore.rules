@@ -1,1 +1,33 @@
+rules_version = '2';
 
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // User profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null &&
+                         request.auth.uid == userId;
+    }
+
+    // User drafts
+    match /drafts/{draftId} {
+      allow read, write: if request.auth != null &&
+                         request.auth.uid == resource.data.uid;
+      allow create: if request.auth != null &&
+                    request.auth.uid == request.resource.data.uid;
+    }
+
+    // Final legal documents
+    match /documents/{docId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      allow update, delete: if request.auth != null &&
+                            request.auth.uid == resource.data.uid;
+    }
+
+    // Block everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
