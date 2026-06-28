@@ -113,7 +113,7 @@ Auth.signUp = async function (email, password) {
     try {
 
         const userCredential =
-            await createUserWithEmailAndPassword(
+            await window.createUserWithEmailAndPassword(
                 this.firebase.auth,
                 email,
                 password
@@ -140,7 +140,7 @@ Auth.login = async function (email, password) {
         return false;
     }
     try {
-        const userCredential = await signInWithEmailAndPassword(
+        const userCredential = await window.signInWithEmailAndPassword(
             this.firebase.auth,
             email,
             password
@@ -159,7 +159,7 @@ Auth.logout = async function () {
         return;
     }
     try {
-        await signOut(this.firebase.auth);
+       await window.signOut(this.firebase.auth);
         console.log("User signed out");
     } catch (error) {
         console.error("Logout error:", error);
@@ -173,7 +173,7 @@ Auth.resetPassword = async function (email) {
         return false;
     }
     try {
-        await sendPasswordResetEmail(this.firebase.auth, email);
+        await window.sendPasswordResetEmail(this.firebase.auth, email);
         console.log("Password reset email sent");
         return true;
     } catch (error) {
@@ -187,7 +187,7 @@ Auth.onAuthStateChanged = function (callback) {
         console.error("Firebase Auth is not ready.");
         return () => {};
     }
-    return onAuthStateChanged(this.firebase.auth, (user) => {
+    return window.onAuthStateChanged(this.firebase.auth, (user) => {
         Auth.currentUser = user;
         if (callback) callback(user);
     });
