@@ -1,1 +1,82 @@
-
+[
+  {
+    "code": "IN",
+    "name": "India",
+    "currency": "INR",
+    "symbol": "₹",
+    "flag": "🇮🇳",
+    "languages": ["en", "hi", "ur"]
+  },
+  {
+    "code": "PK",
+    "name": "Pakistan",
+    "currency": "PKR",
+    "symbol": "₨",
+    "flag": "🇵🇰",
+    "languages": ["ur", "en"]
+  },
+  {
+    "code": "US",
+    "name": "United States",
+    "currency": "USD",
+    "symbol": "$",
+    "flag": "🇺🇸",
+    "languages": ["en"]
+  },
+  {
+    "code": "GB",
+    "name": "United Kingdom",
+    "currency": "GBP",
+    "symbol": "£",
+    "flag": "🇬🇧",
+    "languages": ["en"]
+  },
+  {
+    "code": "AE",
+    "name": "United Arab Emirates",
+    "currency": "AED",
+    "symbol": "د.إ",
+    "flag": "🇦🇪",
+    "languages": ["ar", "en"]
+  },
+  {
+    "code": "SA",
+    "name": "Saudi Arabia",
+    "currency": "SAR",
+    "symbol": "﷼",
+    "flag": "🇸🇦",
+    "languages": ["ar", "en"]
+  },
+  {
+    "code": "CA",
+    "name": "Canada",
+    "currency": "CAD",
+    "symbol": "$",
+    "flag": "🇨🇦",
+    "languages": ["en", "fr"]
+  },
+  {
+    "code": "AU",
+    "name": "Australia",
+    "currency": "AUD",
+    "symbol": "$",
+    "flag": "🇦🇺",
+    "languages": ["en"]
+  },
+  {
+    "code": "BD",
+    "name": "Bangladesh",
+    "currency": "BDT",
+    "symbol": "৳",
+    "flag": "🇧🇩",
+    "languages": ["bn", "en"]
+  },
+  {
+    "code": "QA",
+    "name": "Qatar",
+    "currency": "QAR",
+    "symbol": "﷼",
+    "flag": "🇶🇦",
+    "languages": ["ar", "en"]
+  }
+]
