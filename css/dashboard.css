@@ -841,3 +841,182 @@ background:#3b82f6;
 
 }
 
+/* ==========================================
+   Dashboard Footer
+========================================== */
+
+.dashboard-footer{
+
+margin-top:40px;
+
+padding:24px;
+
+text-align:center;
+
+border-top:1px solid rgba(255,255,255,.08);
+
+color:#94a3b8;
+
+font-size:14px;
+
+}
+
+/* ==========================================
+   Skeleton Loading
+========================================== */
+
+.skeleton{
+
+position:relative;
+
+overflow:hidden;
+
+background:rgba(255,255,255,.06);
+
+border-radius:18px;
+
+}
+
+.skeleton::after{
+
+content:"";
+
+position:absolute;
+
+top:0;
+
+left:-150%;
+
+width:120%;
+
+height:100%;
+
+background:
+
+linear-gradient(
+
+90deg,
+
+transparent,
+
+rgba(255,255,255,.15),
+
+transparent
+
+);
+
+animation:skeleton-loading 1.5s infinite;
+
+}
+
+@keyframes skeleton-loading{
+
+100%{
+
+left:150%;
+
+}
+
+}
+
+/* ==========================================
+   Status Badge
+========================================== */
+
+.status{
+
+display:inline-flex;
+
+align-items:center;
+
+justify-content:center;
+
+padding:6px 14px;
+
+border-radius:999px;
+
+font-size:13px;
+
+font-weight:600;
+
+}
+
+.status.success{
+
+background:rgba(22,163,74,.15);
+
+color:#22c55e;
+
+}
+
+.status.warning{
+
+background:rgba(245,158,11,.15);
+
+color:#f59e0b;
+
+}
+
+.status.error{
+
+background:rgba(220,38,38,.15);
+
+color:#ef4444;
+
+}
+
+/* ==========================================
+   Dashboard Utilities
+========================================== */
+
+.card-spacing{
+
+margin-bottom:30px;
+
+}
+
+.full-width{
+
+grid-column:1/-1;
+
+}
+
+.scroll-area{
+
+overflow:auto;
+
+max-height:500px;
+
+}
+
+/* ==========================================
+   Print Dashboard
+========================================== */
+
+@media print{
+
+.sidebar,
+
+.dashboard-topbar,
+
+.dashboard-actions,
+
+.pagination,
+
+.notification-panel{
+
+display:none!important;
+
+}
+
+.dashboard-main{
+
+margin-left:0;
+
+}
+
+}
+
+/* ==========================================
+   End Dashboard
+========================================== */
