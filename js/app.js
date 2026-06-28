@@ -344,3 +344,63 @@ Lexora.registerEvents = function () {
 
 };
 
+/* ==========================================
+   Session Manager
+========================================== */
+
+Lexora.session = {
+
+    saveUser(user) {
+
+        Lexora.storage.save("currentUser", user);
+
+    },
+
+    getUser() {
+
+        return Lexora.storage.load("currentUser", null);
+
+    },
+
+    clear() {
+
+        Lexora.storage.remove("currentUser");
+
+    }
+
+};
+
+/* ==========================================
+   Current User
+========================================== */
+
+Lexora.getCurrentUser = function () {
+
+    return this.session.getUser();
+
+};
+
+/* ==========================================
+   Authentication Check
+========================================== */
+
+Lexora.isLoggedIn = function () {
+
+    return this.getCurrentUser() !== null;
+
+};
+
+/* ==========================================
+   Logout
+========================================== */
+
+Lexora.logout = function () {
+
+    this.session.clear();
+
+    this.showToast("Logged out successfully", "success");
+
+    console.log("User Logged Out");
+
+};
+
