@@ -35,11 +35,11 @@ const Signature = {
         }
 
         this.pad = new SignaturePad(this.canvas, {
-            minWidth: 0.8,
-            maxWidth: 2.8,
+            minWidth: 0.7,
+            maxWidth: 2.5,
             penColor: "#000000",
             backgroundColor: "rgba(255,255,255,0)",
-            velocityFilterWeight: 0.7
+            velocityFilterWeight: 0.6
         });
 
         if (!this.resizeBound) {
