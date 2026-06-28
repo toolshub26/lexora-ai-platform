@@ -1,4 +1,3 @@
-
 "use strict";
 
 /*
@@ -12,6 +11,7 @@ const Signature = {
 
     pad: null,
     canvas: null,
+    resizeBound: false,
 
     init(canvasId = "signaturePad") {
 
@@ -38,15 +38,19 @@ const Signature = {
             minWidth: 0.8,
             maxWidth: 2.8,
             penColor: "#000000",
-            backgroundColor: "rgba(255,255,255,0)"
+            backgroundColor: "rgba(255,255,255,0)",
+            velocityFilterWeight: 0.7
         });
 
-        window.addEventListener("resize", () => this.resize());
+        if (!this.resizeBound) {
+            window.addEventListener("resize", () => this.resize());
+            this.resizeBound = true;
+        }
 
-        console.log("Signature Ready");
+        console.log("Signature module initialized.");
     },
 
-    resize() {
+        resize() {
 
         if (!this.canvas) return;
 
@@ -57,18 +61,16 @@ const Signature = {
         this.canvas.width = this.canvas.offsetWidth * ratio;
         this.canvas.height = this.canvas.offsetHeight * ratio;
 
-        this.canvas.getContext("2d").scale(ratio, ratio);
+        const ctx = this.canvas.getContext("2d");
+        ctx.scale(ratio, ratio);
 
         if (this.pad) {
-
             this.pad.clear();
 
             if (data && data.length) {
                 this.pad.fromData(data);
             }
-
         }
-
     },
 
     clear() {
@@ -85,12 +87,9 @@ const Signature = {
 
         const data = this.pad.toData();
 
-        if (data.length) {
-
+        if (data.length > 0) {
             data.pop();
-
             this.pad.fromData(data);
-
         }
 
     },
@@ -101,11 +100,41 @@ const Signature = {
 
     },
 
-    save() {
+    save(format = "image/png") {
 
-        if (this.isEmpty()) return null;
+        if (!this.pad || this.isEmpty()) {
+            return null;
+        }
 
-        return this.pad.toDataURL("image/png");
+        return this.pad.toDataURL(format);
+
+    },
+
+    fromData(data) {
+
+        if (this.pad && Array.isArray(data)) {
+            this.pad.fromData(data);
+        }
+
+    },
+
+    toData() {
+
+        return this.pad ? this.pad.toData() : [];
+
+    },
+
+        exportBlob() {
+
+        if (!this.pad || this.isEmpty()) {
+            return null;
+        }
+
+        return new Promise((resolve) => {
+            this.canvas.toBlob((blob) => {
+                resolve(blob);
+            }, "image/png");
+        });
 
     }
 
