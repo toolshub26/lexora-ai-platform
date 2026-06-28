@@ -593,3 +593,219 @@ border-top:4px solid #8b5cf6;
 
 }
 
+/* ==========================================
+   FAQ
+========================================== */
+
+.faq,
+.newsletter,
+.contact,
+.download-app,
+.latest-updates,
+.partners,
+.security,
+.testimonials{
+
+max-width:1400px;
+
+margin:80px auto;
+
+padding:20px;
+
+}
+
+.faq h2,
+.newsletter h2,
+.contact h2,
+.download-app h2,
+.latest-updates h2,
+.partners h2,
+.security h2,
+.testimonials h2{
+
+text-align:center;
+
+font-size:40px;
+
+margin-bottom:40px;
+
+}
+
+.faq-list{
+
+display:flex;
+
+flex-direction:column;
+
+gap:20px;
+
+}
+
+.faq-item{
+
+background:rgba(255,255,255,.06);
+
+padding:25px;
+
+border-radius:18px;
+
+border:1px solid rgba(255,255,255,.08);
+
+}
+
+.faq-item h3{
+
+margin-bottom:10px;
+
+}
+
+.faq-item p{
+
+color:#cbd5e1;
+
+}
+
+/* ==========================================
+   Newsletter
+========================================== */
+
+.newsletter-box{
+
+display:flex;
+
+gap:16px;
+
+justify-content:center;
+
+flex-wrap:wrap;
+
+margin-top:25px;
+
+}
+
+.newsletter-box input{
+
+width:420px;
+
+max-width:100%;
+
+padding:16px;
+
+border-radius:14px;
+
+background:#fff;
+
+}
+
+/* ==========================================
+   Contact
+========================================== */
+
+.contact-grid{
+
+margin-top:40px;
+
+}
+
+/* ==========================================
+   Download
+========================================== */
+
+.download-actions{
+
+display:flex;
+
+gap:18px;
+
+justify-content:center;
+
+flex-wrap:wrap;
+
+margin-top:30px;
+
+}
+
+/* ==========================================
+   AI
+========================================== */
+
+.ai-box{
+
+display:flex;
+
+flex-direction:column;
+
+gap:20px;
+
+max-width:900px;
+
+margin:auto;
+
+}
+
+.ai-box textarea{
+
+width:100%;
+
+min-height:180px;
+
+padding:20px;
+
+border-radius:18px;
+
+resize:vertical;
+
+background:rgba(255,255,255,.08);
+
+color:#fff;
+
+}
+
+/* ==========================================
+   Footer
+========================================== */
+
+footer{
+
+margin-top:80px;
+
+padding:60px 20px;
+
+border-top:1px solid rgba(255,255,255,.08);
+
+background:#020617;
+
+}
+
+footer ul{
+
+display:flex;
+
+flex-direction:column;
+
+gap:10px;
+
+}
+
+footer li a{
+
+color:#cbd5e1;
+
+}
+
+footer li a:hover{
+
+color:#3b82f6;
+
+}
+
+.copyright{
+
+margin-top:40px;
+
+text-align:center;
+
+color:#94a3b8;
+
+}
+
