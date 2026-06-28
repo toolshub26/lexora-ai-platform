@@ -132,3 +132,79 @@ Lexora.restoreLanguage();
 
 Lexora.restoreCountry();
 
+/* ==========================================
+   Toast Notification System
+========================================== */
+
+Lexora.showToast = function (message, type = "info") {
+
+    let toast = document.getElementById("lexora-toast");
+
+    if (!toast) {
+
+        toast = document.createElement("div");
+        toast.id = "lexora-toast";
+        document.body.appendChild(toast);
+
+    }
+
+    toast.className = "toast toast-" + type;
+    toast.textContent = message;
+    toast.style.display = "block";
+
+    clearTimeout(toast.hideTimer);
+
+    toast.hideTimer = setTimeout(() => {
+
+        toast.style.display = "none";
+
+    }, 3000);
+
+};
+
+/* ==========================================
+   Network Status
+========================================== */
+
+Lexora.handleOnline = function () {
+
+    console.log("Internet Connected");
+
+    this.showToast("Internet Connected", "success");
+
+};
+
+Lexora.handleOffline = function () {
+
+    console.log("Internet Disconnected");
+
+    this.showToast("No Internet Connection", "error");
+
+};
+
+/* ==========================================
+   Register Network Events
+========================================== */
+
+window.addEventListener("online", () => {
+
+    Lexora.handleOnline();
+
+});
+
+window.addEventListener("offline", () => {
+
+    Lexora.handleOffline();
+
+});
+
+/* ==========================================
+   Utility
+========================================== */
+
+Lexora.isOnline = function () {
+
+    return navigator.onLine;
+
+};
+
