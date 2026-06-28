@@ -14,15 +14,34 @@ const Lexora = {
     init() {
         console.log("Lexora AI Started");
 
-        this.loadCountry();
-        this.loadLanguage();
-        this.loadPurposes();
-        this.registerEvents();
+        this.loadTheme();
+this.restoreLanguage();
+this.restoreCountry();
+
+this.loadCountry();
+this.loadLanguage();
+this.loadPurposes();
+
+this.registerEvents();
     },
 
     registerEvents() {
-        console.log("Events Registered");
-    },
+
+    console.log("Events Registered");
+
+    if (typeof this.registerUIEvents === "function") {
+        this.registerUIEvents();
+    }
+
+    window.addEventListener("online", () => {
+        this.handleOnline();
+    });
+
+    window.addEventListener("offline", () => {
+        this.handleOffline();
+    });
+
+},
 
     loadCountry() {
         console.log("Countries Loaded");
@@ -122,15 +141,6 @@ Lexora.restoreCountry = function () {
 
 };
 
-/* ==========================================
-   Call Restore Functions
-========================================== */
-
-Lexora.loadTheme();
-
-Lexora.restoreLanguage();
-
-Lexora.restoreCountry();
 
 /* ==========================================
    Toast Notification System
@@ -186,17 +196,7 @@ Lexora.handleOffline = function () {
    Register Network Events
 ========================================== */
 
-window.addEventListener("online", () => {
 
-    Lexora.handleOnline();
-
-});
-
-window.addEventListener("offline", () => {
-
-    Lexora.handleOffline();
-
-});
 
 /* ==========================================
    Utility
@@ -336,13 +336,7 @@ Lexora.registerUIEvents = function () {
    Extend registerEvents
 ========================================== */
 
-Lexora.registerEvents = function () {
 
-    console.log("Events Registered");
-
-    this.registerUIEvents();
-
-};
 
 /* ==========================================
    Session Manager
