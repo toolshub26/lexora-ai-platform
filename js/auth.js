@@ -23,6 +23,19 @@ const Auth = {
 
         this.bindEvents();
 this.initializeFirebase();
+   // Start the auth state listener (only once)
+if (!this._listenerStarted) {
+    this._listenerStarted = true;
+    this.onAuthStateChanged((user) => {
+        this.currentUser = user;
+
+        document.dispatchEvent(
+            new CustomEvent("auth-state-changed", {
+                detail: { user }
+            })
+        );
+    });
+}     
     },
 
     bindEvents() {
@@ -118,5 +131,65 @@ Auth.signUp = async function (email, password) {
 
     }
 
+};
+
+
+Auth.login = async function (email, password) {
+    if (!this.isReady()) {
+        console.error("Firebase Auth is not ready.");
+        return false;
+    }
+    try {
+        const userCredential = await signInWithEmailAndPassword(
+            this.firebase.auth,
+            email,
+            password
+        );
+        console.log("Login successful");
+        return userCredential;
+    } catch (error) {
+        console.error("Login error:", error.message);
+        throw error;
+    }
+};
+
+Auth.logout = async function () {
+    if (!this.isReady()) {
+        console.error("Firebase Auth is not ready.");
+        return;
+    }
+    try {
+        await signOut(this.firebase.auth);
+        console.log("User signed out");
+    } catch (error) {
+        console.error("Logout error:", error);
+        throw error;
+    }
+};
+
+Auth.resetPassword = async function (email) {
+    if (!this.isReady()) {
+        console.error("Firebase Auth is not ready.");
+        return false;
+    }
+    try {
+        await sendPasswordResetEmail(this.firebase.auth, email);
+        console.log("Password reset email sent");
+        return true;
+    } catch (error) {
+        console.error("Password reset error:", error.message);
+        throw error;
+    }
+};
+
+Auth.onAuthStateChanged = function (callback) {
+    if (!this.isReady()) {
+        console.error("Firebase Auth is not ready.");
+        return () => {};
+    }
+    return onAuthStateChanged(this.firebase.auth, (user) => {
+        Auth.currentUser = user;
+        if (callback) callback(user);
+    });
 };
 
