@@ -22,7 +22,7 @@ const Auth = {
         console.log("Lexora Auth Initialized");
 
         this.bindEvents();
-
+this.initializeFirebase();
     },
 
     bindEvents() {
@@ -38,3 +38,48 @@ document.addEventListener("DOMContentLoaded", () => {
     Auth.init();
 
 });
+
+/* ==========================================
+   Firebase Authentication Reference
+========================================== */
+
+Auth.firebase = {
+
+    auth: null,
+
+    ready: false
+
+};
+
+/* ==========================================
+   Initialize Firebase Auth
+========================================== */
+
+Auth.initializeFirebase = function () {
+
+    if (typeof auth === "undefined") {
+
+        console.warn("Firebase Auth not loaded.");
+
+        return;
+
+    }
+
+    this.firebase.auth = auth;
+
+    this.firebase.ready = true;
+
+    console.log("Firebase Authentication Ready");
+
+};
+
+/* ==========================================
+   Check Authentication
+========================================== */
+
+Auth.isReady = function () {
+
+    return this.firebase.ready;
+
+};
+
