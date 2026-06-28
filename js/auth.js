@@ -83,3 +83,40 @@ Auth.isReady = function () {
 
 };
 
+/* ==========================================
+   Create Account
+========================================== */
+
+Auth.signUp = async function (email, password) {
+
+    if (!this.isReady()) {
+
+        console.error("Firebase Auth is not ready.");
+
+        return false;
+
+    }
+
+    try {
+
+        const userCredential =
+            await createUserWithEmailAndPassword(
+                this.firebase.auth,
+                email,
+                password
+            );
+
+        console.log("Account Created");
+
+        return userCredential;
+
+    } catch (error) {
+
+        console.error(error);
+
+        return false;
+
+    }
+
+};
+
