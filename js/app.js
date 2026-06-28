@@ -208,3 +208,71 @@ Lexora.isOnline = function () {
 
 };
 
+/* ==========================================
+   Modal Manager
+========================================== */
+
+Lexora.openModal = function (id) {
+
+    const modal = document.getElementById(id);
+
+    if (!modal) return;
+
+    modal.classList.remove("hidden");
+
+};
+
+Lexora.closeModal = function (id) {
+
+    const modal = document.getElementById(id);
+
+    if (!modal) return;
+
+    modal.classList.add("hidden");
+
+};
+
+/* ==========================================
+   Loading Manager
+========================================== */
+
+Lexora.showLoader = function () {
+
+    const loader = document.getElementById("globalLoader");
+
+    if (loader) {
+
+        loader.classList.remove("hidden");
+
+    }
+
+};
+
+Lexora.hideLoader = function () {
+
+    const loader = document.getElementById("globalLoader");
+
+    if (loader) {
+
+        loader.classList.add("hidden");
+
+    }
+
+};
+
+/* ==========================================
+   Helpers
+========================================== */
+
+Lexora.$ = function(selector){
+
+    return document.querySelector(selector);
+
+};
+
+Lexora.$$ = function(selector){
+
+    return document.querySelectorAll(selector);
+
+};
+
