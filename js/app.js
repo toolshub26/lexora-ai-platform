@@ -41,3 +41,94 @@ const Lexora = {
 document.addEventListener("DOMContentLoaded", () => {
     Lexora.init();
 });
+
+/* ==========================================
+   Local Storage Manager
+========================================== */
+
+Lexora.storage = {
+
+save(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+        console.error("Storage Save Error:", e);
+    }
+},
+
+load(key, defaultValue = null) {
+    try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : defaultValue;
+    } catch (e) {
+        return defaultValue;
+    }
+},
+
+remove(key) {
+    localStorage.removeItem(key);
+}
+
+};
+
+/* ==========================================
+   Theme Manager
+========================================== */
+
+Lexora.loadTheme = function () {
+
+    const savedTheme = this.storage.load("theme", "dark");
+
+    document.documentElement.setAttribute("data-theme", savedTheme);
+
+    console.log("Theme Loaded:", savedTheme);
+
+};
+
+Lexora.toggleTheme = function () {
+
+    const current =
+        document.documentElement.getAttribute("data-theme") || "dark";
+
+    const next = current === "dark" ? "light" : "dark";
+
+    document.documentElement.setAttribute("data-theme", next);
+
+    this.storage.save("theme", next);
+
+};
+
+/* ==========================================
+   Language
+========================================== */
+
+Lexora.restoreLanguage = function () {
+
+    const lang = this.storage.load("language", "en");
+
+    console.log("Language:", lang);
+
+};
+
+/* ==========================================
+   Country
+========================================== */
+
+Lexora.restoreCountry = function () {
+
+    const country = this.storage.load("country", "IN");
+
+    console.log("Country:", country);
+
+};
+
+/* ==========================================
+   Call Restore Functions
+========================================== */
+
+Lexora.loadTheme();
+
+Lexora.restoreLanguage();
+
+Lexora.restoreCountry();
+
