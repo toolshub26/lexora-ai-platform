@@ -16,7 +16,14 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
-    getFirestore
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  query,
+  orderBy,
+  limit,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 /* ==========================================
@@ -46,7 +53,13 @@ const db = getFirestore(app);
 
 window.auth = auth;
 window.db = db;
-
+window.doc = doc;
+window.getDoc = getDoc;
+window.collection = collection;
+window.query = query;
+window.orderBy = orderBy;
+window.limit = limit;
+window.onSnapshot = onSnapshot;
 window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
 window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 window.sendPasswordResetEmail = sendPasswordResetEmail;
