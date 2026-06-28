@@ -809,3 +809,231 @@ color:#94a3b8;
 
 }
 
+/* ==========================================
+   Modals
+========================================== */
+
+.modal{
+
+position:fixed;
+
+inset:0;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+background:rgba(0,0,0,.65);
+
+backdrop-filter:blur(12px);
+
+z-index:1000;
+
+padding:20px;
+
+}
+
+.modal-content{
+
+width:100%;
+
+max-width:500px;
+
+background:rgba(15,23,42,.96);
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:22px;
+
+padding:30px;
+
+box-shadow:0 25px 60px rgba(0,0,0,.45);
+
+}
+
+.modal-content h2{
+
+margin-bottom:24px;
+
+text-align:center;
+
+}
+
+.close-modal{
+
+float:right;
+
+font-size:30px;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.close-modal:hover{
+
+color:#3b82f6;
+
+}
+
+.modal form{
+
+display:flex;
+
+flex-direction:column;
+
+gap:18px;
+
+}
+
+.modal input{
+
+padding:16px;
+
+border-radius:14px;
+
+background:#fff;
+
+}
+
+/* ==========================================
+   AI Chat
+========================================== */
+
+#aiChatWindow{
+
+position:fixed;
+
+right:20px;
+
+bottom:20px;
+
+width:380px;
+
+height:600px;
+
+display:flex;
+
+flex-direction:column;
+
+background:#0f172a;
+
+border-radius:24px;
+
+overflow:hidden;
+
+border:1px solid rgba(255,255,255,.08);
+
+box-shadow:0 25px 60px rgba(0,0,0,.35);
+
+z-index:900;
+
+}
+
+.chat-header{
+
+padding:20px;
+
+background:#2563eb;
+
+font-weight:700;
+
+}
+
+#chatMessages{
+
+flex:1;
+
+overflow:auto;
+
+padding:18px;
+
+}
+
+.chat-input{
+
+display:flex;
+
+gap:10px;
+
+padding:16px;
+
+}
+
+.chat-input input{
+
+flex:1;
+
+padding:14px;
+
+border-radius:12px;
+
+background:#fff;
+
+}
+
+/* ==========================================
+   Toast
+========================================== */
+
+#toastContainer{
+
+position:fixed;
+
+top:20px;
+
+right:20px;
+
+display:flex;
+
+flex-direction:column;
+
+gap:12px;
+
+z-index:9999;
+
+}
+
+/* ==========================================
+   Utilities
+========================================== */
+
+.text-center{
+
+text-align:center;
+
+}
+
+.mt-20{
+
+margin-top:20px;
+
+}
+
+.mt-40{
+
+margin-top:40px;
+
+}
+
+.mb-20{
+
+margin-bottom:20px;
+
+}
+
+.mb-40{
+
+margin-bottom:40px;
+
+}
+
+.w-100{
+
+width:100%;
+
+}
+
