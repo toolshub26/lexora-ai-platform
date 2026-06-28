@@ -276,3 +276,71 @@ Lexora.$$ = function(selector){
 
 };
 
+/* ==========================================
+   Register UI Events
+========================================== */
+
+Lexora.registerUIEvents = function () {
+
+    const loginBtn = document.getElementById("loginBtn");
+
+    if (loginBtn) {
+
+        loginBtn.addEventListener("click", () => {
+
+            this.openModal("loginModal");
+
+        });
+
+    }
+
+    const signupBtn = document.getElementById("signupBtn");
+
+    if (signupBtn) {
+
+        signupBtn.addEventListener("click", () => {
+
+            this.openModal("signupModal");
+
+        });
+
+    }
+
+    const closeLogin = document.getElementById("closeLogin");
+
+    if (closeLogin) {
+
+        closeLogin.addEventListener("click", () => {
+
+            this.closeModal("loginModal");
+
+        });
+
+    }
+
+    const closeSignup = document.getElementById("closeSignup");
+
+    if (closeSignup) {
+
+        closeSignup.addEventListener("click", () => {
+
+            this.closeModal("signupModal");
+
+        });
+
+    }
+
+};
+
+/* ==========================================
+   Extend registerEvents
+========================================== */
+
+Lexora.registerEvents = function () {
+
+    console.log("Events Registered");
+
+    this.registerUIEvents();
+
+};
+
