@@ -1,1 +1,74 @@
-
+[
+  {
+    "id": "affidavit",
+    "title": "General Affidavit",
+    "category": "Affidavit",
+    "template": "I, {{fullName}}, residing at {{address}}, do hereby solemnly affirm and declare that the statements made herein are true and correct to the best of my knowledge and belief."
+  },
+  {
+    "id": "name_change",
+    "title": "Name Change Affidavit",
+    "category": "Affidavit",
+    "template": "I, {{oldName}}, have changed my name to {{newName}} and shall hereafter be known as {{newName}} for all legal purposes."
+  },
+  {
+    "id": "address_proof",
+    "title": "Address Proof Affidavit",
+    "category": "Affidavit",
+    "template": "I, {{fullName}}, certify that my permanent address is {{address}}."
+  },
+  {
+    "id": "birth_affidavit",
+    "title": "Birth Affidavit",
+    "category": "Affidavit",
+    "template": "I hereby affirm that {{personName}} was born on {{dob}} at {{birthPlace}}."
+  },
+  {
+    "id": "marriage_affidavit",
+    "title": "Marriage Affidavit",
+    "category": "Affidavit",
+    "template": "I hereby declare that I am legally married to {{spouseName}} on {{marriageDate}}."
+  },
+  {
+    "id": "income_affidavit",
+    "title": "Income Affidavit",
+    "category": "Affidavit",
+    "template": "I declare that my monthly income is {{income}} and this statement is true."
+  },
+  {
+    "id": "passport_loss",
+    "title": "Lost Passport Affidavit",
+    "category": "Travel",
+    "template": "I declare that my passport bearing number {{passportNumber}} has been lost on {{lossDate}}."
+  },
+  {
+    "id": "driving_license_loss",
+    "title": "Lost Driving Licence Affidavit",
+    "category": "Travel",
+    "template": "I declare that my driving licence number {{licenseNumber}} has been lost."
+  },
+  {
+    "id": "employment_letter",
+    "title": "Employment Letter",
+    "category": "Employment",
+    "template": "This is to certify that {{employeeName}} is employed with {{companyName}} as {{designation}}."
+  },
+  {
+    "id": "salary_certificate",
+    "title": "Salary Certificate",
+    "category": "Employment",
+    "template": "This certifies that {{employeeName}} receives a monthly salary of {{salary}}."
+  },
+  {
+    "id": "noc",
+    "title": "No Objection Certificate",
+    "category": "Certificate",
+    "template": "This is to certify that we have no objection to {{personName}} for {{purpose}}."
+  },
+  {
+    "id": "legal_notice",
+    "title": "Legal Notice",
+    "category": "Legal",
+    "template": "This legal notice is issued to {{recipientName}} regarding {{subject}}."
+  }
+]
