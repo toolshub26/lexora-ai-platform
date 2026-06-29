@@ -893,3 +893,121 @@ export function currentUID() {
 
 }
 
+/*==========================================================
+  Module 5 : Core Initializer
+==========================================================*/
+
+export const Core = {
+
+    async initialize() {
+
+        Logger.log("Initializing Core...");
+
+        try {
+
+            Performance.start("CORE");
+
+            /* Restore Session */
+
+            Session.restore();
+
+            /* Preferences */
+
+            Preferences.loadTheme();
+            Preferences.loadLanguage();
+            Preferences.loadCountry();
+
+            /* Apply Theme */
+
+            Theme.apply(STATE.theme);
+
+            /* Firebase Auth */
+
+            Authentication.init();
+
+            /* Network */
+
+            STATE.online = navigator.onLine;
+
+            window.addEventListener(
+
+                "online",
+
+                () => {
+
+                    STATE.online = true;
+
+                    Events.emit("network:online");
+
+                }
+
+            );
+
+            window.addEventListener(
+
+                "offline",
+
+                () => {
+
+                    STATE.online = false;
+
+                    Events.emit("network:offline");
+
+                }
+
+            );
+
+            /* UI */
+
+            initializeUI();
+
+            /* Boot */
+
+            await bootstrap();
+
+            Performance.end("CORE");
+
+            Logger.log(
+
+                "Core Ready"
+
+            );
+
+            Events.emit(
+
+                "core:ready"
+
+            );
+
+        } catch (error) {
+
+            Logger.error(
+
+                "Core Initialization Failed",
+
+                error
+
+            );
+
+        }
+
+    }
+
+};
+
+/*==========================================================
+  DOM Ready
+==========================================================*/
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    async () => {
+
+        await Core.initialize();
+
+    }
+
+);
+
