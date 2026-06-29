@@ -1,400 +1,234 @@
 "use strict";
 
-/*
-=========================================
-Lexora AI Platform v20
-Main Application Controller
-=========================================
-*/
+/*==========================================================
+  Lexora AI Platform v21 Enterprise
+  Module 1 : Bootstrap Engine
+==========================================================*/
 
-const Lexora = {
+export const APP_VERSION = "21.0.0";
+export const APP_NAME = "Lexora AI Platform";
+export const BUILD = "Enterprise";
 
-    version: "20.0.0",
+/*==========================================================
+  Global Configuration
+==========================================================*/
 
-    init() {
-        console.log("Lexora AI Started");
+export const CONFIG = Object.freeze({
 
-        this.loadTheme();
-this.restoreLanguage();
-this.restoreCountry();
+    DEBUG: true,
 
-this.loadCountry();
-this.loadLanguage();
-this.loadPurposes();
+    ENV: "production",
 
-this.registerEvents();
-    },
+    CACHE_VERSION: "21",
 
-    registerEvents() {
+    STORAGE_PREFIX: "LEXORA_",
 
-    console.log("Events Registered");
+    API_TIMEOUT: 30000,
 
-    if (typeof this.registerUIEvents === "function") {
-        this.registerUIEvents();
-    }
+    AUTO_SAVE_INTERVAL: 30000,
 
-    window.addEventListener("online", () => {
-        this.handleOnline();
-    });
+    OFFLINE_MODE: true,
 
-    window.addEventListener("offline", () => {
-        this.handleOffline();
-    });
+    ENABLE_AI: true,
 
-},
+    ENABLE_QR: true,
 
-    loadCountry() {
-        console.log("Countries Loaded");
-    },
+    ENABLE_SCANNER: true,
 
-    loadLanguage() {
-        console.log("Languages Loaded");
-    },
+    ENABLE_PDF: true,
 
-    loadPurposes() {
-        console.log("Purposes Loaded");
-    }
+    ENABLE_ANALYTICS: true,
 
-};
+    ENABLE_NOTIFICATIONS: true,
 
-document.addEventListener("DOMContentLoaded", () => {
-    Lexora.init();
+    ENABLE_PAYMENT: true,
+
+    ENABLE_SYNC: true
+
 });
 
-/* ==========================================
-   Local Storage Manager
-========================================== */
+/*==========================================================
+  Global State
+==========================================================*/
 
-Lexora.storage = {
+export const STATE = {
 
-save(key, value) {
-    try {
-        localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-        console.error("Storage Save Error:", e);
+    initialized: false,
+
+    bootTime: Date.now(),
+
+    currentUser: null,
+
+    language: "en",
+
+    country: "IN",
+
+    theme: "dark",
+
+    online: navigator.onLine,
+
+    loading: false,
+
+    version: APP_VERSION,
+
+    build: BUILD
+
+};
+
+/*==========================================================
+  Logger
+==========================================================*/
+
+export const Logger = {
+
+    log(...args){
+
+        if(CONFIG.DEBUG)
+            console.log("[Lexora]",...args);
+
+    },
+
+    warn(...args){
+
+        console.warn("[Lexora]",...args);
+
+    },
+
+    error(...args){
+
+        console.error("[Lexora]",...args);
+
     }
-},
 
-load(key, defaultValue = null) {
-    try {
-        const value = localStorage.getItem(key);
-        return value ? JSON.parse(value) : defaultValue;
-    } catch (e) {
-        return defaultValue;
+};
+
+/*==========================================================
+  Performance
+==========================================================*/
+
+export const Performance = {
+
+    timers:new Map(),
+
+    start(name){
+
+        this.timers.set(name,performance.now());
+
+    },
+
+    end(name){
+
+        if(!this.timers.has(name)) return;
+
+        const start=this.timers.get(name);
+
+        const end=performance.now();
+
+        Logger.log(
+
+            `${name}: ${(end-start).toFixed(2)} ms`
+
+        );
+
+        this.timers.delete(name);
+
     }
-},
 
-remove(key) {
-    localStorage.removeItem(key);
+};
+
+/*==========================================================
+  Event Bus
+==========================================================*/
+
+export const Events={
+
+    events:new Map(),
+
+    on(event,callback){
+
+        if(!this.events.has(event))
+            this.events.set(event,[]);
+
+        this.events.get(event).push(callback);
+
+    },
+
+    emit(event,data){
+
+        if(!this.events.has(event))
+            return;
+
+        this.events.get(event)
+        .forEach(cb=>cb(data));
+
+    },
+
+    off(event){
+
+        this.events.delete(event);
+
+    }
+
+};
+
+/*==========================================================
+  Error Handler
+==========================================================*/
+
+window.addEventListener("error",(event)=>{
+
+    Logger.error(
+
+        "Application Error",
+
+        event.error
+
+    );
+
+});
+
+window.addEventListener(
+
+    "unhandledrejection",
+
+    (event)=>{
+
+        Logger.error(
+
+            "Unhandled Promise",
+
+            event.reason
+
+        );
+
+    }
+
+);
+
+/*==========================================================
+  Bootstrap
+==========================================================*/
+
+export async function bootstrap(){
+
+    if(STATE.initialized)
+        return;
+
+    Performance.start("BOOT");
+
+    Logger.log(
+
+        APP_NAME,
+
+        APP_VERSION,
+
+        BUILD
+
+    );
+
+    STATE.initialized=true;
+
+    Performance.end("BOOT");
+
 }
-
-};
-
-/* ==========================================
-   Theme Manager
-========================================== */
-
-Lexora.loadTheme = function () {
-
-    const savedTheme = this.storage.load("theme", "dark");
-
-    document.documentElement.setAttribute("data-theme", savedTheme);
-
-    console.log("Theme Loaded:", savedTheme);
-
-};
-
-Lexora.toggleTheme = function () {
-
-    const current =
-        document.documentElement.getAttribute("data-theme") || "dark";
-
-    const next = current === "dark" ? "light" : "dark";
-
-    document.documentElement.setAttribute("data-theme", next);
-
-    this.storage.save("theme", next);
-
-};
-
-/* ==========================================
-   Language
-========================================== */
-
-Lexora.restoreLanguage = function () {
-
-    const lang = this.storage.load("language", "en");
-
-    console.log("Language:", lang);
-
-};
-
-/* ==========================================
-   Country
-========================================== */
-
-Lexora.restoreCountry = function () {
-
-    const country = this.storage.load("country", "IN");
-
-    console.log("Country:", country);
-
-};
-
-
-/* ==========================================
-   Toast Notification System
-========================================== */
-
-Lexora.showToast = function (message, type = "info") {
-
-    let toast = document.getElementById("lexora-toast");
-
-    if (!toast) {
-
-        toast = document.createElement("div");
-        toast.id = "lexora-toast";
-        document.body.appendChild(toast);
-
-    }
-
-    toast.className = "toast toast-" + type;
-    toast.textContent = message;
-    toast.style.display = "block";
-
-    clearTimeout(toast.hideTimer);
-
-    toast.hideTimer = setTimeout(() => {
-
-        toast.style.display = "none";
-
-    }, 3000);
-
-};
-
-/* ==========================================
-   Network Status
-========================================== */
-
-Lexora.handleOnline = function () {
-
-    console.log("Internet Connected");
-
-    this.showToast("Internet Connected", "success");
-
-};
-
-Lexora.handleOffline = function () {
-
-    console.log("Internet Disconnected");
-
-    this.showToast("No Internet Connection", "error");
-
-};
-
-/* ==========================================
-   Register Network Events
-========================================== */
-
-
-
-/* ==========================================
-   Utility
-========================================== */
-
-Lexora.isOnline = function () {
-
-    return navigator.onLine;
-
-};
-
-/* ==========================================
-   Modal Manager
-========================================== */
-
-Lexora.openModal = function (id) {
-
-    const modal = document.getElementById(id);
-
-    if (!modal) return;
-
-    modal.classList.remove("hidden");
-
-};
-
-Lexora.closeModal = function (id) {
-
-    const modal = document.getElementById(id);
-
-    if (!modal) return;
-
-    modal.classList.add("hidden");
-
-};
-
-/* ==========================================
-   Loading Manager
-========================================== */
-
-Lexora.showLoader = function () {
-
-    const loader = document.getElementById("globalLoader");
-
-    if (loader) {
-
-        loader.classList.remove("hidden");
-
-    }
-
-};
-
-Lexora.hideLoader = function () {
-
-    const loader = document.getElementById("globalLoader");
-
-    if (loader) {
-
-        loader.classList.add("hidden");
-
-    }
-
-};
-
-/* ==========================================
-   Helpers
-========================================== */
-
-Lexora.$ = function(selector){
-
-    return document.querySelector(selector);
-
-};
-
-Lexora.$$ = function(selector){
-
-    return document.querySelectorAll(selector);
-
-};
-
-/* ==========================================
-   Register UI Events
-========================================== */
-
-Lexora.registerUIEvents = function () {
-
-    const loginBtn = document.getElementById("loginBtn");
-
-    if (loginBtn) {
-
-        loginBtn.addEventListener("click", () => {
-
-            this.openModal("loginModal");
-
-        });
-
-    }
-
-    const signupBtn = document.getElementById("signupBtn");
-
-    if (signupBtn) {
-
-        signupBtn.addEventListener("click", () => {
-
-            this.openModal("signupModal");
-
-        });
-
-    }
-
-    const closeLogin = document.getElementById("closeLogin");
-
-    if (closeLogin) {
-
-        closeLogin.addEventListener("click", () => {
-
-            this.closeModal("loginModal");
-
-        });
-
-    }
-
-    const closeSignup = document.getElementById("closeSignup");
-
-    if (closeSignup) {
-
-        closeSignup.addEventListener("click", () => {
-
-            this.closeModal("signupModal");
-
-        });
-
-    }
-
-};
-
-/* ==========================================
-   Extend registerEvents
-========================================== */
-
-
-
-/* ==========================================
-   Session Manager
-========================================== */
-
-Lexora.session = {
-
-    saveUser(user) {
-
-        Lexora.storage.save("currentUser", user);
-
-    },
-
-    getUser() {
-
-        return Lexora.storage.load("currentUser", null);
-
-    },
-
-    clear() {
-
-        Lexora.storage.remove("currentUser");
-
-    }
-
-};
-
-/* ==========================================
-   Current User
-========================================== */
-
-Lexora.getCurrentUser = function () {
-
-    return this.session.getUser();
-
-};
-
-/* ==========================================
-   Authentication Check
-========================================== */
-
-Lexora.isLoggedIn = function () {
-
-    return this.getCurrentUser() !== null;
-
-};
-
-/* ==========================================
-   Logout
-========================================== */
-
-Lexora.logout = function () {
-
-    this.session.clear();
-
-    this.showToast("Logged out successfully", "success");
-
-    console.log("User Logged Out");
-
-};
 
