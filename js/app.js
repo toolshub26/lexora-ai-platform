@@ -1011,3 +1011,213 @@ document.addEventListener(
 
 );
 
+/*==========================================================
+  Module 6 : Router Engine
+==========================================================*/
+
+export const Router = {
+
+    current: "home",
+
+    routes: new Map(),
+
+    register(name, callback) {
+
+        if (!name || typeof callback !== "function")
+            return;
+
+        this.routes.set(name, callback);
+
+    },
+
+    async navigate(name, data = null) {
+
+        if (!this.routes.has(name)) {
+
+            Logger.warn("Route not found:", name);
+
+            return;
+
+        }
+
+        try {
+
+            Performance.start("ROUTE");
+
+            this.current = name;
+
+            await this.routes.get(name)(data);
+
+            Events.emit("route:changed", {
+
+                route: name,
+
+                data
+
+            });
+
+            Performance.end("ROUTE");
+
+        } catch (error) {
+
+            Logger.error(error);
+
+        }
+
+    }
+
+};
+
+/*==========================================================
+  Screen Manager
+==========================================================*/
+
+export const Screen = {
+
+    active: null,
+
+    show(id) {
+
+        document
+
+            .querySelectorAll("[data-screen]")
+
+            .forEach(screen => {
+
+                screen.classList.add("hidden");
+
+            });
+
+        const screen = document.getElementById(id);
+
+        if (!screen)
+            return;
+
+        screen.classList.remove("hidden");
+
+        this.active = id;
+
+        Events.emit(
+
+            "screen:changed",
+
+            id
+
+        );
+
+    },
+
+    current() {
+
+        return this.active;
+
+    }
+
+};
+
+/*==========================================================
+  Navigation
+==========================================================*/
+
+export const Navigation = {
+
+    init() {
+
+        document
+
+            .querySelectorAll("[data-route]")
+
+            .forEach(button => {
+
+                button.addEventListener(
+
+                    "click",
+
+                    () => {
+
+                        Router.navigate(
+
+                            button.dataset.route
+
+                        );
+
+                    }
+
+                );
+
+            });
+
+    }
+
+};
+
+/*==========================================================
+  Default Routes
+==========================================================*/
+
+Router.register(
+
+    "home",
+
+    () => {
+
+        Screen.show("homeScreen");
+
+    }
+
+);
+
+Router.register(
+
+    "dashboard",
+
+    () => {
+
+        Screen.show("dashboardScreen");
+
+    }
+
+);
+
+Router.register(
+
+    "settings",
+
+    () => {
+
+        Screen.show("settingsScreen");
+
+    }
+
+);
+
+Router.register(
+
+    "profile",
+
+    () => {
+
+        Screen.show("profileScreen");
+
+    }
+
+);
+
+/*==========================================================
+  Router Ready
+==========================================================*/
+
+Events.on(
+
+    "core:ready",
+
+    () => {
+
+        Navigation.init();
+
+        Router.navigate("home");
+
+    }
+
+);
+
