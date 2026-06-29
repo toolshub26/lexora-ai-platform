@@ -1425,3 +1425,259 @@ Events.on(
 
 );
 
+/*==========================================================
+  Module 8 : Enterprise UI Engine
+==========================================================*/
+
+export const UI = {
+
+    activeModal: null,
+
+    activeLoader: false,
+
+    toastTimer: null
+
+};
+
+/*==========================================================
+  Modal Engine
+==========================================================*/
+
+UI.openModal = function(id){
+
+    const modal=document.getElementById(id);
+
+    if(!modal) return false;
+
+    modal.classList.remove("hidden");
+
+    modal.setAttribute("aria-hidden","false");
+
+    this.activeModal=id;
+
+    Events.emit("modal:opened",id);
+
+    return true;
+
+};
+
+UI.closeModal=function(id){
+
+    const modal=document.getElementById(id);
+
+    if(!modal) return false;
+
+    modal.classList.add("hidden");
+
+    modal.setAttribute("aria-hidden","true");
+
+    this.activeModal=null;
+
+    Events.emit("modal:closed",id);
+
+    return true;
+
+};
+
+UI.closeAllModals=function(){
+
+    document
+        .querySelectorAll(".modal")
+        .forEach(modal=>{
+
+            modal.classList.add("hidden");
+
+            modal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+        });
+
+    this.activeModal=null;
+
+};
+
+/*==========================================================
+  Loader Engine
+==========================================================*/
+
+UI.showLoader=function(text="Loading..."){
+
+    const loader=document.getElementById("globalLoader");
+
+    if(!loader) return;
+
+    loader.classList.remove("hidden");
+
+    const label=
+
+        loader.querySelector(".loader-text");
+
+    if(label)
+        label.textContent=text;
+
+    this.activeLoader=true;
+
+};
+
+UI.hideLoader=function(){
+
+    const loader=document.getElementById("globalLoader");
+
+    if(!loader) return;
+
+    loader.classList.add("hidden");
+
+    this.activeLoader=false;
+
+};
+
+/*==========================================================
+  Toast Engine
+==========================================================*/
+
+UI.toast=function(
+
+    message,
+
+    type="info",
+
+    duration=3000
+
+){
+
+    let toast=
+
+        document.getElementById(
+
+            "lexora-toast"
+
+        );
+
+    if(!toast){
+
+        toast=document.createElement("div");
+
+        toast.id="lexora-toast";
+
+        document.body.appendChild(toast);
+
+    }
+
+    toast.className=
+
+        "toast toast-"+type;
+
+    toast.textContent=message;
+
+    toast.style.display="block";
+
+    clearTimeout(this.toastTimer);
+
+    this.toastTimer=setTimeout(()=>{
+
+        toast.style.display="none";
+
+    },duration);
+
+};
+
+/*==========================================================
+  Alert
+==========================================================*/
+
+UI.alert=function(message){
+
+    window.alert(message);
+
+};
+
+/*==========================================================
+  Confirm
+==========================================================*/
+
+UI.confirm=function(message){
+
+    return window.confirm(message);
+
+};
+
+/*==========================================================
+  Bottom Sheet
+==========================================================*/
+
+UI.openSheet=function(id){
+
+    const sheet=
+
+        document.getElementById(id);
+
+    if(!sheet) return;
+
+    sheet.classList.add("active");
+
+};
+
+UI.closeSheet=function(id){
+
+    const sheet=
+
+        document.getElementById(id);
+
+    if(!sheet) return;
+
+    sheet.classList.remove("active");
+
+};
+
+/*==========================================================
+  Keyboard Shortcuts
+==========================================================*/
+
+document.addEventListener(
+
+    "keydown",
+
+    event=>{
+
+        if(
+
+            event.key==="Escape" &&
+
+            UI.activeModal
+
+        ){
+
+            UI.closeModal(
+
+                UI.activeModal
+
+            );
+
+        }
+
+    }
+
+);
+
+/*==========================================================
+  UI Ready
+==========================================================*/
+
+Events.on(
+
+    "core:ready",
+
+    ()=>{
+
+        Logger.log(
+
+            "Enterprise UI Ready"
+
+        );
+
+    }
+
+);
+
