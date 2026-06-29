@@ -232,3 +232,305 @@ export async function bootstrap(){
 
 }
 
+/*==========================================================
+  Module 2 : Storage Engine
+==========================================================*/
+
+export const Storage = {
+
+    prefix: CONFIG.STORAGE_PREFIX,
+
+    key(name){
+
+        return this.prefix + name;
+
+    },
+
+    save(name,value){
+
+        try{
+
+            localStorage.setItem(
+
+                this.key(name),
+
+                JSON.stringify(value)
+
+            );
+
+            return true;
+
+        }catch(error){
+
+            Logger.error(error);
+
+            return false;
+
+        }
+
+    },
+
+    load(name,defaultValue=null){
+
+        try{
+
+            const data=
+
+                localStorage.getItem(
+
+                    this.key(name)
+
+                );
+
+            return data
+                ? JSON.parse(data)
+                : defaultValue;
+
+        }catch(error){
+
+            Logger.error(error);
+
+            return defaultValue;
+
+        }
+
+    },
+
+    remove(name){
+
+        localStorage.removeItem(
+
+            this.key(name)
+
+        );
+
+    },
+
+    clear(){
+
+        Object.keys(localStorage)
+
+        .filter(key=>
+
+            key.startsWith(this.prefix)
+
+        )
+
+        .forEach(key=>
+
+            localStorage.removeItem(key)
+
+        );
+
+    }
+
+};
+
+/*==========================================================
+  Session Manager
+==========================================================*/
+
+export const Session={
+
+    login(user){
+
+        STATE.currentUser=user;
+
+        Storage.save(
+
+            "CURRENT_USER",
+
+            user
+
+        );
+
+        Events.emit(
+
+            "user:login",
+
+            user
+
+        );
+
+    },
+
+    logout(){
+
+        STATE.currentUser=null;
+
+        Storage.remove(
+
+            "CURRENT_USER"
+
+        );
+
+        Events.emit(
+
+            "user:logout"
+
+        );
+
+    },
+
+    restore(){
+
+        STATE.currentUser=
+
+            Storage.load(
+
+                "CURRENT_USER",
+
+                null
+
+            );
+
+        return STATE.currentUser;
+
+    },
+
+    isLoggedIn(){
+
+        return STATE.currentUser!==null;
+
+    }
+
+};
+
+/*==========================================================
+  Cache Engine
+==========================================================*/
+
+export const Cache={
+
+    memory:new Map(),
+
+    set(key,value){
+
+        this.memory.set(
+
+            key,
+
+            value
+
+        );
+
+    },
+
+    get(key){
+
+        return this.memory.get(key);
+
+    },
+
+    has(key){
+
+        return this.memory.has(key);
+
+    },
+
+    remove(key){
+
+        this.memory.delete(key);
+
+    },
+
+    clear(){
+
+        this.memory.clear();
+
+    }
+
+};
+
+/*==========================================================
+  Preferences
+==========================================================*/
+
+export const Preferences={
+
+    saveTheme(theme){
+
+        STATE.theme=theme;
+
+        Storage.save(
+
+            "THEME",
+
+            theme
+
+        );
+
+    },
+
+    loadTheme(){
+
+        STATE.theme=
+
+            Storage.load(
+
+                "THEME",
+
+                "dark"
+
+            );
+
+    },
+
+    saveLanguage(lang){
+
+        STATE.language=lang;
+
+        Storage.save(
+
+            "LANGUAGE",
+
+            lang
+
+        );
+
+    },
+
+    loadLanguage(){
+
+        STATE.language=
+
+            Storage.load(
+
+                "LANGUAGE",
+
+                "en"
+
+            );
+
+    },
+
+    saveCountry(country){
+
+        STATE.country=country;
+
+        Storage.save(
+
+            "COUNTRY",
+
+            country
+
+        );
+
+    },
+
+    loadCountry(){
+
+        STATE.country=
+
+            Storage.load(
+
+                "COUNTRY",
+
+                "IN"
+
+            );
+
+    }
+
+};
+
