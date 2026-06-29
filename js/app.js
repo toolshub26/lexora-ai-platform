@@ -1,1683 +1,397 @@
 "use strict";
 
-/*==========================================================
-  Lexora AI Platform v21 Enterprise
-  Module 1 : Bootstrap Engine
-==========================================================*/
+/*
+Lexora AI Platform v20
+Main Application Controller
+*/
 
-export const APP_VERSION = "21.0.0";
-export const APP_NAME = "Lexora AI Platform";
-export const BUILD = "Enterprise";
+const Lexora = {
 
-/*==========================================================
-  Global Configuration
-==========================================================*/
+version: "20.0.0",
 
-export const CONFIG = Object.freeze({
+init() {
+console.log("Lexora AI Started");
 
-    DEBUG: true,
+this.loadTheme();
+this.restoreLanguage();
+this.restoreCountry();
 
-    ENV: "production",
+this.loadCountry();
+this.loadLanguage();
+this.loadPurposes();
 
-    CACHE_VERSION: "21",
+this.registerEvents();
+},
 
-    STORAGE_PREFIX: "LEXORA_",
+registerEvents() {
 
-    API_TIMEOUT: 30000,
+console.log("Events Registered");
 
-    AUTO_SAVE_INTERVAL: 30000,
+if (typeof this.registerUIEvents === "function") {
+this.registerUIEvents();
+}
 
-    OFFLINE_MODE: true,
+window.addEventListener("online", () => {
+this.handleOnline();
+});
 
-    ENABLE_AI: true,
+window.addEventListener("offline", () => {
+this.handleOffline();
+});
 
-    ENABLE_QR: true,
+},
 
-    ENABLE_SCANNER: true,
+loadCountry() {
+console.log("Countries Loaded");
+},
 
-    ENABLE_PDF: true,
+loadLanguage() {
+console.log("Languages Loaded");
+},
 
-    ENABLE_ANALYTICS: true,
+loadPurposes() {
+console.log("Purposes Loaded");
+}
 
-    ENABLE_NOTIFICATIONS: true,
+};
 
-    ENABLE_PAYMENT: true,
+document.addEventListener("DOMContentLoaded", () => {
+Lexora.init();
+});
 
-    ENABLE_SYNC: true
+/* ==========================================
+Local Storage Manager
+========================================== */
+
+Lexora.storage = {
+
+save(key, value) {
+try {
+localStorage.setItem(key, JSON.stringify(value));
+} catch (e) {
+console.error("Storage Save Error:", e);
+}
+},
+
+load(key, defaultValue = null) {
+try {
+const value = localStorage.getItem(key);
+return value ? JSON.parse(value) : defaultValue;
+} catch (e) {
+return defaultValue;
+}
+},
+
+remove(key) {
+localStorage.removeItem(key);
+}
+
+};
+
+/* ==========================================
+Theme Manager
+========================================== */
+
+Lexora.loadTheme = function () {
+
+const savedTheme = this.storage.load("theme", "dark");
+
+document.documentElement.setAttribute("data-theme", savedTheme);
+
+console.log("Theme Loaded:", savedTheme);
+
+};
+
+Lexora.toggleTheme = function () {
+
+const current =
+document.documentElement.getAttribute("data-theme") || "dark";
+
+const next = current === "dark" ? "light" : "dark";
+
+document.documentElement.setAttribute("data-theme", next);
+
+this.storage.save("theme", next);
+
+};
+
+/* ==========================================
+Language
+========================================== */
+
+Lexora.restoreLanguage = function () {
+
+const lang = this.storage.load("language", "en");
+
+console.log("Language:", lang);
+
+};
+
+/* ==========================================
+Country
+========================================== */
+
+Lexora.restoreCountry = function () {
+
+const country = this.storage.load("country", "IN");
+
+console.log("Country:", country);
+
+};
+
+
+/* ==========================================
+Toast Notification System
+========================================== */
+
+Lexora.showToast = function (message, type = "info") {
+
+let toast = document.getElementById("lexora-toast");
+
+if (!toast) {
+
+toast = document.createElement("div");
+toast.id = "lexora-toast";
+document.body.appendChild(toast);
+
+}
+
+toast.className = "toast toast-" + type;
+toast.textContent = message;
+toast.style.display = "block";
+
+clearTimeout(toast.hideTimer);
+
+toast.hideTimer = setTimeout(() => {
+
+toast.style.display = "none";
+
+}, 3000);
+
+};
+
+/* ==========================================
+Network Status
+========================================== */
+
+Lexora.handleOnline = function () {
+
+console.log("Internet Connected");
+
+this.showToast("Internet Connected", "success");
+
+};
+
+Lexora.handleOffline = function () {
+
+console.log("Internet Disconnected");
+
+this.showToast("No Internet Connection", "error");
+
+};
+
+/* ==========================================
+Register Network Events
+========================================== */
+
+
+
+/* ==========================================
+Utility
+========================================== */
+
+Lexora.isOnline = function () {
+
+return navigator.onLine;
+
+};
+
+/* ==========================================
+Modal Manager
+========================================== */
+
+Lexora.openModal = function (id) {
+
+const modal = document.getElementById(id);
+
+if (!modal) return;
+
+modal.classList.remove("hidden");
+
+};
+
+Lexora.closeModal = function (id) {
+
+const modal = document.getElementById(id);
+
+if (!modal) return;
+
+modal.classList.add("hidden");
+
+};
+
+/* ==========================================
+Loading Manager
+========================================== */
+
+Lexora.showLoader = function () {
+
+const loader = document.getElementById("globalLoader");
+
+if (loader) {
+
+loader.classList.remove("hidden");
+
+}
+
+};
+
+Lexora.hideLoader = function () {
+
+const loader = document.getElementById("globalLoader");
+
+if (loader) {
+
+loader.classList.add("hidden");
+
+}
+
+};
+
+/* ==========================================
+Helpers
+========================================== */
+
+Lexora.$` = function(selector){
+
+return document.querySelector(selector);
+
+};
+
+Lexora.`$ = function(selector){
+
+return document.querySelectorAll(selector);
+
+};
+
+/* ==========================================
+Register UI Events
+========================================== */
+
+Lexora.registerUIEvents = function () {
+
+const loginBtn = document.getElementById("loginBtn");
+
+if (loginBtn) {
+
+loginBtn.addEventListener("click", () => {
+
+this.openModal("loginModal");
 
 });
 
-/*==========================================================
-  Global State
-==========================================================*/
+}
 
-export const STATE = {
+const signupBtn = document.getElementById("signupBtn");
 
-    initialized: false,
+if (signupBtn) {
 
-    bootTime: Date.now(),
+signupBtn.addEventListener("click", () => {
 
-    currentUser: null,
-
-    language: "en",
-
-    country: "IN",
-
-    theme: "dark",
-
-    online: navigator.onLine,
-
-    loading: false,
-
-    version: APP_VERSION,
-
-    build: BUILD
-
-};
-
-/*==========================================================
-  Logger
-==========================================================*/
-
-export const Logger = {
-
-    log(...args){
-
-        if(CONFIG.DEBUG)
-            console.log("[Lexora]",...args);
-
-    },
-
-    warn(...args){
-
-        console.warn("[Lexora]",...args);
-
-    },
-
-    error(...args){
-
-        console.error("[Lexora]",...args);
-
-    }
-
-};
-
-/*==========================================================
-  Performance
-==========================================================*/
-
-export const Performance = {
-
-    timers:new Map(),
-
-    start(name){
-
-        this.timers.set(name,performance.now());
-
-    },
-
-    end(name){
-
-        if(!this.timers.has(name)) return;
-
-        const start=this.timers.get(name);
-
-        const end=performance.now();
-
-        Logger.log(
-
-            `${name}: ${(end-start).toFixed(2)} ms`
-
-        );
-
-        this.timers.delete(name);
-
-    }
-
-};
-
-/*==========================================================
-  Event Bus
-==========================================================*/
-
-export const Events={
-
-    events:new Map(),
-
-    on(event,callback){
-
-        if(!this.events.has(event))
-            this.events.set(event,[]);
-
-        this.events.get(event).push(callback);
-
-    },
-
-    emit(event,data){
-
-        if(!this.events.has(event))
-            return;
-
-        this.events.get(event)
-        .forEach(cb=>cb(data));
-
-    },
-
-    off(event){
-
-        this.events.delete(event);
-
-    }
-
-};
-
-/*==========================================================
-  Error Handler
-==========================================================*/
-
-window.addEventListener("error",(event)=>{
-
-    Logger.error(
-
-        "Application Error",
-
-        event.error
-
-    );
+this.openModal("signupModal");
 
 });
 
-window.addEventListener(
+}
 
-    "unhandledrejection",
+const closeLogin = document.getElementById("closeLogin");
 
-    (event)=>{
+if (closeLogin) {
 
-        Logger.error(
+closeLogin.addEventListener("click", () => {
 
-            "Unhandled Promise",
+this.closeModal("loginModal");
 
-            event.reason
-
-        );
-
-    }
-
-);
-
-/*==========================================================
-  Bootstrap
-==========================================================*/
-
-export async function bootstrap(){
-
-    if(STATE.initialized)
-        return;
-
-    Performance.start("BOOT");
-
-    Logger.log(
-
-        APP_NAME,
-
-        APP_VERSION,
-
-        BUILD
-
-    );
-
-    STATE.initialized=true;
-
-    Performance.end("BOOT");
+});
 
 }
 
-/*==========================================================
-  Module 2 : Storage Engine
-==========================================================*/
+const closeSignup = document.getElementById("closeSignup");
 
-export const Storage = {
+if (closeSignup) {
 
-    prefix: CONFIG.STORAGE_PREFIX,
+closeSignup.addEventListener("click", () => {
 
-    key(name){
+this.closeModal("signupModal");
 
-        return this.prefix + name;
-
-    },
-
-    save(name,value){
-
-        try{
-
-            localStorage.setItem(
-
-                this.key(name),
-
-                JSON.stringify(value)
-
-            );
-
-            return true;
-
-        }catch(error){
-
-            Logger.error(error);
-
-            return false;
-
-        }
-
-    },
-
-    load(name,defaultValue=null){
-
-        try{
-
-            const data=
-
-                localStorage.getItem(
-
-                    this.key(name)
-
-                );
-
-            return data
-                ? JSON.parse(data)
-                : defaultValue;
-
-        }catch(error){
-
-            Logger.error(error);
-
-            return defaultValue;
-
-        }
-
-    },
-
-    remove(name){
-
-        localStorage.removeItem(
-
-            this.key(name)
-
-        );
-
-    },
-
-    clear(){
-
-        Object.keys(localStorage)
-
-        .filter(key=>
-
-            key.startsWith(this.prefix)
-
-        )
-
-        .forEach(key=>
-
-            localStorage.removeItem(key)
-
-        );
-
-    }
-
-};
-
-/*==========================================================
-  Session Manager
-==========================================================*/
-
-export const Session={
-
-    login(user){
-
-        STATE.currentUser=user;
-
-        Storage.save(
-
-            "CURRENT_USER",
-
-            user
-
-        );
-
-        Events.emit(
-
-            "user:login",
-
-            user
-
-        );
-
-    },
-
-    logout(){
-
-        STATE.currentUser=null;
-
-        Storage.remove(
-
-            "CURRENT_USER"
-
-        );
-
-        Events.emit(
-
-            "user:logout"
-
-        );
-
-    },
-
-    restore(){
-
-        STATE.currentUser=
-
-            Storage.load(
-
-                "CURRENT_USER",
-
-                null
-
-            );
-
-        return STATE.currentUser;
-
-    },
-
-    isLoggedIn(){
-
-        return STATE.currentUser!==null;
-
-    }
-
-};
-
-/*==========================================================
-  Cache Engine
-==========================================================*/
-
-export const Cache={
-
-    memory:new Map(),
-
-    set(key,value){
-
-        this.memory.set(
-
-            key,
-
-            value
-
-        );
-
-    },
-
-    get(key){
-
-        return this.memory.get(key);
-
-    },
-
-    has(key){
-
-        return this.memory.has(key);
-
-    },
-
-    remove(key){
-
-        this.memory.delete(key);
-
-    },
-
-    clear(){
-
-        this.memory.clear();
-
-    }
-
-};
-
-/*==========================================================
-  Preferences
-==========================================================*/
-
-export const Preferences={
-
-    saveTheme(theme){
-
-        STATE.theme=theme;
-
-        Storage.save(
-
-            "THEME",
-
-            theme
-
-        );
-
-    },
-
-    loadTheme(){
-
-        STATE.theme=
-
-            Storage.load(
-
-                "THEME",
-
-                "dark"
-
-            );
-
-    },
-
-    saveLanguage(lang){
-
-        STATE.language=lang;
-
-        Storage.save(
-
-            "LANGUAGE",
-
-            lang
-
-        );
-
-    },
-
-    loadLanguage(){
-
-        STATE.language=
-
-            Storage.load(
-
-                "LANGUAGE",
-
-                "en"
-
-            );
-
-    },
-
-    saveCountry(country){
-
-        STATE.country=country;
-
-        Storage.save(
-
-            "COUNTRY",
-
-            country
-
-        );
-
-    },
-
-    loadCountry(){
-
-        STATE.country=
-
-            Storage.load(
-
-                "COUNTRY",
-
-                "IN"
-
-            );
-
-    }
-
-};
-
-/*==========================================================
-  Module 3 : Theme Manager
-==========================================================*/
-
-export const Theme = {
-
-    current: "dark",
-
-    init() {
-
-        this.current = Storage.load("THEME", "dark");
-
-        this.apply(this.current);
-
-    },
-
-    apply(theme) {
-
-        this.current = theme;
-
-        document.documentElement.setAttribute(
-            "data-theme",
-            theme
-        );
-
-        Storage.save("THEME", theme);
-
-        Events.emit("theme:changed", theme);
-
-    },
-
-    toggle() {
-
-        this.apply(
-
-            this.current === "dark"
-                ? "light"
-                : "dark"
-
-        );
-
-    }
-
-};
-
-/*==========================================================
-  Language Manager
-==========================================================*/
-
-export const Language = {
-
-    current: "en",
-
-    init() {
-
-        this.current = Storage.load(
-            "LANGUAGE",
-            "en"
-        );
-
-        Events.emit(
-            "language:loaded",
-            this.current
-        );
-
-    },
-
-    set(language) {
-
-        this.current = language;
-
-        Storage.save(
-            "LANGUAGE",
-            language
-        );
-
-        Events.emit(
-            "language:changed",
-            language
-        );
-
-    },
-
-    get() {
-
-        return this.current;
-
-    }
-
-};
-
-/*==========================================================
-  Country Manager
-==========================================================*/
-
-export const Country = {
-
-    current: "IN",
-
-    init() {
-
-        this.current = Storage.load(
-            "COUNTRY",
-            "IN"
-        );
-
-        Events.emit(
-            "country:loaded",
-            this.current
-        );
-
-    },
-
-    set(country) {
-
-        this.current = country;
-
-        Storage.save(
-            "COUNTRY",
-            country
-        );
-
-        Events.emit(
-            "country:changed",
-            country
-        );
-
-    },
-
-    get() {
-
-        return this.current;
-
-    }
-
-};
-
-/*==========================================================
-  Purpose Manager
-==========================================================*/
-
-export const Purpose = {
-
-    list: [],
-
-    init(data = []) {
-
-        this.list = Array.isArray(data)
-            ? data
-            : [];
-
-        Events.emit(
-            "purpose:loaded",
-            this.list
-        );
-
-    },
-
-    all() {
-
-        return this.list;
-
-    },
-
-    find(id) {
-
-        return this.list.find(
-            item => item.id === id
-        ) || null;
-
-    }
-
-};
-
-/*==========================================================
-  UI Bootstrap
-==========================================================*/
-
-export function initializeUI() {
-
-    Theme.init();
-
-    Language.init();
-
-    Country.init();
-
-    Purpose.init();
-
-    Logger.log(
-        "UI Managers Ready"
-    );
+});
 
 }
 
-/*==========================================================
-  Module 4 : Authentication Manager
-==========================================================*/
-
-import {
-    auth
-} from "../firebase/firebase.js";
-
-import {
-
-    onAuthStateChanged,
-
-    signOut
-
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-
-/*==========================================================
-  User Manager
-==========================================================*/
-
-export const User = {
-
-    profile: null,
-
-    uid: null,
-
-    email: null,
-
-    verified: false,
-
-    premium: false,
-
-    role: "user",
-
-    set(user) {
-
-        if (!user) return;
-
-        this.profile = user;
-
-        this.uid = user.uid;
-
-        this.email = user.email;
-
-        this.verified =
-            user.emailVerified;
-
-        Session.login(user);
-
-        Events.emit(
-            "user:ready",
-            user
-        );
-
-    },
-
-    clear() {
-
-        this.profile = null;
-
-        this.uid = null;
-
-        this.email = null;
-
-        this.verified = false;
-
-        this.premium = false;
-
-        this.role = "user";
-
-        Session.logout();
-
-    }
-
 };
 
-/*==========================================================
-  Authentication
-==========================================================*/
+/* ==========================================
+Extend registerEvents
+========================================== */
 
-export const Authentication = {
 
-    initialized: false,
 
-    init() {
+/* ==========================================
+Session Manager
+========================================== */
 
-        if (this.initialized)
-            return;
+Lexora.session = {
 
-        this.initialized = true;
+saveUser(user) {
 
-        onAuthStateChanged(
+Lexora.storage.save("currentUser", user);
 
-            auth,
+},
 
-            (user) => {
+getUser() {
 
-                if (user) {
+return Lexora.storage.load("currentUser", null);
 
-                    User.set(user);
+},
 
-                    Logger.log(
+clear() {
 
-                        "Authenticated",
-
-                        user.email
-
-                    );
-
-                } else {
-
-                    User.clear();
-
-                }
-
-            }
-
-        );
-
-    },
-
-    async logout() {
-
-        try {
-
-            await signOut(auth);
-
-            User.clear();
-
-            Logger.log(
-                "Logout Success"
-            );
-
-        } catch (error) {
-
-            Logger.error(error);
-
-        }
-
-    }
-
-};
-
-/*==========================================================
-  Profile Helpers
-==========================================================*/
-
-export function isLoggedIn() {
-
-    return User.profile !== null;
+Lexora.storage.remove("currentUser");
 
 }
 
-export function currentUser() {
+};
 
-    return User.profile;
+/* ==========================================
+Current User
+========================================== */
 
-}
+Lexora.getCurrentUser = function () {
 
-export function currentUID() {
-
-    return User.uid;
-
-}
-
-/*==========================================================
-  Module 5 : Core Initializer
-==========================================================*/
-
-export const Core = {
-
-    async initialize() {
-
-        Logger.log("Initializing Core...");
-
-        try {
-
-            Performance.start("CORE");
-
-            /* Restore Session */
-
-            Session.restore();
-
-            /* Preferences */
-
-            Preferences.loadTheme();
-            Preferences.loadLanguage();
-            Preferences.loadCountry();
-
-            /* Apply Theme */
-
-            Theme.apply(STATE.theme);
-
-            /* Firebase Auth */
-
-            Authentication.init();
-
-            /* Network */
-
-            STATE.online = navigator.onLine;
-
-            window.addEventListener(
-
-                "online",
-
-                () => {
-
-                    STATE.online = true;
-
-                    Events.emit("network:online");
-
-                }
-
-            );
-
-            window.addEventListener(
-
-                "offline",
-
-                () => {
-
-                    STATE.online = false;
-
-                    Events.emit("network:offline");
-
-                }
-
-            );
-
-            /* UI */
-
-            initializeUI();
-
-            /* Boot */
-
-            await bootstrap();
-
-            Performance.end("CORE");
-
-            Logger.log(
-
-                "Core Ready"
-
-            );
-
-            Events.emit(
-
-                "core:ready"
-
-            );
-
-        } catch (error) {
-
-            Logger.error(
-
-                "Core Initialization Failed",
-
-                error
-
-            );
-
-        }
-
-    }
+return this.session.getUser();
 
 };
 
-/*==========================================================
-  DOM Ready
-==========================================================*/
+/* ==========================================
+Authentication Check
+========================================== */
 
-document.addEventListener(
+Lexora.isLoggedIn = function () {
 
-    "DOMContentLoaded",
-
-    async () => {
-
-        await Core.initialize();
-
-    }
-
-);
-
-/*==========================================================
-  Module 6 : Router Engine
-==========================================================*/
-
-export const Router = {
-
-    current: "home",
-
-    routes: new Map(),
-
-    register(name, callback) {
-
-        if (!name || typeof callback !== "function")
-            return;
-
-        this.routes.set(name, callback);
-
-    },
-
-    async navigate(name, data = null) {
-
-        if (!this.routes.has(name)) {
-
-            Logger.warn("Route not found:", name);
-
-            return;
-
-        }
-
-        try {
-
-            Performance.start("ROUTE");
-
-            this.current = name;
-
-            await this.routes.get(name)(data);
-
-            Events.emit("route:changed", {
-
-                route: name,
-
-                data
-
-            });
-
-            Performance.end("ROUTE");
-
-        } catch (error) {
-
-            Logger.error(error);
-
-        }
-
-    }
+return this.getCurrentUser() !== null;
 
 };
 
-/*==========================================================
-  Screen Manager
-==========================================================*/
+/* ==========================================
+Logout
+========================================== */
 
-export const Screen = {
+Lexora.logout = function () {
 
-    active: null,
+this.session.clear();
 
-    show(id) {
+this.showToast("Logged out successfully", "success");
 
-        document
-
-            .querySelectorAll("[data-screen]")
-
-            .forEach(screen => {
-
-                screen.classList.add("hidden");
-
-            });
-
-        const screen = document.getElementById(id);
-
-        if (!screen)
-            return;
-
-        screen.classList.remove("hidden");
-
-        this.active = id;
-
-        Events.emit(
-
-            "screen:changed",
-
-            id
-
-        );
-
-    },
-
-    current() {
-
-        return this.active;
-
-    }
+console.log("User Logged Out");
 
 };
-
-/*==========================================================
-  Navigation
-==========================================================*/
-
-export const Navigation = {
-
-    init() {
-
-        document
-
-            .querySelectorAll("[data-route]")
-
-            .forEach(button => {
-
-                button.addEventListener(
-
-                    "click",
-
-                    () => {
-
-                        Router.navigate(
-
-                            button.dataset.route
-
-                        );
-
-                    }
-
-                );
-
-            });
-
-    }
-
-};
-
-/*==========================================================
-  Default Routes
-==========================================================*/
-
-Router.register(
-
-    "home",
-
-    () => {
-
-        Screen.show("homeScreen");
-
-    }
-
-);
-
-Router.register(
-
-    "dashboard",
-
-    () => {
-
-        Screen.show("dashboardScreen");
-
-    }
-
-);
-
-Router.register(
-
-    "settings",
-
-    () => {
-
-        Screen.show("settingsScreen");
-
-    }
-
-);
-
-Router.register(
-
-    "profile",
-
-    () => {
-
-        Screen.show("profileScreen");
-
-    }
-
-);
-
-/*==========================================================
-  Router Ready
-==========================================================*/
-
-Events.on(
-
-    "core:ready",
-
-    () => {
-
-        Navigation.init();
-
-        Router.navigate("home");
-
-    }
-
-);
-
-/*==========================================================
-  Module 7 : Dynamic Module Loader
-==========================================================*/
-
-export const ModuleLoader = {
-
-    modules: new Map(),
-
-    loaded: new Set(),
-
-    loading: new Set(),
-
-    register(name, loader) {
-
-        if (!name || typeof loader !== "function") {
-
-            Logger.warn("Invalid module:", name);
-
-            return;
-
-        }
-
-        this.modules.set(name, loader);
-
-    },
-
-    async load(name) {
-
-        if (this.loaded.has(name))
-            return true;
-
-        if (this.loading.has(name))
-            return false;
-
-        if (!this.modules.has(name)) {
-
-            Logger.warn("Unknown module:", name);
-
-            return false;
-
-        }
-
-        this.loading.add(name);
-
-        Performance.start(name);
-
-        try {
-
-            await this.modules.get(name)();
-
-            this.loaded.add(name);
-
-            Events.emit("module:loaded", name);
-
-            Logger.log(name + " Loaded");
-
-            return true;
-
-        } catch (error) {
-
-            Logger.error(name, error);
-
-            Events.emit("module:error", {
-
-                module: name,
-
-                error
-
-            });
-
-            return false;
-
-        } finally {
-
-            this.loading.delete(name);
-
-            Performance.end(name);
-
-        }
-
-    },
-
-    async loadAll() {
-
-        for (const name of this.modules.keys()) {
-
-            await this.load(name);
-
-        }
-
-    },
-
-    isLoaded(name) {
-
-        return this.loaded.has(name);
-
-    }
-
-};
-
-/*==========================================================
-  Enterprise Modules
-==========================================================*/
-
-ModuleLoader.register(
-
-    "PDF",
-
-    async () => {
-
-        Logger.log("PDF Engine Ready");
-
-    }
-
-);
-
-ModuleLoader.register(
-
-    "QR",
-
-    async () => {
-
-        Logger.log("QR Engine Ready");
-
-    }
-
-);
-
-ModuleLoader.register(
-
-    "SCANNER",
-
-    async () => {
-
-        Logger.log("Scanner Ready");
-
-    }
-
-);
-
-ModuleLoader.register(
-
-    "AI",
-
-    async () => {
-
-        Logger.log("AI Engine Ready");
-
-    }
-
-);
-
-ModuleLoader.register(
-
-    "PAYMENT",
-
-    async () => {
-
-        Logger.log("Payment Ready");
-
-    }
-
-);
-
-ModuleLoader.register(
-
-    "ANALYTICS",
-
-    async () => {
-
-        Logger.log("Analytics Ready");
-
-    }
-
-);
-
-ModuleLoader.register(
-
-    "NOTIFICATIONS",
-
-    async () => {
-
-        Logger.log("Notifications Ready");
-
-    }
-
-);
-
-/*==========================================================
-  Auto Load
-==========================================================*/
-
-Events.on(
-
-    "core:ready",
-
-    async () => {
-
-        await ModuleLoader.loadAll();
-
-    }
-
-);
-
-/*==========================================================
-  Module 8 : Enterprise UI Engine
-==========================================================*/
-
-export const UI = {
-
-    activeModal: null,
-
-    activeLoader: false,
-
-    toastTimer: null
-
-};
-
-/*==========================================================
-  Modal Engine
-==========================================================*/
-
-UI.openModal = function(id){
-
-    const modal=document.getElementById(id);
-
-    if(!modal) return false;
-
-    modal.classList.remove("hidden");
-
-    modal.setAttribute("aria-hidden","false");
-
-    this.activeModal=id;
-
-    Events.emit("modal:opened",id);
-
-    return true;
-
-};
-
-UI.closeModal=function(id){
-
-    const modal=document.getElementById(id);
-
-    if(!modal) return false;
-
-    modal.classList.add("hidden");
-
-    modal.setAttribute("aria-hidden","true");
-
-    this.activeModal=null;
-
-    Events.emit("modal:closed",id);
-
-    return true;
-
-};
-
-UI.closeAllModals=function(){
-
-    document
-        .querySelectorAll(".modal")
-        .forEach(modal=>{
-
-            modal.classList.add("hidden");
-
-            modal.setAttribute(
-                "aria-hidden",
-                "true"
-            );
-
-        });
-
-    this.activeModal=null;
-
-};
-
-/*==========================================================
-  Loader Engine
-==========================================================*/
-
-UI.showLoader=function(text="Loading..."){
-
-    const loader=document.getElementById("globalLoader");
-
-    if(!loader) return;
-
-    loader.classList.remove("hidden");
-
-    const label=
-
-        loader.querySelector(".loader-text");
-
-    if(label)
-        label.textContent=text;
-
-    this.activeLoader=true;
-
-};
-
-UI.hideLoader=function(){
-
-    const loader=document.getElementById("globalLoader");
-
-    if(!loader) return;
-
-    loader.classList.add("hidden");
-
-    this.activeLoader=false;
-
-};
-
-/*==========================================================
-  Toast Engine
-==========================================================*/
-
-UI.toast=function(
-
-    message,
-
-    type="info",
-
-    duration=3000
-
-){
-
-    let toast=
-
-        document.getElementById(
-
-            "lexora-toast"
-
-        );
-
-    if(!toast){
-
-        toast=document.createElement("div");
-
-        toast.id="lexora-toast";
-
-        document.body.appendChild(toast);
-
-    }
-
-    toast.className=
-
-        "toast toast-"+type;
-
-    toast.textContent=message;
-
-    toast.style.display="block";
-
-    clearTimeout(this.toastTimer);
-
-    this.toastTimer=setTimeout(()=>{
-
-        toast.style.display="none";
-
-    },duration);
-
-};
-
-/*==========================================================
-  Alert
-==========================================================*/
-
-UI.alert=function(message){
-
-    window.alert(message);
-
-};
-
-/*==========================================================
-  Confirm
-==========================================================*/
-
-UI.confirm=function(message){
-
-    return window.confirm(message);
-
-};
-
-/*==========================================================
-  Bottom Sheet
-==========================================================*/
-
-UI.openSheet=function(id){
-
-    const sheet=
-
-        document.getElementById(id);
-
-    if(!sheet) return;
-
-    sheet.classList.add("active");
-
-};
-
-UI.closeSheet=function(id){
-
-    const sheet=
-
-        document.getElementById(id);
-
-    if(!sheet) return;
-
-    sheet.classList.remove("active");
-
-};
-
-/*==========================================================
-  Keyboard Shortcuts
-==========================================================*/
-
-document.addEventListener(
-
-    "keydown",
-
-    event=>{
-
-        if(
-
-            event.key==="Escape" &&
-
-            UI.activeModal
-
-        ){
-
-            UI.closeModal(
-
-                UI.activeModal
-
-            );
-
-        }
-
-    }
-
-);
-
-/*==========================================================
-  UI Ready
-==========================================================*/
-
-Events.on(
-
-    "core:ready",
-
-    ()=>{
-
-        Logger.log(
-
-            "Enterprise UI Ready"
-
-        );
-
-    }
-
-);
-
