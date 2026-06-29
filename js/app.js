@@ -534,3 +534,197 @@ export const Preferences={
 
 };
 
+/*==========================================================
+  Module 3 : Theme Manager
+==========================================================*/
+
+export const Theme = {
+
+    current: "dark",
+
+    init() {
+
+        this.current = Storage.load("THEME", "dark");
+
+        this.apply(this.current);
+
+    },
+
+    apply(theme) {
+
+        this.current = theme;
+
+        document.documentElement.setAttribute(
+            "data-theme",
+            theme
+        );
+
+        Storage.save("THEME", theme);
+
+        Events.emit("theme:changed", theme);
+
+    },
+
+    toggle() {
+
+        this.apply(
+
+            this.current === "dark"
+                ? "light"
+                : "dark"
+
+        );
+
+    }
+
+};
+
+/*==========================================================
+  Language Manager
+==========================================================*/
+
+export const Language = {
+
+    current: "en",
+
+    init() {
+
+        this.current = Storage.load(
+            "LANGUAGE",
+            "en"
+        );
+
+        Events.emit(
+            "language:loaded",
+            this.current
+        );
+
+    },
+
+    set(language) {
+
+        this.current = language;
+
+        Storage.save(
+            "LANGUAGE",
+            language
+        );
+
+        Events.emit(
+            "language:changed",
+            language
+        );
+
+    },
+
+    get() {
+
+        return this.current;
+
+    }
+
+};
+
+/*==========================================================
+  Country Manager
+==========================================================*/
+
+export const Country = {
+
+    current: "IN",
+
+    init() {
+
+        this.current = Storage.load(
+            "COUNTRY",
+            "IN"
+        );
+
+        Events.emit(
+            "country:loaded",
+            this.current
+        );
+
+    },
+
+    set(country) {
+
+        this.current = country;
+
+        Storage.save(
+            "COUNTRY",
+            country
+        );
+
+        Events.emit(
+            "country:changed",
+            country
+        );
+
+    },
+
+    get() {
+
+        return this.current;
+
+    }
+
+};
+
+/*==========================================================
+  Purpose Manager
+==========================================================*/
+
+export const Purpose = {
+
+    list: [],
+
+    init(data = []) {
+
+        this.list = Array.isArray(data)
+            ? data
+            : [];
+
+        Events.emit(
+            "purpose:loaded",
+            this.list
+        );
+
+    },
+
+    all() {
+
+        return this.list;
+
+    },
+
+    find(id) {
+
+        return this.list.find(
+            item => item.id === id
+        ) || null;
+
+    }
+
+};
+
+/*==========================================================
+  UI Bootstrap
+==========================================================*/
+
+export function initializeUI() {
+
+    Theme.init();
+
+    Language.init();
+
+    Country.init();
+
+    Purpose.init();
+
+    Logger.log(
+        "UI Managers Ready"
+    );
+
+}
+
