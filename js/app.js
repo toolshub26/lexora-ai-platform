@@ -728,3 +728,168 @@ export function initializeUI() {
 
 }
 
+/*==========================================================
+  Module 4 : Authentication Manager
+==========================================================*/
+
+import {
+    auth
+} from "../firebase/firebase.js";
+
+import {
+
+    onAuthStateChanged,
+
+    signOut
+
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+/*==========================================================
+  User Manager
+==========================================================*/
+
+export const User = {
+
+    profile: null,
+
+    uid: null,
+
+    email: null,
+
+    verified: false,
+
+    premium: false,
+
+    role: "user",
+
+    set(user) {
+
+        if (!user) return;
+
+        this.profile = user;
+
+        this.uid = user.uid;
+
+        this.email = user.email;
+
+        this.verified =
+            user.emailVerified;
+
+        Session.login(user);
+
+        Events.emit(
+            "user:ready",
+            user
+        );
+
+    },
+
+    clear() {
+
+        this.profile = null;
+
+        this.uid = null;
+
+        this.email = null;
+
+        this.verified = false;
+
+        this.premium = false;
+
+        this.role = "user";
+
+        Session.logout();
+
+    }
+
+};
+
+/*==========================================================
+  Authentication
+==========================================================*/
+
+export const Authentication = {
+
+    initialized: false,
+
+    init() {
+
+        if (this.initialized)
+            return;
+
+        this.initialized = true;
+
+        onAuthStateChanged(
+
+            auth,
+
+            (user) => {
+
+                if (user) {
+
+                    User.set(user);
+
+                    Logger.log(
+
+                        "Authenticated",
+
+                        user.email
+
+                    );
+
+                } else {
+
+                    User.clear();
+
+                }
+
+            }
+
+        );
+
+    },
+
+    async logout() {
+
+        try {
+
+            await signOut(auth);
+
+            User.clear();
+
+            Logger.log(
+                "Logout Success"
+            );
+
+        } catch (error) {
+
+            Logger.error(error);
+
+        }
+
+    }
+
+};
+
+/*==========================================================
+  Profile Helpers
+==========================================================*/
+
+export function isLoggedIn() {
+
+    return User.profile !== null;
+
+}
+
+export function currentUser() {
+
+    return User.profile;
+
+}
+
+export function currentUID() {
+
+    return User.uid;
+
+}
+
