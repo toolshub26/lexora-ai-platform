@@ -7,20 +7,26 @@ Main Application Controller
 
 const Lexora = {
 
-version: "20.0.0",
-
+version: "21.0.0",
+initialized: false,
 init() {
-console.log("Lexora AI Started");
+    if (this.initialized) return;
 
-this.loadTheme();
-this.restoreLanguage();
-this.restoreCountry();
+    this.initialized = true;
 
-this.loadCountry();
-this.loadLanguage();
-this.loadPurposes();
+    console.log("Lexora AI Started v21");
 
-this.registerEvents();
+    this.loadTheme();
+    this.restoreLanguage();
+    this.restoreCountry();
+
+    this.loadCountry();
+    this.loadLanguage();
+    this.loadPurposes();
+
+    this.registerEvents();
+
+    this.showToast("Lexora Ready", "success");
 },
 
 registerEvents() {
