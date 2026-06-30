@@ -81,7 +81,7 @@ Auth.initializeFirebase = function () {
     this.firebase.auth = auth;
 
     this.firebase.ready = true;
-
+window.Auth = Auth;
     console.log("Firebase Authentication Ready");
 
 };
