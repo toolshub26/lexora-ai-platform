@@ -178,7 +178,7 @@ clearTimeout(toast.hideTimer);
 toast.hideTimer = setTimeout(() => {
 
 toast.style.display = "none";
-
+toast.removeAttribute("aria-live");
 }, 3000);
 
 };
