@@ -206,6 +206,14 @@ Auth.onAuthStateChanged = function (callback) {
     }
     return window.onAuthStateChanged(this.firebase.auth, (user) => {
         Auth.currentUser = user;
+        if (user) {
+    Lexora.session.saveUser({
+        uid: user.uid,
+        email: user.email
+    });
+} else {
+    Lexora.session.clear();
+}
         if (callback) callback(user);
     });
 };
