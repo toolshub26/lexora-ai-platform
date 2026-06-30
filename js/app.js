@@ -404,10 +404,14 @@ Logout
 
 Lexora.logout = function () {
 
-this.session.clear();
+    this.session.clear();
 
-this.showToast("Logged out successfully", "success");
+    if (window.Auth && typeof window.Auth.logout === "function") {
+        window.Auth.logout().catch(console.error);
+    }
 
-console.log("User Logged Out");
+    this.showToast("Logged out successfully", "success");
+
+    console.log("User Logged Out");
 
 };
