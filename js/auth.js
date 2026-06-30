@@ -170,10 +170,18 @@ Auth.logout = async function () {
     try {
        await window.signOut(this.firebase.auth);
         console.log("User signed out");
+        if (window.Lexora?.showToast) {
+    window.Lexora.showToast("Logged out successfully", "success");
+      }      
     } catch (error) {
-        console.error("Logout error:", error);
-        throw error;
+    console.error("Logout error:", error.message);
+
+    if (window.Lexora?.showToast) {
+        window.Lexora.showToast(error.message, "error");
     }
+
+    throw error;
+     }
 };
 
 Auth.resetPassword = async function (email) {
