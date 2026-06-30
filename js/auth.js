@@ -79,8 +79,11 @@ Auth.initializeFirebase = function () {
     }
 
     this.firebase.auth = auth;
-
+if (window.auth) {
+    this.firebase.auth = window.auth;
+}
     this.firebase.ready = true;
+    Object.freeze(this.firebase);
 window.Auth = Auth;
     console.log("Firebase Authentication Ready");
 
