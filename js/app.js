@@ -262,15 +262,15 @@ loader.classList.add("hidden");
 Helpers
 ========================================== */
 
-Lexora.$` = function(selector){
+Lexora.$ = function(selector){
 
-return document.querySelector(selector);
+    return document.querySelector(selector);
 
 };
 
-Lexora.`$ = function(selector){
+Lexora.$$ = function(selector){
 
-return document.querySelectorAll(selector);
+    return document.querySelectorAll(selector);
 
 };
 
