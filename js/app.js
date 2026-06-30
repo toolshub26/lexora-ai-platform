@@ -230,7 +230,8 @@ const modal = document.getElementById(id);
 if (!modal) return;
 
 modal.classList.remove("hidden");
-
+modal.setAttribute("aria-hidden", "false");
+document.body.classList.add("modal-open");
 };
 
 Lexora.closeModal = function (id) {
@@ -240,7 +241,8 @@ const modal = document.getElementById(id);
 if (!modal) return;
 
 modal.classList.add("hidden");
-
+modal.setAttribute("aria-hidden", "true");
+document.body.classList.remove("modal-open");
 };
 
 /* ==========================================
