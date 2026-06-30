@@ -169,9 +169,10 @@ document.body.appendChild(toast);
 }
 
 toast.className = "toast toast-" + type;
-toast.textContent = message;
+toast.textContent = String(message ?? "");
 toast.style.display = "block";
-
+toast.setAttribute("role", "alert");
+toast.setAttribute("aria-live", "polite");
 clearTimeout(toast.hideTimer);
 
 toast.hideTimer = setTimeout(() => {
