@@ -9,6 +9,7 @@ const Lexora = {
 
 version: "21.0.0",
 initialized: false,
+    networkEventsRegistered: false,
 init() {
     if (this.initialized) return;
 
@@ -37,14 +38,19 @@ if (typeof this.registerUIEvents === "function") {
 this.registerUIEvents();
 }
 
-window.addEventListener("online", () => {
-this.handleOnline();
-});
+if (!this.networkEventsRegistered) {
 
-window.addEventListener("offline", () => {
-this.handleOffline();
-});
+    window.addEventListener("online", () => {
+        this.handleOnline();
+    });
 
+    window.addEventListener("offline", () => {
+        this.handleOffline();
+    });
+
+    this.networkEventsRegistered = true;
+
+}
 },
 
 loadCountry() {
