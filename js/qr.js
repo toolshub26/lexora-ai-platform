@@ -631,3 +631,345 @@ document.addEventListener(
 
 );
 
+/*==========================================================
+  PART 3/4
+  Enterprise Verification Engine
+==========================================================*/
+
+Object.assign(QR,{
+
+    verified:false,
+
+    verificationData:null,
+
+    async verify(payload){
+
+        try{
+
+            if(!payload)
+                return false;
+
+            const copy={...payload};
+
+            const hash=copy.hash||"";
+
+            delete copy.hash;
+
+            const calculated=
+
+                await this.sha256(
+
+                    JSON.stringify(copy)
+
+                );
+
+            if(hash!==calculated){
+
+                this.verified=false;
+
+                this.showStatus(
+
+                    "Invalid QR Hash",
+
+                    "error"
+
+                );
+
+                return false;
+
+            }
+
+            this.verified=true;
+
+            this.verificationData=payload;
+
+            this.showStatus(
+
+                "QR Hash Verified",
+
+                "success"
+
+            );
+
+            await this.verifyFirebase(payload);
+
+            return true;
+
+        }
+
+        catch(error){
+
+            console.error(error);
+
+            this.showStatus(
+
+                "Verification Failed",
+
+                "error"
+
+            );
+
+            return false;
+
+        }
+
+    },
+
+    async verifyFirebase(payload){
+
+        try{
+
+            if(
+
+                !window.db ||
+
+                !window.doc ||
+
+                !window.getDoc
+
+            ){
+
+                this.showStatus(
+
+                    "Offline Verification",
+
+                    "warning"
+
+                );
+
+                return false;
+
+            }
+
+            if(!payload.id){
+
+                return false;
+
+            }
+
+            const ref=
+
+                window.doc(
+
+                    window.db,
+
+                    "affidavits",
+
+                    payload.id
+
+                );
+
+            const snap=
+
+                await window.getDoc(ref);
+
+            if(!snap.exists()){
+
+                this.showStatus(
+
+                    "Document Not Found",
+
+                    "error"
+
+                );
+
+                return false;
+
+            }
+
+            const data=snap.data();
+
+            this.compare(data,payload);
+
+            return true;
+
+        }
+
+        catch(error){
+
+            console.error(error);
+
+            this.showStatus(
+
+                "Firebase Error",
+
+                "error"
+
+            );
+
+            return false;
+
+        }
+
+    },
+
+    compare(server,local){
+
+        if(
+
+            server.affidavitId===local.id &&
+
+            server.country===local.country
+
+        ){
+
+            this.showStatus(
+
+                "Authentic Document",
+
+                "success"
+
+            );
+
+        }
+
+        else{
+
+            this.showStatus(
+
+                "Document Mismatch",
+
+                "error"
+
+            );
+
+        }
+
+    },
+
+    showStatus(message,type="info"){
+
+        const box=
+
+            document.getElementById(
+
+                "qrStatus"
+
+            );
+
+        if(box){
+
+            box.className=
+
+                "qr-status "+type;
+
+            box.textContent=message;
+
+        }
+
+        console.log(message);
+
+    },
+
+    async copyResult(){
+
+        if(!this.lastResult)
+            return;
+
+        await navigator.clipboard.writeText(
+
+            this.lastResult
+
+        );
+
+        this.showStatus(
+
+            "Copied",
+
+            "success"
+
+        );
+
+    },
+
+    exportJSON(){
+
+        if(!this.lastResult)
+            return;
+
+        const blob=new Blob(
+
+            [this.lastResult],
+
+            {
+
+                type:"application/json"
+
+            }
+
+        );
+
+        const url=
+
+            URL.createObjectURL(blob);
+
+        const a=
+
+            document.createElement("a");
+
+        a.href=url;
+
+        a.download="qr-data.json";
+
+        a.click();
+
+        URL.revokeObjectURL(url);
+
+    }
+
+});
+
+/*==========================================================
+ Buttons
+==========================================================*/
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    ()=>{
+
+        const copyBtn=
+
+            document.getElementById(
+
+                "copyQRBtn"
+
+            );
+
+        if(copyBtn){
+
+            copyBtn.addEventListener(
+
+                "click",
+
+                ()=>QR.copyResult()
+
+            );
+
+        }
+
+        const exportBtn=
+
+            document.getElementById(
+
+                "exportQRBtn"
+
+            );
+
+        if(exportBtn){
+
+            exportBtn.addEventListener(
+
+                "click",
+
+                ()=>QR.exportJSON()
+
+            );
+
+        }
+
+    }
+
+);
+
