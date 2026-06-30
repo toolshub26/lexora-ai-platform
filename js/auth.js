@@ -124,6 +124,12 @@ Auth.signUp = async function (email, password) {
         return userCredential;
 
     } catch (error) {
+    console.error("Signup error:", error.message);
+    if (window.Lexora?.showToast) {
+        window.Lexora.showToast(error.message, "error");
+    }
+    throw error;
+}
 
         console.error(error);
 
@@ -148,8 +154,11 @@ Auth.login = async function (email, password) {
         console.log("Login successful");
         return userCredential;
     } catch (error) {
-        console.error("Login error:", error.message);
-        throw error;
+    console.error("Login error:", error.message);
+    if (window.Lexora?.showToast) {
+        window.Lexora.showToast(error.message, "error");
+    }
+    throw error;
     }
 };
 
