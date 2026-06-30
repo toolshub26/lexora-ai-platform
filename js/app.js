@@ -256,7 +256,8 @@ const loader = document.getElementById("globalLoader");
 if (loader) {
 
 loader.classList.remove("hidden");
-
+loader.setAttribute("aria-hidden", "false");
+document.body.classList.add("loading");
 }
 
 };
@@ -268,7 +269,8 @@ const loader = document.getElementById("globalLoader");
 if (loader) {
 
 loader.classList.add("hidden");
-
+loader.setAttribute("aria-hidden", "true");
+document.body.classList.remove("loading");
 }
 
 };
