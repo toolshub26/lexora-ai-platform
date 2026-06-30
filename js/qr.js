@@ -299,3 +299,335 @@ document.addEventListener(
 
 window.QR = QR;
 
+/*==========================================================
+  PART 2/4
+  Enterprise QR Scanner Engine
+==========================================================*/
+
+Object.assign(QR, {
+
+    scanning: false,
+
+    currentCamera: "environment",
+
+    async startScanner(elementId = "qrScanner") {
+
+        try {
+
+            if (typeof Html5Qrcode === "undefined") {
+
+                console.error("html5-qrcode library missing.");
+
+                return false;
+
+            }
+
+            if (this.scanning)
+                return true;
+
+            this.scanner = new Html5Qrcode(elementId);
+
+            await this.scanner.start(
+
+                {
+                    facingMode: this.currentCamera
+                },
+
+                {
+                    fps: 10,
+                    qrbox: {
+                        width: 250,
+                        height: 250
+                    },
+                    aspectRatio: 1
+                },
+
+                async (decodedText) => {
+
+                    await this.onScan(decodedText);
+
+                },
+
+                (error) => {
+
+                    // Ignore frame errors
+
+                }
+
+            );
+
+            this.scanning = true;
+
+            console.log("QR Scanner Started");
+
+            return true;
+
+        } catch (error) {
+
+            console.error(error);
+
+            return false;
+
+        }
+
+    },
+
+    async stopScanner() {
+
+        try {
+
+            if (!this.scanner)
+                return;
+
+            await this.scanner.stop();
+
+            await this.scanner.clear();
+
+            this.scanning = false;
+
+            console.log("QR Scanner Stopped");
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    },
+
+    async switchCamera() {
+
+        this.currentCamera =
+
+            this.currentCamera === "environment"
+
+                ? "user"
+
+                : "environment";
+
+        if (this.scanning) {
+
+            await this.stopScanner();
+
+            await this.startScanner();
+
+        }
+
+    },
+
+    async onScan(result) {
+
+        if (!result)
+            return;
+
+        if (result === this.lastResult)
+            return;
+
+        this.lastResult = result;
+
+        try {
+
+            const payload = JSON.parse(result);
+
+            const output =
+
+                document.getElementById(
+
+                    "scanResult"
+
+                );
+
+            if (output) {
+
+                output.textContent =
+
+                    JSON.stringify(
+
+                        payload,
+
+                        null,
+
+                        2
+
+                    );
+
+            }
+
+            if (typeof this.verify === "function") {
+
+                await this.verify(payload);
+
+            }
+
+            console.log("QR Scan Success");
+
+            await this.stopScanner();
+
+        } catch (error) {
+
+            console.error(
+
+                "Invalid QR",
+
+                error
+
+            );
+
+        }
+
+    },
+
+    async scanImage(file) {
+
+        try {
+
+            if (
+
+                typeof Html5Qrcode ===
+
+                "undefined"
+
+            ) {
+
+                return false;
+
+            }
+
+            const scanner =
+
+                new Html5Qrcode(
+
+                    "qrScanner"
+
+                );
+
+            const text =
+
+                await scanner.scanFile(
+
+                    file,
+
+                    true
+
+                );
+
+            await this.onScan(text);
+
+            return true;
+
+        } catch (error) {
+
+            console.error(error);
+
+            return false;
+
+        }
+
+    }
+
+});
+
+/*==========================================================
+  Scanner Buttons
+==========================================================*/
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    () => {
+
+        const startBtn =
+
+            document.getElementById(
+
+                "scanBtn"
+
+            );
+
+        if (startBtn) {
+
+            startBtn.addEventListener(
+
+                "click",
+
+                () => QR.startScanner()
+
+            );
+
+        }
+
+        const stopBtn =
+
+            document.getElementById(
+
+                "stopScanBtn"
+
+            );
+
+        if (stopBtn) {
+
+            stopBtn.addEventListener(
+
+                "click",
+
+                () => QR.stopScanner()
+
+            );
+
+        }
+
+        const switchBtn =
+
+            document.getElementById(
+
+                "switchCameraBtn"
+
+            );
+
+        if (switchBtn) {
+
+            switchBtn.addEventListener(
+
+                "click",
+
+                () => QR.switchCamera()
+
+            );
+
+        }
+
+        const imageInput =
+
+            document.getElementById(
+
+                "scanImageInput"
+
+            );
+
+        if (imageInput) {
+
+            imageInput.addEventListener(
+
+                "change",
+
+                (e) => {
+
+                    const file =
+
+                        e.target.files[0];
+
+                    if (file)
+
+                        QR.scanImage(file);
+
+                }
+
+            );
+
+        }
+
+    }
+
+);
+
