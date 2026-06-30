@@ -293,8 +293,9 @@ Register UI Events
 
 Lexora.registerUIEvents = function () {
 
-const loginBtn = document.getElementById("loginBtn");
+    if (this.uiEventsRegistered) return;
 
+    const loginBtn = document.getElementById("loginBtn");
 if (loginBtn) {
 
 loginBtn.addEventListener("click", () => {
@@ -331,15 +332,17 @@ this.closeModal("loginModal");
 
 const closeSignup = document.getElementById("closeSignup");
 
+...
+
 if (closeSignup) {
 
-closeSignup.addEventListener("click", () => {
-
-this.closeModal("signupModal");
-
-});
+    closeSignup.addEventListener("click", () => {
+        this.closeModal("signupModal");
+    });
 
 }
+
+this.uiEventsRegistered = true;
 
 };
 
