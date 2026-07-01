@@ -151,7 +151,18 @@ exports.verifyPayment = functions.https.onCall(async (data, context) => {
   }
 
   const order = orderDoc.data();
+const paymentRef = db
+  .collection("payments")
+  .doc(razorpay_payment_id);
 
+const paymentDoc = await paymentRef.get();
+
+if (paymentDoc.exists) {
+  return {
+    success: true,
+    alreadyProcessed: true
+  };
+}
   if (order.uid !== uid) {
     throw new functions.https.HttpsError(
       "permission-denied",
@@ -165,6 +176,16 @@ exports.verifyPayment = functions.https.onCall(async (data, context) => {
       alreadyVerified: true
     };
   }
+
+    await paymentRef.set({
+  uid,
+  orderId: razorpay_order_id,
+  paymentId: razorpay_payment_id,
+  plan: order.plan,
+  amount: order.amount,
+  currency: order.currency,
+  createdAt: admin.firestore.FieldValue.serverTimestamp()
+});
 
 await orderRef.update({
   status: "paid",
