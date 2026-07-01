@@ -95,7 +95,11 @@ window.Auth = Auth;
 
 Auth.isReady = function () {
 
-    return this.firebase.ready;
+    return !!(
+    this.firebase &&
+    this.firebase.ready &&
+    this.firebase.auth
+);
 
 };
 
