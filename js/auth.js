@@ -206,6 +206,11 @@ Auth.resetPassword = async function (email) {
         return false;
     }
     try {
+        email = String(email).trim().toLowerCase();
+
+if (!email) {
+    throw new Error("Email is required.");
+}
         await window.sendPasswordResetEmail(this.firebase.auth, email);
         console.log("Password reset email sent");
         return true;
