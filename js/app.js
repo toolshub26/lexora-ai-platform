@@ -345,7 +345,28 @@ if (closeSignup) {
     });
 
 }
+const upgradeBtn = document.getElementById("upgradeBtn");
 
+if (upgradeBtn) {
+  upgradeBtn.addEventListener("click", async () => {
+    try {
+      Lexora.showLoader();
+
+      await Payment.startPayment("PRO");
+
+      Lexora.hideLoader();
+
+      Lexora.showToast("Payment Successful", "success");
+
+    } catch (err) {
+
+      Lexora.hideLoader();
+
+      Lexora.showToast("Payment Failed", "error");
+
+    }
+  });
+}
 this.uiEventsRegistered = true;
 
 };
