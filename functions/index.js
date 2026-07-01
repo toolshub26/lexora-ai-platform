@@ -98,3 +98,89 @@ exports.createOrder = functions.https.onCall(async (data, context) => {
     key: functions.config().razorpay.key_id
   };
 });
+
+exports.verifyPayment = functions.https.onCall(async (data, context) => {
+  const uid = getUserId(context);
+
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature
+  } = data;
+
+  if (
+    !razorpay_order_id ||
+    !razorpay_payment_id ||
+    !razorpay_signature
+  ) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Missing payment details."
+    );
+  }
+
+  const body =
+    razorpay_order_id + "|" + razorpay_payment_id;
+
+  const expectedSignature = crypto
+    .createHmac(
+      "sha256",
+      functions.config().razorpay.key_secret
+    )
+    .update(body)
+    .digest("hex");
+
+  if (expectedSignature !== razorpay_signature) {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Invalid payment signature."
+    );
+  }
+
+  const orderRef = db
+    .collection("orders")
+    .doc(razorpay_order_id);
+
+  const orderDoc = await orderRef.get();
+
+  if (!orderDoc.exists) {
+    throw new functions.https.HttpsError(
+      "not-found",
+      "Order not found."
+    );
+  }
+
+  const order = orderDoc.data();
+
+  if (order.uid !== uid) {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Unauthorized."
+    );
+  }
+
+  if (order.status === "paid") {
+    return {
+      success: true,
+      alreadyVerified: true
+    };
+  }
+
+await orderRef.update({
+  status: "paid",
+  razorpayPaymentId: razorpay_payment_id,
+  verifiedAt: admin.firestore.FieldValue.serverTimestamp()
+});
+
+await db.collection("subscriptions").doc(uid).set({
+  plan: order.plan,
+  active: order.plan !== "FREE",
+  updatedAt: admin.firestore.FieldValue.serverTimestamp()
+}, { merge: true });
+
+return {
+  success: true,
+  plan: order.plan
+};
+
+});                                               
