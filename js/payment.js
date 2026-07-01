@@ -70,9 +70,9 @@ Payment.startPayment = async function(plan) {
 
       prefill: {
         name: firebase.auth().currentUser?.displayName || "",
-        email: firebase.auth().currentUser?.email || ""
-      },
 
+        name: window.auth.currentUser?.displayName || "",
+        email: window.auth.currentUser?.email || ""
       theme: {
         color: "#2563eb"
       }
