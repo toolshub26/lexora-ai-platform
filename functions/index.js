@@ -205,3 +205,46 @@ return {
 };
 
 });                                               
+
+exports.checkPremium = functions.https.onCall(async (data, context) => {
+  const uid = getUserId(context);
+
+  const subRef = db.collection("subscriptions").doc(uid);
+  const subDoc = await subRef.get();
+
+  if (!subDoc.exists) {
+    return {
+      plan: "FREE",
+      active: false
+    };
+  }
+
+  const sub = subDoc.data();
+const expiresAt = sub.expiresAt || null;
+
+if (
+  expiresAt &&
+  expiresAt.toDate &&
+  expiresAt.toDate() < new Date()
+) {
+  await subRef.set(
+    {
+      active: false
+    },
+    { merge: true }
+  );
+
+  return {
+    plan: "FREE",
+    active: false,
+    expired: true
+  };
+}
+  return {
+  success: true,
+  plan: sub.plan || "FREE",
+  active: !!sub.active,
+  expiresAt: sub.expiresAt || null,
+  updatedAt: sub.updatedAt || null
+};
+});
