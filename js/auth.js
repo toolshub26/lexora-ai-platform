@@ -114,7 +114,11 @@ Auth.signUp = async function (email, password) {
     }
 
     try {
+email = String(email).trim().toLowerCase();
 
+if (!email || !password) {
+    throw new Error("Email and password are required.");
+}
         const userCredential =
             await window.createUserWithEmailAndPassword(
                 this.firebase.auth,
@@ -149,6 +153,11 @@ Auth.login = async function (email, password) {
         return false;
     }
     try {
+        email = String(email).trim().toLowerCase();
+
+if (!email || !password) {
+    throw new Error("Email and password are required.");
+}
         const userCredential = await window.signInWithEmailAndPassword(
             this.firebase.auth,
             email,
