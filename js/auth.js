@@ -194,6 +194,7 @@ if (!email || !password) {
 
 
 Auth.login = async function (email, password) {
+    alert("Auth.login called");
     if (!this.isReady()) {
         console.error("Firebase Auth is not ready.");
         return false;
