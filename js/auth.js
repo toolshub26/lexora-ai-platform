@@ -40,9 +40,51 @@ if (!this._listenerStarted) {
 
     bindEvents() {
 
-        console.log("Auth Events Ready");
+    console.log("Auth Events Ready");
 
+    const loginForm = document.getElementById("loginForm");
+
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            try {
+                await this.login(
+                    document.getElementById("loginEmail").value,
+                    document.getElementById("loginPassword").value
+                );
+
+                Lexora.closeModal("loginModal");
+                Lexora.showToast("Login Successful", "success");
+
+            } catch (error) {
+                Lexora.showToast(error.message, "error");
+            }
+        });
     }
+
+    const signupForm = document.getElementById("signupForm");
+
+    if (signupForm) {
+        signupForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            try {
+                await this.signUp(
+                    document.getElementById("signupEmail").value,
+                    document.getElementById("signupPassword").value
+                );
+
+                Lexora.closeModal("signupModal");
+                Lexora.showToast("Account Created", "success");
+
+            } catch (error) {
+                Lexora.showToast(error.message, "error");
+            }
+        });
+    }
+
+}
 
 };
 
