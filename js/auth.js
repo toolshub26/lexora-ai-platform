@@ -14,6 +14,7 @@ const Auth = {
     initialized: false,
 
     init() {
+        alert("Auth.init");
 
         if (this.initialized) return;
 
