@@ -422,8 +422,11 @@ Authentication Check
 
 Lexora.isLoggedIn = function () {
 
-return this.getCurrentUser() !== null;
+    if (window.Auth && typeof Auth.isReady === "function" && Auth.isReady()) {
+        return !!Auth.currentUser;
+    }
 
+    return false;
 };
 
 /* ==========================================
