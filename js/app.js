@@ -336,8 +336,6 @@ this.closeModal("loginModal");
 
 const closeSignup = document.getElementById("closeSignup");
 
-...
-
 if (closeSignup) {
 
     closeSignup.addEventListener("click", () => {
