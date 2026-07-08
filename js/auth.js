@@ -283,3 +283,7 @@ Auth.onAuthStateChanged = function (callback) {
     });
 };
 
+// Expose Auth globally
+window.Auth = Auth;
+
+console.log("Auth module loaded");
