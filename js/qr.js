@@ -139,7 +139,9 @@ const QR = {
     },
 
     async sha256(text) {
-
+if (!window.crypto?.subtle) {
+        throw new Error("Crypto API not supported.");
+    }
         const buffer =
             await crypto.subtle.digest(
 
@@ -865,7 +867,10 @@ Object.assign(QR,{
 
         if(!this.lastResult)
             return;
-
+if (!navigator.clipboard) {
+    this.showStatus("Clipboard not supported.", "error");
+    return;
+}
         await navigator.clipboard.writeText(
 
             this.lastResult
