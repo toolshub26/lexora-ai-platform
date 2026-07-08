@@ -364,24 +364,32 @@ if (closeSignup) {
 const upgradeBtn = document.getElementById("upgradeBtn");
 
 if (upgradeBtn) {
-  upgradeBtn.addEventListener("click", async () => {
-    try {
-      Lexora.showLoader();
+    upgradeBtn.addEventListener("click", async () => {
 
-      await Payment.startPayment("PRO");
+        try {
 
-      Lexora.hideLoader();
+            Lexora.showLoader();
 
-      Lexora.showToast("Payment Successful", "success");
+            if (!window.Payment || typeof window.Payment.startPayment !== "function") {
+                Lexora.hideLoader();
+                Lexora.showToast("Payment module not loaded", "error");
+                return;
+            }
 
-    } catch (err) {
+            await window.Payment.startPayment("PRO");
 
-      Lexora.hideLoader();
+            Lexora.hideLoader();
+            Lexora.showToast("Payment Successful", "success");
 
-      Lexora.showToast("Payment Failed", "error");
+        } catch (err) {
 
-    }
-  });
+            Lexora.hideLoader();
+            console.error(err);
+            Lexora.showToast("Payment Failed", "error");
+
+        }
+
+    });
 }
 this.uiEventsRegistered = true;
 
