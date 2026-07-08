@@ -326,7 +326,13 @@ this.openModal("signupModal");
 });
 
 }
+const startBtn = document.getElementById("startBtn");
 
+if (startBtn) {
+  startBtn.addEventListener("click", () => {
+    this.openModal("signupModal");
+  });
+}
 const closeLogin = document.getElementById("closeLogin");
 
 if (closeLogin) {
