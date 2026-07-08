@@ -326,6 +326,13 @@ this.openModal("signupModal");
 });
 
 }
+   const createAccountBtn = document.getElementById("createAccountBtn");
+
+if (createAccountBtn) {
+    createAccountBtn.addEventListener("click", () => {
+        this.openModal("signupModal");
+    });
+} 
 const startBtn = document.getElementById("startBtn");
 
 if (startBtn) {
