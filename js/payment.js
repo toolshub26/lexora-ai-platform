@@ -89,3 +89,5 @@ Payment.startPayment = async function(plan) {
   });
 
 };
+
+window.Payment = Payment;
