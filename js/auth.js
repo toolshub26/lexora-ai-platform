@@ -14,7 +14,7 @@ const Auth = {
     initialized: false,
 
     init() {
-        alert("Auth.init");
+        
 
         if (this.initialized) return;
 
@@ -185,17 +185,10 @@ if (!email || !password) {
     throw error;
 }
 
-        console.error(error);
-
-        return false;
-
-    }
-
 };
 
 
 Auth.login = async function (email, password) {
-    alert("Auth.login called");
     if (!this.isReady()) {
         console.error("Firebase Auth is not ready.");
         return false;
