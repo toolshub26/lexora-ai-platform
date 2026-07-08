@@ -452,3 +452,4 @@ Lexora.logout = function () {
     console.log("User Logged Out");
 
 };
+window.Lexora = Lexora;
