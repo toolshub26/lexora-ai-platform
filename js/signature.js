@@ -62,8 +62,7 @@ const Signature = {
         this.canvas.height = this.canvas.offsetHeight * ratio;
 
         const ctx = this.canvas.getContext("2d");
-        ctx.scale(ratio, ratio);
-
+ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
         if (this.pad) {
             this.pad.clear();
 
