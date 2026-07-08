@@ -186,7 +186,6 @@ const PDF = {
 
     async share(elementId = "preview") {
 
-        if (!navigator.share) return false;
 
         const blob = await this.outputBlob(elementId);
 
@@ -199,7 +198,13 @@ const PDF = {
                 type: "application/pdf"
             }
         );
-
+if (
+    !navigator.share ||
+    !navigator.canShare ||
+    !navigator.canShare({ files: [file] })
+) {
+    return false;
+}
         await navigator.share({
 
             title: this.options.filename,
