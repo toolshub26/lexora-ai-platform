@@ -113,7 +113,7 @@ Auth.firebase = {
 
 Auth.initializeFirebase = function () {
 
-    if (typeof auth === "undefined") {
+    if (!window.auth) {
 
         console.warn("Firebase Auth not loaded.");
 
@@ -121,7 +121,7 @@ Auth.initializeFirebase = function () {
 
     }
 
-    this.firebase.auth = auth;
+    this.firebase.auth = window.auth;
 if (window.auth) {
     this.firebase.auth = window.auth;
 }
