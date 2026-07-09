@@ -663,6 +663,114 @@ Lexora.initializeActions = function () {
     });
 
 };
+    Lexora.initializeActions = function () {
+
+    const bind = (id, fn) => {
+
+        const el = document.getElementById(id);
+
+        if (!el) return;
+
+        const clone = el.cloneNode(true);
+        el.parentNode.replaceChild(clone, el);
+
+        clone.addEventListener("click", fn);
+
+    };
+
+    // Ask AI
+    bind("askAiBtn", () => {
+
+        const prompt = document.getElementById("aiPrompt")?.value.trim();
+
+        if (!prompt) {
+            this.showToast("Please enter your question.", "warning");
+            return;
+        }
+
+        if (window.AI && typeof window.AI.ask === "function") {
+            window.AI.ask(prompt);
+        } else {
+            this.showToast("AI module not loaded.", "error");
+        }
+
+    });
+
+    // Newsletter
+    bind("subscribeBtn", async () => {
+
+        const email = document.getElementById("newsletterEmail")?.value.trim();
+
+        if (!email) {
+            this.showToast("Enter your email.", "warning");
+            return;
+        }
+
+        if (window.Notifications &&
+            typeof window.Notifications.subscribe === "function") {
+
+            await window.Notifications.subscribe(email);
+
+        } else {
+
+            this.showToast("Subscribed successfully.", "success");
+
+        }
+
+    });
+
+    // Install App
+    bind("installAppBtn", async () => {
+
+        if (window.deferredPrompt) {
+
+            window.deferredPrompt.prompt();
+
+            const choice =
+                await window.deferredPrompt.userChoice;
+
+            console.log(choice);
+
+            window.deferredPrompt = null;
+
+        } else {
+
+            this.showToast("Install not available.", "info");
+
+        }
+
+    });
+
+    // Share App
+    bind("shareAppBtn", async () => {
+
+        try {
+
+            if (navigator.share) {
+
+                await navigator.share({
+                    title: document.title,
+                    text: "Lexora AI Platform",
+                    url: location.href
+                });
+
+            } else {
+
+                await navigator.clipboard.writeText(location.href);
+
+                this.showToast("Link copied.", "success");
+
+            }
+
+        } catch (e) {
+
+            console.error(e);
+
+        }
+
+    });
+
+};
     document.addEventListener("DOMContentLoaded", () => {
 
     if (window.Lexora) {
