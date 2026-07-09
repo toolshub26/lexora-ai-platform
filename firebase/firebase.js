@@ -5,6 +5,8 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase
 
 import {
   getAuth,
+  GoogleAuthProvider,
+signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -59,7 +61,8 @@ window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 window.sendPasswordResetEmail = sendPasswordResetEmail;
 window.signOut = signOut;
 window.onAuthStateChanged = onAuthStateChanged;
-
+window.GoogleAuthProvider = GoogleAuthProvider;
+window.signInWithPopup = signInWithPopup;
 console.log("Firebase Initialized");
 
 export {
