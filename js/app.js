@@ -304,94 +304,75 @@ Lexora.registerUIEvents = function () {
 
     if (this.uiEventsRegistered) return;
 
-    const loginBtn = document.getElementById("loginBtn");
-if (loginBtn) {
+    this.uiEventsRegistered = true;
 
-loginBtn.addEventListener("click", () => {
+    const bindClick = (id, handler) => {
 
-this.openModal("loginModal");
+        const el = document.getElementById(id);
 
-});
+        if (!el) return;
 
-}
+        const clone = el.cloneNode(true);
+        el.parentNode.replaceChild(clone, el);
 
-const signupBtn = document.getElementById("signupBtn");
+        clone.addEventListener("click", handler);
 
-if (signupBtn) {
+    };
 
-signupBtn.addEventListener("click", () => {
+    bindClick("loginBtn", () => {
+        this.openModal("loginModal");
+    });
 
-this.openModal("signupModal");
-
-});
-
-}
-   const createAccountBtn = document.getElementById("createAccountBtn");
-
-if (createAccountBtn) {
-    createAccountBtn.addEventListener("click", () => {
+    bindClick("signupBtn", () => {
         this.openModal("signupModal");
     });
-} 
-const startBtn = document.getElementById("startBtn");
 
-if (startBtn) {
-  startBtn.addEventListener("click", () => {
-    this.openModal("signupModal");
-  });
-}
-const closeLogin = document.getElementById("closeLogin");
+    bindClick("createAccountBtn", () => {
+        this.openModal("signupModal");
+    });
 
-if (closeLogin) {
+    bindClick("startBtn", () => {
+        this.openModal("signupModal");
+    });
 
-closeLogin.addEventListener("click", () => {
+    bindClick("closeLogin", () => {
+        this.closeModal("loginModal");
+    });
 
-this.closeModal("loginModal");
-
-});
-
-}
-
-const closeSignup = document.getElementById("closeSignup");
-
-if (closeSignup) {
-
-    closeSignup.addEventListener("click", () => {
+    bindClick("closeSignup", () => {
         this.closeModal("signupModal");
     });
 
-}
-const upgradeBtn = document.getElementById("upgradeBtn");
-
-if (upgradeBtn) {
-    upgradeBtn.addEventListener("click", async () => {
+    bindClick("upgradeBtn", async () => {
 
         try {
 
-            Lexora.showLoader();
+            this.showLoader();
 
-            if (!window.Payment || typeof window.Payment.startPayment !== "function") {
-                Lexora.hideLoader();
-                Lexora.showToast("Payment module not loaded", "error");
-                return;
+            if (
+                !window.Payment ||
+                typeof window.Payment.startPayment !== "function"
+            ) {
+                throw new Error("Payment module missing");
             }
 
             await window.Payment.startPayment("PRO");
 
-            Lexora.hideLoader();
-            Lexora.showToast("Payment Successful", "success");
+            this.showToast("Payment Successful", "success");
 
         } catch (err) {
 
-            Lexora.hideLoader();
             console.error(err);
-            Lexora.showToast("Payment Failed", "error");
+
+            this.showToast(err.message || "Payment Failed", "error");
+
+        } finally {
+
+            this.hideLoader();
 
         }
 
     });
-}
-this.uiEventsRegistered = true;
 
 };
 
