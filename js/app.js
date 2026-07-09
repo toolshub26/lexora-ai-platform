@@ -373,7 +373,73 @@ Lexora.registerUIEvents = function () {
         }
 
     });
+/* ---------- Navigation ---------- */
 
+document.querySelectorAll('header nav a').forEach(link => {
+
+    link.addEventListener("click", (e) => {
+
+        e.preventDefault();
+
+        const text = link.textContent.trim().toLowerCase();
+
+        const map = {
+            home: ".hero",
+            features: ".features",
+            pricing: ".pricing",
+            contact: ".contact"
+        };
+
+        const target = document.querySelector(map[text]);
+
+        if (target) {
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+
+    });
+
+});
+
+
+/* ---------- Feature Cards ---------- */
+
+document.querySelectorAll(".feature-card").forEach(card => {
+
+    card.style.cursor = "pointer";
+
+    card.addEventListener("click", () => {
+
+        this.showToast(
+            card.querySelector("h3")?.textContent + " Coming Soon",
+            "info"
+        );
+
+    });
+
+});
+
+
+/* ---------- Dashboard Cards ---------- */
+
+document.querySelectorAll(".dashboard-card").forEach(card => {
+
+    card.style.cursor = "pointer";
+
+    card.addEventListener("click", () => {
+
+        if (!this.isLoggedIn()) {
+
+            this.openModal("loginModal");
+            return;
+
+        }
+
+        this.showToast("Dashboard module opening...", "success");
+
+});
 };
 
 /* ==========================================
