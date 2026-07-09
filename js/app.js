@@ -845,5 +845,63 @@ Lexora.initializeCards = function () {
     }
 
 });
+/* =========================================
+   Part 3D - Final Production Cleanup
+========================================= */
 
+window.addEventListener("error", (e) => {
+
+    console.error("[Lexora Error]", e.error || e.message);
+
+});
+
+window.addEventListener("unhandledrejection", (e) => {
+
+    console.error("[Unhandled Promise]", e.reason);
+
+});
+
+window.addEventListener("beforeinstallprompt", (e) => {
+
+    e.preventDefault();
+
+    window.deferredPrompt = e;
+
+});
+
+window.addEventListener("online", () => {
+
+    if (window.Lexora) {
+        window.Lexora.showToast("Internet Connected", "success");
+    }
+
+});
+
+window.addEventListener("offline", () => {
+
+    if (window.Lexora) {
+        window.Lexora.showToast("Internet Disconnected", "warning");
+    }
+
+});
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", async () => {
+
+        try {
+
+            await navigator.serviceWorker.register("/sw.js");
+
+            console.log("Service Worker Registered");
+
+        } catch (err) {
+
+            console.error(err);
+
+        }
+
+    });
+
+}
 window.Lexora = Lexora;
