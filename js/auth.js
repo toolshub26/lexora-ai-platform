@@ -63,7 +63,19 @@ if (!this._listenerStarted) {
             }
         });
     }
+const googleLoginBtn = document.getElementById("googleLoginBtn");
 
+if (googleLoginBtn) {
+    googleLoginBtn.addEventListener("click", async () => {
+        try {
+            await this.googleLogin();
+            Lexora.closeModal("loginModal");
+            Lexora.showToast("Login Successful", "success");
+        } catch (error) {
+            Lexora.showToast(error.message, "error");
+        }
+    });
+}
     const signupForm = document.getElementById("signupForm");
 
     if (signupForm) {
@@ -236,7 +248,21 @@ Auth.logout = async function () {
     throw error;
      }
 };
+Auth.googleLogin = async function () {
+    if (!this.isReady()) {
+        throw new Error("Firebase Auth is not ready.");
+    }
 
+    const provider = new window.GoogleAuthProvider();
+
+    try {
+        const result = await window.signInWithPopup(this.firebase.auth, provider);
+        return result.user;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
 Auth.resetPassword = async function (email) {
     if (!this.isReady()) {
         console.error("Firebase Auth is not ready.");
