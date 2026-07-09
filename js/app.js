@@ -454,64 +454,124 @@ Session Manager
 
 Lexora.session = {
 
-saveUser(user) {
+    KEY: "lexora_current_user",
 
-Lexora.storage.save("currentUser", user);
+    save(user) {
 
-},
+        if (!user) return;
 
-getUser() {
+        try {
 
-return Lexora.storage.load("currentUser", null);
+            localStorage.setItem(
+                this.KEY,
+                JSON.stringify(user)
+            );
 
-},
+        } catch (e) {
 
-clear() {
+            console.error("Session save failed", e);
 
-Lexora.storage.remove("currentUser");
+        }
 
-}
+    },
+
+    get() {
+
+        try {
+
+            const raw = localStorage.getItem(this.KEY);
+
+            return raw ? JSON.parse(raw) : null;
+
+        } catch (e) {
+
+            console.error("Session read failed", e);
+
+            return null;
+
+        }
+
+    },
+
+    clear() {
+
+        try {
+
+            localStorage.removeItem(this.KEY);
+
+        } catch (e) {
+
+            console.error("Session clear failed", e);
+
+        }
+
+    }
 
 };
 
-/* ==========================================
-Current User
-========================================== */
+/* =====================================================
+   Current User
+===================================================== */
 
 Lexora.getCurrentUser = function () {
 
-return this.session.getUser();
+    if (
+        window.Auth &&
+        typeof window.Auth.currentUser === "function"
+    ) {
+
+        return window.Auth.currentUser();
+
+    }
+
+    return this.session.get();
 
 };
-
-/* ==========================================
-Authentication Check
-========================================== */
+/* =====================================================
+   Login State
+===================================================== */
 
 Lexora.isLoggedIn = function () {
 
-    if (window.Auth && typeof Auth.isReady === "function" && Auth.isReady()) {
-        return !!Auth.currentUser;
-    }
+    const user = this.getCurrentUser();
 
-    return false;
-};
-
-/* ==========================================
-Logout
-========================================== */
-
-Lexora.logout = function () {
-
-    this.session.clear();
-
-    if (window.Auth && typeof window.Auth.logout === "function") {
-        window.Auth.logout().catch(console.error);
-    }
-
-    this.showToast("Logged out successfully", "success");
-
-    console.log("User Logged Out");
+    return !!(user && (user.uid || user.email));
 
 };
+
+/* =====================================================
+   Logout
+===================================================== */
+
+Lexora.logout = async function () {
+
+    try {
+
+        this.session.clear();
+
+        if (
+            window.Auth &&
+            typeof window.Auth.logout === "function"
+        ) {
+            await window.Auth.logout();
+        }
+
+        this.showToast("Logged out successfully", "success");
+
+        window.location.reload();
+
+    } catch (err) {
+
+        console.error(err);
+
+        this.showToast("Logout failed", "error");
+
+    }
+
+};
+
+/* =====================================================
+   Export
+===================================================== */
+
 window.Lexora = Lexora;
