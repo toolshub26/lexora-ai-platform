@@ -771,11 +771,79 @@ Lexora.initializeActions = function () {
     });
 
 };
+    /* =========================================
+   Part 3C - Template / CTA Actions
+========================================= */
+
+Lexora.initializeCards = function () {
+
+    // Template Cards
+    document.querySelectorAll(".template-card").forEach(card => {
+
+        card.style.cursor = "pointer";
+
+        card.addEventListener("click", () => {
+
+            const title = card.textContent.trim();
+
+            this.showToast(`${title} template opening...`, "success");
+
+        });
+
+    });
+
+    // CTA Button
+    const createBtn = document.getElementById("createAccountBtn");
+
+    if (createBtn) {
+
+        const clone = createBtn.cloneNode(true);
+        createBtn.parentNode.replaceChild(clone, createBtn);
+
+        clone.addEventListener("click", () => {
+
+            this.openModal("signupModal");
+
+        });
+
+    }
+
+    // Contact Sales
+    document.querySelectorAll(".enterprise button").forEach(btn => {
+
+        btn.addEventListener("click", () => {
+
+            this.showToast(
+                "Sales team will contact you soon.",
+                "info"
+            );
+
+        });
+
+    });
+
+    // Free Plan
+    document.querySelectorAll(".free button").forEach(btn => {
+
+        btn.addEventListener("click", () => {
+
+            this.openModal("signupModal");
+
+        });
+
+    });
+
+};
+
     document.addEventListener("DOMContentLoaded", () => {
 
     if (window.Lexora) {
+
         window.Lexora.initializeActions();
+        window.Lexora.initializeCards();
+
     }
 
 });
+
 window.Lexora = Lexora;
