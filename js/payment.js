@@ -69,13 +69,13 @@ Payment.startPayment = async function(plan) {
       },
 
       prefill: {
-        name: firebase.auth().currentUser?.displayName || "",
+    name: window.Auth?.currentUser?.displayName || "",
+    email: window.Auth?.currentUser?.email || ""
+},
 
-        name: window.auth.currentUser?.displayName || "",
-        email: window.auth.currentUser?.email || ""
-      theme: {
-        color: "#2563eb"
-      }
+theme: {
+    color: "#2563eb"
+}
     };
 
     const rzp = new Razorpay(options);
