@@ -573,5 +573,101 @@ Lexora.logout = async function () {
 /* =====================================================
    Export
 ===================================================== */
+/* =====================================================
+   Generic Button Actions
+===================================================== */
 
+Lexora.initializeActions = function () {
+
+    const bind = (id, fn) => {
+
+        const el = document.getElementById(id);
+
+        if (!el) return;
+
+        const clone = el.cloneNode(true);
+        el.parentNode.replaceChild(clone, el);
+
+        clone.addEventListener("click", fn);
+    };
+
+    // Ask AI
+    bind("askAiBtn", () => {
+
+        const prompt = document.getElementById("aiPrompt")?.value.trim();
+
+        if (!prompt) {
+            this.showToast("Please enter your question.", "warning");
+            return;
+        }
+
+        this.showToast("AI Assistant is processing...", "info");
+
+        const chat = document.getElementById("aiChatWindow");
+        if (chat) chat.classList.remove("hidden");
+    });
+
+    // Newsletter
+    bind("subscribeBtn", () => {
+
+        const email = document.getElementById("newsletterEmail")?.value.trim();
+
+        if (!email) {
+            this.showToast("Enter your email.", "warning");
+            return;
+        }
+
+        this.showToast("Subscribed successfully.", "success");
+    });
+
+    // Install App
+    bind("installAppBtn", () => {
+
+        if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+        } else {
+            this.showToast("Install prompt unavailable.", "info");
+        }
+
+    });
+
+    // Share
+    bind("shareAppBtn", async () => {
+
+        try {
+
+            if (navigator.share) {
+
+                await navigator.share({
+
+                    title: document.title,
+                    text: "Lexora AI Platform",
+                    url: location.href
+
+                });
+
+            } else {
+
+                navigator.clipboard.writeText(location.href);
+
+                this.showToast("Link copied.", "success");
+
+            }
+
+        } catch (e) {
+
+            console.error(e);
+
+        }
+
+    });
+
+};
+    document.addEventListener("DOMContentLoaded", () => {
+
+    if (window.Lexora) {
+        window.Lexora.initializeActions();
+    }
+
+});
 window.Lexora = Lexora;
