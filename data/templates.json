@@ -1,0 +1,182 @@
+[
+  {
+    "id": "affidavit",
+    "title": "General Affidavit",
+    "category": "Affidavit",
+    "template": "I, {{fullName}}, residing at {{address}}, do hereby solemnly affirm and declare that the statements made herein are true and correct to the best of my knowledge and belief."
+  },
+  {
+    "id": "name_change",
+    "title": "Name Change Affidavit",
+    "category": "Affidavit",
+    "template": "I, {{oldName}}, have changed my name to {{newName}} and shall hereafter be known as {{newName}} for all legal purposes."
+  },
+  {
+    "id": "address_proof",
+    "title": "Address Proof Affidavit",
+    "category": "Affidavit",
+    "template": "I, {{fullName}}, certify that my permanent address is {{address}}."
+  },
+  {
+    "id": "birth_affidavit",
+    "title": "Birth Affidavit",
+    "category": "Affidavit",
+    "template": "I hereby affirm that {{personName}} was born on {{dob}} at {{birthPlace}}."
+  },
+  {
+    "id": "marriage_affidavit",
+    "title": "Marriage Affidavit",
+    "category": "Affidavit",
+    "template": "I hereby declare that I am legally married to {{spouseName}} on {{marriageDate}}."
+  },
+  {
+    "id": "divorce_affidavit",
+    "title": "Divorce Affidavit",
+    "category": "Affidavit",
+    "template": "I hereby declare that my marriage with {{spouseName}} has legally ended on {{divorceDate}}."
+  },
+  {
+    "id": "income_affidavit",
+    "title": "Income Affidavit",
+    "category": "Affidavit",
+    "template": "I declare that my monthly income is {{income}}."
+  },
+  {
+    "id": "domicile_affidavit",
+    "title": "Domicile Affidavit",
+    "category": "Affidavit",
+    "template": "I certify that I am a permanent resident of {{state}}."
+  },
+  {
+    "id": "nationality_affidavit",
+    "title": "Nationality Affidavit",
+    "category": "Affidavit",
+    "template": "I declare that I am a citizen of {{country}}."
+  },
+  {
+    "id": "identity_affidavit",
+    "title": "Identity Affidavit",
+    "category": "Affidavit",
+    "template": "I certify that my identity details provided herein are true and correct."
+  },
+  {
+    "id": "passport_loss",
+    "title": "Lost Passport Affidavit",
+    "category": "Travel",
+    "template": "My passport bearing number {{passportNumber}} was lost on {{lossDate}}."
+  },
+  {
+    "id": "certificate_loss",
+    "title": "Lost Certificate Affidavit",
+    "category": "Travel",
+    "template": "My certificate has been lost and despite every effort could not be recovered."
+  },
+  {
+    "id": "driving_license_loss",
+    "title": "Lost Driving Licence Affidavit",
+    "category": "Travel",
+    "template": "My driving licence number {{licenseNumber}} has been lost."
+  },
+  {
+    "id": "sim_loss",
+    "title": "Lost SIM Affidavit",
+    "category": "Travel",
+    "template": "My SIM card with number {{mobileNumber}} has been lost."
+  },
+  {
+    "id": "document_loss",
+    "title": "Lost Document Affidavit",
+    "category": "Travel",
+    "template": "The following document has been lost: {{documentName}}."
+  },
+  {
+    "id": "rent_agreement",
+    "title": "Rent Agreement",
+    "category": "Property",
+    "template": "This agreement is executed between {{ownerName}} and {{tenantName}}."
+  },
+  {
+    "id": "lease_agreement",
+    "title": "Lease Agreement",
+    "category": "Property",
+    "template": "This lease agreement is effective from {{startDate}} to {{endDate}}."
+  },
+  {
+    "id": "sale_agreement",
+    "title": "Sale Agreement",
+    "category": "Property",
+    "template": "The seller {{sellerName}} agrees to sell the property to {{buyerName}}."
+  },
+  {
+    "id": "gift_deed",
+    "title": "Gift Deed",
+    "category": "Property",
+    "template": "The donor {{donorName}} gifts the property to {{receiverName}}."
+  },
+  {
+    "id": "property_noc",
+    "title": "Property NOC",
+    "category": "Property",
+    "template": "No objection is hereby granted regarding the property situated at {{propertyAddress}}."
+  },
+  {
+    "id": "employment_letter",
+    "title": "Employment Letter",
+    "category": "Employment",
+    "template": "This certifies that {{employeeName}} is employed with {{companyName}} as {{designation}}."
+  },
+  {
+    "id": "experience_letter",
+    "title": "Experience Letter",
+    "category": "Employment",
+    "template": "{{employeeName}} worked with {{companyName}} from {{fromDate}} to {{toDate}}."
+  },
+  {
+    "id": "salary_certificate",
+    "title": "Salary Certificate",
+    "category": "Employment",
+    "template": "{{employeeName}} receives a monthly salary of {{salary}}."
+  },
+  {
+    "id": "joining_letter",
+    "title": "Joining Letter",
+    "category": "Employment",
+    "template": "You are appointed as {{designation}} with effect from {{joiningDate}}."
+  },
+  {
+    "id": "resignation_letter",
+    "title": "Resignation Letter",
+    "category": "Employment",
+    "template": "I hereby resign from my position effective {{resignationDate}}."
+  },
+  {
+    "id": "noc",
+    "title": "No Objection Certificate",
+    "category": "Certificate",
+    "template": "This is to certify that we have no objection to {{personName}} for {{purpose}}."
+  },
+  {
+    "id": "character_certificate",
+    "title": "Character Certificate",
+    "category": "Certificate",
+    "template": "{{personName}} is known to us and bears good moral character."
+  },
+  {
+    "id": "bonafide_certificate",
+    "title": "Bonafide Certificate",
+    "category": "Certificate",
+    "template": "This certifies that {{studentName}} is a bonafide student of {{institutionName}}."
+  },
+  {
+    "id": "residence_certificate",
+    "title": "Residence Certificate",
+    "category": "Certificate",
+    "template": "{{personName}} is residing at {{address}}."
+  },
+  {
+    "id": "legal_notice",
+    "title": "Legal Notice",
+    "category": "Legal",
+    "template": "This legal notice is issued to {{recipientName}} regarding {{subject}}."
+  }
+]

@@ -1,0 +1,37 @@
+
+[
+  { "id": "affidavit", "name": "General Affidavit", "category": "Affidavit" },
+  { "id": "name_change", "name": "Name Change Affidavit", "category": "Affidavit" },
+  { "id": "address_proof", "name": "Address Proof Affidavit", "category": "Affidavit" },
+  { "id": "birth_affidavit", "name": "Birth Affidavit", "category": "Affidavit" },
+  { "id": "marriage_affidavit", "name": "Marriage Affidavit", "category": "Affidavit" },
+  { "id": "divorce_affidavit", "name": "Divorce Affidavit", "category": "Affidavit" },
+  { "id": "income_affidavit", "name": "Income Affidavit", "category": "Affidavit" },
+  { "id": "domicile_affidavit", "name": "Domicile Affidavit", "category": "Affidavit" },
+  { "id": "nationality_affidavit", "name": "Nationality Affidavit", "category": "Affidavit" },
+  { "id": "identity_affidavit", "name": "Identity Affidavit", "category": "Affidavit" },
+
+  { "id": "passport_loss", "name": "Lost Passport Affidavit", "category": "Travel" },
+  { "id": "certificate_loss", "name": "Lost Certificate Affidavit", "category": "Travel" },
+  { "id": "driving_license_loss", "name": "Lost Driving Licence Affidavit", "category": "Travel" },
+  { "id": "sim_loss", "name": "Lost SIM Card Affidavit", "category": "Travel" },
+  { "id": "document_loss", "name": "Lost Document Affidavit", "category": "Travel" },
+
+  { "id": "rent_agreement", "name": "Rent Agreement", "category": "Property" },
+  { "id": "lease_agreement", "name": "Lease Agreement", "category": "Property" },
+  { "id": "sale_agreement", "name": "Sale Agreement", "category": "Property" },
+  { "id": "gift_deed", "name": "Gift Deed", "category": "Property" },
+  { "id": "property_noc", "name": "Property NOC", "category": "Property" },
+
+  { "id": "employment_letter", "name": "Employment Letter", "category": "Employment" },
+  { "id": "experience_letter", "name": "Experience Letter", "category": "Employment" },
+  { "id": "salary_certificate", "name": "Salary Certificate", "category": "Employment" },
+  { "id": "joining_letter", "name": "Joining Letter", "category": "Employment" },
+  { "id": "resignation_letter", "name": "Resignation Letter", "category": "Employment" },
+
+  { "id": "noc", "name": "No Objection Certificate", "category": "Certificate" },
+  { "id": "character_certificate", "name": "Character Certificate", "category": "Certificate" },
+  { "id": "bonafide_certificate", "name": "Bonafide Certificate", "category": "Certificate" },
+  { "id": "residence_certificate", "name": "Residence Certificate", "category": "Certificate" },
+  { "id": "legal_notice", "name": "Legal Notice", "category": "Legal" }
+]
