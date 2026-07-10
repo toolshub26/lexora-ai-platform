@@ -1,25 +1,49 @@
 "use strict";
 
-window.AI = {
+(function () {
 
-    init() {
-        console.log("AI Engine Loaded");
-    },
+    const AI = {
 
-    async ask(prompt) {
+        init() {
+            console.log("AI Engine Loaded");
+        },
 
-        if (!prompt || !prompt.trim()) {
-            throw new Error("Prompt is empty.");
+        async ask(prompt) {
+
+            try {
+
+                if (!prompt || !prompt.trim()) {
+                    throw new Error("Prompt is empty.");
+                }
+
+                return await this.generate(prompt);
+
+            } catch (err) {
+
+                console.error(err);
+
+                return {
+                    success: false,
+                    error: err.message
+                };
+            }
+        },
+
+        async generate(prompt) {
+
+            // TODO:
+            // Future: Connect OpenAI / Gemini / Claude API here.
+
+            return {
+                success: true,
+                response: `Lexora AI Response: ${prompt}`
+            };
         }
 
-        console.log("[AI]", prompt);
+    };
 
-        return {
-            success: true,
-            response: "AI module connected successfully."
-        };
-    }
+    window.AI = AI;
 
-};
+    AI.init();
 
-window.AI.init();
+})();
