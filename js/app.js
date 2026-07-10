@@ -689,7 +689,23 @@ Lexora.initializeActions = function () {
         }
 
         if (window.AI && typeof window.AI.ask === "function") {
-            window.AI.ask(prompt);
+            window.AI.ask(prompt)
+.then(result => {
+
+    console.log(result);
+
+    if (result?.response) {
+        this.showToast(result.response, "success");
+    }
+
+})
+.catch(err => {
+
+    console.error(err);
+
+    this.showToast(err.message || "AI Error", "error");
+
+});
         } else {
             this.showToast("AI module not loaded.", "error");
         }
