@@ -1,19 +1,34 @@
-export const DASHBOARD_WIDGETS = [
-  "overview",
-  "analytics",
-  "statistics",
-  "activity",
-  "notifications",
-  "reports",
-] as const;
+import type {
+  DashboardActivity,
+  DashboardNotification,
+  DashboardStats,
+  DashboardWidget,
+} from "./types";
 
-export const DASHBOARD_REFRESH_INTERVAL = 30000;
+export class DashboardService {
+  async getStats(): Promise<DashboardStats | null> {
+    console.log("Loading dashboard stats");
+    return null;
+  }
 
-export const DEFAULT_WIDGET_ORDER = [
-  "overview",
-  "analytics",
-  "statistics",
-  "activity",
-  "notifications",
-  "reports",
-];
+  async getWidgets(): Promise<DashboardWidget[]> {
+    console.log("Loading dashboard widgets");
+    return [];
+  }
+
+  async getActivities(): Promise<DashboardActivity[]> {
+    console.log("Loading dashboard activities");
+    return [];
+  }
+
+  async getNotifications(): Promise<DashboardNotification[]> {
+    console.log("Loading dashboard notifications");
+    return [];
+  }
+
+  async refreshDashboard(): Promise<void> {
+    console.log("Refreshing dashboard");
+  }
+}
+
+export const dashboardService = new DashboardService();
