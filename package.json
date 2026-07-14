@@ -1,1 +1,22 @@
-
+{
+  "name": "lexora-ai-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lexora AI Platform - Enterprise Legal AI Ecosystem",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@10.15.0",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "biome format . --write",
+    "check": "biome check .",
+    "clean": "turbo run clean"
+  }
+}
