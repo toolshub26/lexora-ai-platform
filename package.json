@@ -17,6 +17,12 @@
     "lint": "turbo run lint",
     "format": "biome format . --write",
     "check": "biome check .",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.4",
+    "turbo": "^2.5.6",
+    "typescript": "^5.9.2"
   }
 }
