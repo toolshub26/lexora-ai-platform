@@ -1,6 +1,6 @@
 import type { AuthState } from "./state";
 import { authSession } from "./session";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, type Unsubscribe } from "firebase/auth";
 import { auth } from "./firebase";
 
 export class AuthProvider {
@@ -10,13 +10,28 @@ export class AuthProvider {
     (state: AuthState | null) => void
   >();
 
+  private unsubscribe: Unsubscribe | null = null;
+
   initialize(): void {
+    if (this.unsubscribe) {
+      return;
+    }
+
     this.state = authSession.getSession();
 
-    onAuthStateChanged(auth, () => {
-      this.state = authSession.getSession();
-      this.notify();
-    });
+    this.unsubscribe = onAuthStateChanged(
+      auth,
+      () => {
+        this.state = authSession.getSession();
+        this.notify();
+      },
+    );
+  }
+
+  destroy(): void {
+    this.unsubscribe?.();
+    this.unsubscribe = null;
+    this.listeners.clear();
   }
 
   getState(): AuthState | null {
@@ -43,6 +58,8 @@ export class AuthProvider {
     listener: (state: AuthState | null) => void,
   ): () => void {
     this.listeners.add(listener);
+
+    listener(this.state);
 
     return () => {
       this.listeners.delete(listener);
