@@ -1,11 +1,11 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "./firebase";
-import type { LoginRequest } from "./types";
+import { authService } from "./service";
+import type {
+  LoginRequest,
+  AuthResponse,
+} from "./types";
 
-export async function login(data: LoginRequest) {
-  return signInWithEmailAndPassword(
-    auth,
-    data.email,
-    data.password
-  );
+export async function login(
+  data: LoginRequest,
+): Promise<AuthResponse> {
+  return authService.login(data);
 }
