@@ -1,22 +1,12 @@
-import {
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
+import { authService } from "./service";
 
-import { auth } from "./firebase";
-import type { RegisterRequest } from "./types";
+import type {
+  RegisterRequest,
+  AuthResponse,
+} from "./types";
 
-export async function register(data: RegisterRequest) {
-  const credential =
-    await createUserWithEmailAndPassword(
-      auth,
-      data.email,
-      data.password
-    );
-
-  await updateProfile(credential.user, {
-    displayName: data.name,
-  });
-
-  return credential;
+export async function register(
+  data: RegisterRequest,
+): Promise<AuthResponse> {
+  return authService.register(data);
 }
