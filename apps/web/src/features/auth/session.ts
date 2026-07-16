@@ -7,7 +7,21 @@ import {
 
 export class AuthSessionManager {
   getSession(): AuthState | null {
-    return loadAuthState();
+    const session = loadAuthState();
+
+    if (!session) {
+      return null;
+    }
+
+    if (
+      session.expiresAt &&
+      session.expiresAt <= Date.now()
+    ) {
+      this.clearSession();
+      return null;
+    }
+
+    return session;
   }
 
   saveSession(state: AuthState): void {
@@ -20,8 +34,17 @@ export class AuthSessionManager {
 
   isAuthenticated(): boolean {
     const session = this.getSession();
-    return session?.isAuthenticated ?? false;
+
+    return (
+      session?.isAuthenticated === true &&
+      !!session.accessToken
+    );
+  }
+
+  hasValidSession(): boolean {
+    return this.getSession() !== null;
   }
 }
 
-export const authSession = new AuthSessionManager();
+export const authSession =
+  new AuthSessionManager();
