@@ -1,27 +1,78 @@
 import { AUTH_STORAGE_KEY } from "./constants";
 import type { AuthState } from "./state";
 
-export function saveAuthState(state: AuthState): void {
-  localStorage.setItem(
-    AUTH_STORAGE_KEY,
-    JSON.stringify(state)
-  );
+function isBrowser(): boolean {
+  return typeof window !== "undefined";
 }
 
-export function loadAuthState(): AuthState | null {
-  const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+export function saveAuthState(
+  state: AuthState,
+): void {
+  if (!isBrowser()) return;
 
-  if (!raw) {
+  try {
+    localStorage.setItem(
+      AUTH_STORAGE_KEY,
+      JSON.stringify(state),
+    );
+  } catch (error) {
+    console.error(
+      "Failed to save auth state:",
+      error,
+    );
+  }
+}
+
+export function loadAuthState():
+  | AuthState
+  | null {
+  if (!isBrowser()) {
     return null;
   }
 
   try {
-    return JSON.parse(raw) as AuthState;
-  } catch {
+    const raw = localStorage.getItem(
+      AUTH_STORAGE_KEY,
+    );
+
+    if (!raw) {
+      return null;
+    }
+
+    const state = JSON.parse(raw) as AuthState;
+
+    if (
+      state.expiresAt &&
+      state.expiresAt <= Date.now()
+    ) {
+      clearAuthState();
+      return null;
+    }
+
+    return state;
+  } catch (error) {
+    console.error(
+      "Failed to load auth state:",
+      error,
+    );
+
+    clearAuthState();
+
     return null;
   }
 }
 
 export function clearAuthState(): void {
-  localStorage.removeItem(AUTH_STORAGE_KEY);
+  if (!isBrowser()) return;
+
+  try {
+    localStorage.removeItem(
+      AUTH_STORAGE_KEY,
+    );
+  } catch (error) {
+    console.error(
+      "Failed to clear auth state:",
+      error,
+    );
+  }
 }
