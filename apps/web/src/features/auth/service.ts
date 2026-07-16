@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 
 import { auth } from "./firebase";
+import { authSession } from "./session";
 
 import type {
   LoginRequest,
@@ -36,30 +37,69 @@ export class AuthService {
     };
   }
 
-  private buildSession(user: FirebaseUser): Session {
+  private async buildSession(
+    user: FirebaseUser,
+  ): Promise<Session> {
+    const accessToken =
+      await user.getIdToken();
+
     return {
-      accessToken: "",
+      accessToken,
       refreshToken: user.refreshToken,
-      expiresAt: Date.now() + 60 * 60 * 1000,
+      expiresAt:
+        Date.now() + 60 * 60 * 1000,
       user: this.mapUser(user),
     };
   }
 
-  async login(data: LoginRequest): Promise<AuthResponse> {
+  async login(
+    data: LoginRequest,
+  ): Promise<AuthResponse> {
     try {
+      if (!data.email.trim()) {
+        return {
+          success: false,
+          message: "Email is required.",
+        };
+      }
+
+      if (!data.password.trim()) {
+        return {
+          success: false,
+          message: "Password is required.",
+        };
+      }
+
       const credential =
         await signInWithEmailAndPassword(
           auth,
-          data.email,
+          data.email.trim(),
           data.password,
         );
+
+      const session =
+        await this.buildSession(
+          credential.user,
+        );
+
+      authSession.saveSession({
+        isAuthenticated: true,
+        isLoading: false,
+        accessToken:
+          session.accessToken,
+        refreshToken:
+          session.refreshToken,
+        expiresAt:
+          session.expiresAt,
+        userId: session.user.id,
+        user: session.user,
+        error: null,
+      });
 
       return {
         success: true,
         message: "Login successful.",
-        session: this.buildSession(
-          credential.user,
-        ),
+        session,
       };
     } catch (error) {
       return {
@@ -72,80 +112,3 @@ export class AuthService {
     }
   }
 
-  async register(
-    data: RegisterRequest,
-  ): Promise<AuthResponse> {
-    try {
-      const credential =
-        await createUserWithEmailAndPassword(
-          auth,
-          data.email,
-          data.password,
-        );
-
-      await updateProfile(
-        credential.user,
-        {
-          displayName: data.name,
-        },
-      );
-
-      await sendEmailVerification(
-        credential.user,
-      );
-
-      return {
-        success: true,
-        message:
-          "Registration successful. Verification email sent.",
-        session: this.buildSession(
-          credential.user,
-        ),
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "Registration failed.",
-      };
-    }
-  }
-
-  async logout(): Promise<void> {
-    await signOut(auth);
-  }
-
-  async refreshSession(): Promise<AuthResponse> {
-    return new Promise((resolve) => {
-      const unsubscribe =
-        onAuthStateChanged(
-          auth,
-          async (user) => {
-            unsubscribe();
-
-            if (!user) {
-              resolve({
-                success: false,
-                message:
-                  "No active session.",
-              });
-              return;
-            }
-
-            resolve({
-              success: true,
-              message:
-                "Session refreshed.",
-              session:
-                this.buildSession(user),
-            });
-          },
-        );
-    });
-  }
-}
-
-export const authService =
-  new AuthService();
