@@ -1,6 +1,21 @@
+import { modelService } from "./model-service";
+import { chatService } from "./chat-service";
+
 export class AIService {
-  async generateResponse(prompt: string): Promise<string> {
-    return `AI response: ${prompt}`;
+  setProvider(provider: Parameters<typeof modelService.setProvider>[0]) {
+    modelService.setProvider(provider);
+  }
+
+  getProvider() {
+    return modelService.getProvider();
+  }
+
+  getModels() {
+    return modelService.getAvailableModels();
+  }
+
+  async sendMessage(message: string) {
+    return chatService.sendMessage(message);
   }
 }
 
