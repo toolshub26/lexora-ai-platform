@@ -1,17 +1,25 @@
 /**
  * Lexora AI Platform
- * AI Core Type Definitions
+ * Enterprise AI Core Types
  */
 
 export type AIProvider =
+  | "openai"
   | "gemini"
-  | "openai";
+  | "claude"
+  | "grok"
+  | "deepseek";
 
 export type AIModel =
+  | "gpt-4.1"
+  | "gpt-4o"
+  | "gpt-4o-mini"
+  | "gpt-5"
   | "gemini-2.5-pro"
   | "gemini-2.5-flash"
-  | "gpt-4.1"
-  | "gpt-4o-mini";
+  | "claude-4-sonnet"
+  | "grok-4"
+  | "deepseek-chat";
 
 export type AIMessageRole =
   | "system"
@@ -25,23 +33,17 @@ export interface AIMessage {
 
 export interface AIRequest {
   provider: AIProvider;
-
   model: AIModel;
-
   messages: AIMessage[];
 
   temperature?: number;
-
   maxTokens?: number;
-
   stream?: boolean;
 }
 
 export interface AIUsage {
   promptTokens: number;
-
   completionTokens: number;
-
   totalTokens: number;
 }
 
@@ -54,7 +56,7 @@ export interface AIResponse {
 
   text: string;
 
-  usage?: AIUsage;
+  usage: AIUsage;
 
   createdAt: string;
 }
@@ -71,6 +73,6 @@ export interface AIProviderConfig {
 
 export interface AIProviderClient {
   generate(
-    request: AIRequest,
+    request: AIRequest
   ): Promise<AIResponse>;
 }
