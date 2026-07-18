@@ -1,45 +1,56 @@
 import {
-  aiProviders,
-  createGeminiProvider,
-  createOpenAIProvider,
-  type AIRequest,
-  type AIResponse,
+  AIRequest,
+  AIResponse,
+  AIProvider,
 } from "../lib/ai";
 
 import {
-  AI_CONFIG,
-  GEMINI_CONFIG,
-  OPENAI_CONFIG,
-} from "../config/ai";
+  aiProviders,
+} from "../lib/ai/provider";
 
 export class AIService {
-  constructor() {
-    if (!aiProviders.has("gemini")) {
-      aiProviders.register(
-        "gemini",
-        createGeminiProvider(GEMINI_CONFIG),
-      );
-    }
+  async generate(
+    request: AIRequest,
+  ): Promise<AIResponse> {
 
-    if (!aiProviders.has("openai")) {
-      aiProviders.register(
-        "openai",
-        createOpenAIProvider(OPENAI_CONFIG),
+    const client =
+      aiProviders.get(
+        request.provider,
       );
-    }
+
+    return client.generate(
+      request,
+    );
   }
 
-  async generate(
-    request: Omit<AIRequest, "provider">,
+  async generateWithFallback(
+    request: AIRequest,
+    fallback?: AIProvider,
   ): Promise<AIResponse> {
-    const provider =
-      aiProviders.get(AI_CONFIG.defaultProvider);
 
-    return provider.generate({
-      provider: AI_CONFIG.defaultProvider,
-      ...request,
-    });
+    try {
+      return await this.generate(
+        request,
+      );
+    } catch (error) {
+
+      if (!fallback) {
+        throw error;
+      }
+      const retryRequest: AIRequest = {
+        ...request,
+        provider: fallback,
+      };
+
+      return this.generate(
+        retryRequest,
+      );
+    }
   }
 }
 
-export const aiService = new AIService();
+export const aiService =
+  new AIService();
+
+export default aiService;
+    
