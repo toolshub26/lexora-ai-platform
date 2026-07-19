@@ -3,19 +3,15 @@ export interface RateLimitOptions {
   windowMs: number;
 }
 
-export class RateLimiter {
-  private readonly requests = new Map<
-    string,
-    {
-      count: number;
-      resetAt: number;
-    }
-  >();
+interface RateLimitRecord {
+  count: number;
+  resetAt: number;
+}
 
-  isAllowed(
-    key: string,
-    options: RateLimitOptions
-  ): boolean {
+export class RateLimiter {
+  private readonly requests = new Map<string, RateLimitRecord>();
+
+  isAllowed(key: string, options: RateLimitOptions): boolean {
     const now = Date.now();
 
     const current = this.requests.get(key);
@@ -33,11 +29,29 @@ export class RateLimiter {
       return false;
     }
 
-    current.count += 1;
+    current.count++;
 
     this.requests.set(key, current);
 
     return true;
+  }
+
+  getRemaining(key: string, options: RateLimitOptions): number {
+    const current = this.requests.get(key);
+
+    if (!current || current.resetAt <= Date.now()) {
+      return options.maxRequests;
+    }
+
+    return Math.max(0, options.maxRequests - current.count);
+  }
+
+  getResetTime(key: string): number | null {
+    return this.requests.get(key)?.resetAt ?? null;
+  }
+
+  reset(key: string): void {
+    this.requests.delete(key);
   }
 
   clear(): void {
