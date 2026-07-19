@@ -1,49 +1,63 @@
 "use strict";
 
-(function () {
+/**
+ * Lexora AI Platform
+ * Main AI Bootstrap
+ */
 
-    const AI = {
+const ai = {
+  version: "3.0.0",
+  initialized: false,
 
-        init() {
-            console.log("AI Engine Loaded");
-        },
+  init() {
+    if (this.initialized) {
+      return;
+    }
 
-        async ask(prompt) {
+    this.initialized = true;
 
-            try {
+    if (typeof console !== "undefined") {
+      console.log("🚀 Lexora AI Platform initialized");
+    }
 
-                if (!prompt || !prompt.trim()) {
-                    throw new Error("Prompt is empty.");
-                }
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("lexora:ai:ready", {
+          detail: {
+            version: this.version
+          }
+        })
+      );
+    }
 
-                return await this.generate(prompt);
+    if (
+      typeof window !== "undefined" &&
+      window.aiTelemetry &&
+      typeof window.aiTelemetry.track === "function"
+    ) {
+      window.aiTelemetry.track("ai_initialized", {
+        version: this.version
+      });
+    }
+  },
 
-            } catch (err) {
-
-                console.error(err);
-
-                return {
-                    success: false,
-                    error: err.message
-                };
-            }
-        },
-
-        async generate(prompt) {
-
-            // TODO:
-            // Future: Connect OpenAI / Gemini / Claude API here.
-
-            return {
-                success: true,
-                response: `Lexora AI Response: ${prompt}`
-            };
-        }
-
+  status() {
+    return {
+      version: this.version,
+      initialized: this.initialized,
+      timestamp: new Date().toISOString()
     };
+  }
+};
 
-    window.AI = AI;
+if (typeof window !== "undefined") {
+  window.LexoraAI = ai;
 
-    AI.init();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => ai.init());
+  } else {
+    ai.init();
+  }
+}
 
-})();
+module.exports = ai;
