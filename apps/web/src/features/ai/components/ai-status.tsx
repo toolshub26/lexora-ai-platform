@@ -1,18 +1,40 @@
-import React from "react";
-import { useAI } from "../context";
+"use client";
 
-export function AIStatus() {
-  const { provider } = useAI();
+interface AIStatusProps {
+  provider: string;
+  model: string;
+  status?: "ready" | "thinking" | "error";
+}
+
+export function AIStatus({
+  provider,
+  model,
+  status = "ready",
+}: AIStatusProps) {
+  const color =
+    status === "ready"
+      ? "bg-green-500"
+      : status === "thinking"
+      ? "bg-yellow-500"
+      : "bg-red-500";
 
   return (
-    <div>
-      <strong>AI Status</strong>
+    <div className="flex items-center justify-between rounded-2xl border bg-white p-4 shadow-sm dark:bg-neutral-900">
+      <div>
+        <h3 className="text-sm font-semibold">Lexora AI Status</h3>
 
-      <p>
-        Provider: <strong>{provider}</strong>
-      </p>
+        <p className="text-sm text-neutral-500">
+          {provider} • {model}
+        </p>
+      </div>
 
-      <p>Status: Ready</p>
+      <div className="flex items-center gap-2">
+        <span className={`h-3 w-3 rounded-full ${color}`} />
+
+        <span className="text-sm font-medium capitalize">
+          {status}
+        </span>
+      </div>
     </div>
   );
 }
