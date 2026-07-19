@@ -1,24 +1,33 @@
-import React from "react";
-import { AI_PROVIDERS } from "../config";
-import { useAI } from "../context";
+"use client";
 
-export function ProviderSelector() {
-  const { provider, setProvider } = useAI();
+interface ProviderSelectorProps {
+  providers: string[];
+  value: string;
+  onChange: (provider: string) => void;
+}
 
+export function ProviderSelector({
+  providers,
+  value,
+  onChange,
+}: ProviderSelectorProps) {
   return (
-    <label>
-      <span>AI Provider</span>
+    <div className="flex flex-col gap-2">
+      <label className="text-sm font-semibold">
+        AI Provider
+      </label>
 
       <select
-        value={provider}
-        onChange={(e) => setProvider(e.target.value as typeof provider)}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="rounded-xl border bg-white p-3 dark:bg-neutral-900"
       >
-        {AI_PROVIDERS.map((item) => (
-          <option key={item.id} value={item.id} disabled={!item.enabled}>
-            {item.name}
+        {providers.map((provider) => (
+          <option key={provider} value={provider}>
+            {provider}
           </option>
         ))}
       </select>
-    </label>
+    </div>
   );
 }
