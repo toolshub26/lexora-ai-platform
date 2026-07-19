@@ -1,1 +1,68 @@
 
+"use strict";
+
+/**
+ * Lexora AI Platform
+ * Enterprise Plugin Registry
+ */
+
+class PluginRegistry {
+  constructor() {
+    this.plugins = new Map();
+  }
+
+  register(name, plugin) {
+    if (!name || typeof name !== "string") {
+      throw new Error("Plugin name is required.");
+    }
+
+    if (this.plugins.has(name)) {
+      console.warn(`Plugin already registered: ${name}`);
+      return;
+    }
+
+    this.plugins.set(name, plugin);
+  }
+
+  unregister(name) {
+    this.plugins.delete(name);
+  }
+
+  has(name) {
+    return this.plugins.has(name);
+  }
+
+  get(name) {
+    return this.plugins.get(name) || null;
+  }
+
+  getAll() {
+    return Array.from(this.plugins.keys());
+  }
+
+  execute(name, payload = {}) {
+    const plugin = this.get(name);
+
+    if (!plugin) {
+      throw new Error(`Plugin not found: ${name}`);
+    }
+
+    if (typeof plugin.execute !== "function") {
+      throw new Error(`Plugin ${name} has no execute() method.`);
+    }
+
+    return plugin.execute(payload);
+  }
+
+  clear() {
+    this.plugins.clear();
+  }
+}
+
+const pluginRegistry = new PluginRegistry();
+
+if (typeof window !== "undefined") {
+  window.pluginRegistry = pluginRegistry;
+}
+
+module.exports = pluginRegistry;
