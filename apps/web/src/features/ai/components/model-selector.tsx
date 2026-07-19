@@ -1,25 +1,33 @@
-import React from "react";
-import { AI_MODELS } from "../config";
-import { useAI } from "../context";
+"use client";
 
-export function ModelSelector() {
-  const { provider } = useAI();
+interface ModelSelectorProps {
+  models: string[];
+  value: string;
+  onChange: (model: string) => void;
+}
 
-  const models = AI_MODELS.filter(
-    (model) => model.provider === provider
-  );
-
+export function ModelSelector({
+  models,
+  value,
+  onChange,
+}: ModelSelectorProps) {
   return (
-    <label>
-      <span>AI Model</span>
+    <div className="flex flex-col gap-2">
+      <label className="text-sm font-semibold">
+        AI Model
+      </label>
 
-      <select defaultValue={models[0]?.id}>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="rounded-xl border bg-white p-3 dark:bg-neutral-900"
+      >
         {models.map((model) => (
-          <option key={model.id} value={model.id}>
-            {model.name}
+          <option key={model} value={model}>
+            {model}
           </option>
         ))}
       </select>
-    </label>
+    </div>
   );
 }
