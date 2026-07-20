@@ -506,7 +506,7 @@ Lexora.session = {
 
         }
 
-    }
+    },
 
     saveUser(user) {
     this.save(user);
