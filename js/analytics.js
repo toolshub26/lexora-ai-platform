@@ -57,4 +57,6 @@ if (typeof window !== "undefined") {
   window.analytics = analytics;
 }
 
-module.exports = analytics;
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = analytics;
+}
