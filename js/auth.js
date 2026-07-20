@@ -662,7 +662,7 @@
                 if (window.Lexora && window.Lexora.session) {
     window.Lexora.session.clear();
     }
-}
+
                 console.log("User signed out");
                 this.config.showToast("Logged out successfully", "success");
                 this._auditLog(AuditEvents.LOGOUT_SUCCESS, { timestamp: Date.now() });
