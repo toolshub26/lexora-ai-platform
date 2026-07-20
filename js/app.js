@@ -525,10 +525,10 @@ Lexora.getCurrentUser = function () {
 
     if (
         window.Auth &&
-        typeof window.Auth.currentUser === "function"
+        typeof window.Auth.getCurrentUser === "function"
     ) {
 
-        return window.Auth.currentUser();
+        return window.Auth.getCurrentUser();
 
     }
 
