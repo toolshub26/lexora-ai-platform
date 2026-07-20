@@ -600,7 +600,7 @@
 
                 const authInstance = FirebaseSdkAdapter.getAuthInstance();
                 const userCredential = await FirebaseSdkAdapter.signIn(authInstance, validation.email, validation.password);
-                
+                this.currentUser = userCredential.user;
                 this.config.showToast("Login successful", "success");
                 this._auditLog(AuditEvents.LOGIN_SUCCESS, { uid: userCredential.user ? userCredential.user.uid : "unknown" });
                 
@@ -633,7 +633,7 @@
 
                 const authInstance = FirebaseSdkAdapter.getAuthInstance();
                 const userCredential = await FirebaseSdkAdapter.signUp(authInstance, validation.email, validation.password);
-                
+                this.currentUser = userCredential.user;
                 console.log("Account Created");
                 this.config.showToast("Account Created", "success");
                 this._auditLog(AuditEvents.SIGNUP_SUCCESS, { uid: userCredential.user ? userCredential.user.uid : "unknown" });
