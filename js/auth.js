@@ -707,6 +707,8 @@
                 const authInstance = FirebaseSdkAdapter.getAuthInstance();
                 const result = await FirebaseSdkAdapter.signInWithPopup(authInstance, provider);
                 
+                this.currentUser = result.user;
+                
                 this.config.showToast("Login Successful", "success");
                 this._auditLog(AuditEvents.LOGIN_SUCCESS, { uid: result.user ? result.user.uid : "oauth", type: "google" });
                 
