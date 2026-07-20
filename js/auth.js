@@ -795,9 +795,13 @@
             const handleUserChange = (user) => {
                 this.currentUser = user;
                 if (user) {
-                    if (window.Lexora && Lexora.session && typeof Lexora.session.saveUser === 'function') {
-                        Lexora.session.saveUser({ uid: user.uid, email: user.email });
-                    }
+    if (window.Lexora && Lexora.session && typeof Lexora.session.save === "function") {
+        Lexora.session.save({
+            uid: user.uid,
+            email: user.email
+        });
+    }
+}
                 } else {
                     if (window.Lexora && Lexora.session && typeof Lexora.session.clear === 'function') {
                         Lexora.session.clear();
