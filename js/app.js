@@ -440,8 +440,8 @@ document.querySelectorAll(".dashboard-card").forEach(card => {
         this.showToast("Dashboard module opening...", "success");
 
 });
-};
 
+});
 /* ==========================================
 Extend registerEvents
 ========================================== */
