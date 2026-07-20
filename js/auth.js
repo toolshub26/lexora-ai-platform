@@ -314,6 +314,9 @@
         // ========================================================
 
         getCurrentUser() { return this.currentUser; }
+        currentUser() {
+    return this.getCurrentUser();
+}
         isAuthenticated() { return this.getCurrentUser() !== null; }
         hasVerifiedEmail() { 
             const user = this.getCurrentUser();
