@@ -442,6 +442,7 @@ document.querySelectorAll(".dashboard-card").forEach(card => {
 });
 
 });
+};  
 /* ==========================================
 Extend registerEvents
 ========================================== */
