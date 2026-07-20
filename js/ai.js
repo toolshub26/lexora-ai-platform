@@ -60,4 +60,6 @@ if (typeof window !== "undefined") {
   }
 }
 
-module.exports = ai;
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = ai;
+}
