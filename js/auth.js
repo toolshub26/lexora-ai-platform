@@ -807,7 +807,7 @@
             email: user.email
         });
     }
-}
+
                 } else {
                     if (window.Lexora && Lexora.session && typeof Lexora.session.clear === 'function') {
                         Lexora.session.clear();
