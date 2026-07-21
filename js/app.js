@@ -859,16 +859,6 @@ Lexora.initializeCards = function () {
 
 };
 
-    document.addEventListener("DOMContentLoaded", () => {
-
-    if (window.Lexora) {
-
-        window.Lexora.initializeActions();
-        window.Lexora.initializeCards();
-
-    }
-
-});
 /* =========================================
    Part 3D - Final Production Cleanup
 ========================================= */
