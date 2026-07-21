@@ -634,6 +634,15 @@ if (forgotPasswordBtn) {
                 }
 
                 const authInstance = FirebaseSdkAdapter.getAuthInstance();
+                const rememberMe = document.getElementById("rememberMe");
+
+if (rememberMe) {
+    this.config.persistence = rememberMe.checked
+        ? "local"
+        : "session";
+
+    await this._applyPersistenceStrategy(authInstance);
+}
                 const userCredential = await FirebaseSdkAdapter.signIn(authInstance, validation.email, validation.password);
                 this.currentUser = userCredential.user;
                 this.config.showToast("Login successful", "success");
