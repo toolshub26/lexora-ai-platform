@@ -595,6 +595,44 @@ if (forgotPasswordBtn) {
                         const emailInput = document.getElementById("signupEmail");
                         const passInput = document.getElementById("signupPassword");
                         const confirmInput = document.getElementById("confirmPassword");
+                        const strengthBox = document.getElementById("passwordStrength");
+
+if (passInput && strengthBox) {
+    passInput.addEventListener("input", () => {
+        const password = passInput.value;
+
+        let score = 0;
+
+        if (password.length >= 8) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[a-z]/.test(password)) score++;
+        if (/\d/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+
+        let text = "Weak";
+        let color = "#ef4444";
+        let width = "25%";
+
+        if (score >= 3) {
+            text = "Medium";
+            color = "#f59e0b";
+            width = "60%";
+        }
+
+        if (score >= 5) {
+            text = "Strong";
+            color = "#22c55e";
+            width = "100%";
+        }
+
+        strengthBox.innerHTML = `
+            <div class="strength-bar">
+                <div class="strength-fill" style="width:${width};background:${color};"></div>
+            </div>
+            <div class="strength-text">${text}</div>
+        `;
+    });
+}
                         if (
     passInput &&
     confirmInput &&
