@@ -320,8 +320,9 @@ Lexora.registerUIEvents = function () {
     };
 
     bindClick("loginBtn", () => {
-        this.openModal("loginModal");
-    });
+    alert("LOGIN CLICK WORKING");
+    this.openModal("loginModal");
+});
 
     bindClick("signupBtn", () => {
         this.openModal("signupModal");
