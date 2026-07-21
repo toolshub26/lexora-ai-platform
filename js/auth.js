@@ -574,6 +574,15 @@
                     try {
                         const emailInput = document.getElementById("signupEmail");
                         const passInput = document.getElementById("signupPassword");
+                        const confirmInput = document.getElementById("confirmPassword");
+                        if (
+    passInput &&
+    confirmInput &&
+    passInput.value !== confirmInput.value
+) {
+    this.config.showToast("Passwords do not match.", "error");
+    return;
+}
                         await this.signUp(
                             emailInput ? emailInput.value : "",
                             passInput ? passInput.value : ""
