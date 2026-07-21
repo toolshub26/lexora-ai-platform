@@ -566,7 +566,27 @@
 }
                 }, { signal });
             }
+const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
 
+if (forgotPasswordBtn) {
+    forgotPasswordBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const emailInput = document.getElementById("loginEmail");
+        const email = emailInput ? emailInput.value.trim() : "";
+
+        if (!email) {
+            this.config.showToast("Please enter your email first.", "error");
+            return;
+        }
+
+        try {
+            await this.resetPassword(email);
+        } catch (error) {
+            console.error(error);
+        }
+    }, { signal });
+}
             const signupForm = document.getElementById("signupForm");
             if (signupForm) {
                 signupForm.addEventListener("submit", async (e) => {
