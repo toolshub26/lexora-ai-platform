@@ -6,12 +6,16 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase
 import {
   getAuth,
   GoogleAuthProvider,
-signInWithPopup,
+  signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  inMemoryPersistence
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
@@ -63,6 +67,10 @@ window.signOut = signOut;
 window.onAuthStateChanged = onAuthStateChanged;
 window.GoogleAuthProvider = GoogleAuthProvider;
 window.signInWithPopup = signInWithPopup;
+window.setPersistence = setPersistence;
+window.browserLocalPersistence = browserLocalPersistence;
+window.browserSessionPersistence = browserSessionPersistence;
+window.inMemoryPersistence = inMemoryPersistence;
 console.log("Firebase Initialized");
 
 export {
