@@ -543,8 +543,10 @@
                         }
                         this.config.showToast("Login Successful", "success");
                     } catch (error) {
-                        this.config.showToast(error.message, "error");
-                    }
+    console.error(error);
+    alert(error.code || error.message || JSON.stringify(error));
+    this.config.showToast(error.message, "error");
+}
                 }, { signal });
             }
 
@@ -558,8 +560,10 @@
                         }
                         this.config.showToast("Login Successful", "success");
                     } catch (error) {
-                        this.config.showToast(error.message, "error");
-                    }
+    console.error(error);
+    alert(error.code || error.message || JSON.stringify(error));
+    this.config.showToast(error.message, "error");
+}
                 }, { signal });
             }
 
@@ -579,8 +583,10 @@
                         }
                         this.config.showToast("Account Created", "success");
                     } catch (error) {
-                        this.config.showToast(error.message, "error");
-                    }
+    console.error(error);
+    alert(error.code || error.message || JSON.stringify(error));
+    this.config.showToast(error.message, "error");
+}
                 }, { signal });
             }
         }
