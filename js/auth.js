@@ -108,7 +108,8 @@ async sendEmailVerification(user) {
         maxLoginAttempts: 5,
 loginCooldownMs: 30000,
 showCooldownCountdown: true,
-        
+        sessionTimeoutMs: 30 * 60 * 1000, // 30 minutes
+enableAutoLogout: true,
         persistence: "local", 
         googleScopes: [],
         googleCustomParams: { prompt: "select_account" },
@@ -155,7 +156,8 @@ showCooldownCountdown: true,
             
             this.currentUser = null;
             this.isInitialized = false;
-            
+            this.sessionTimer = null;
+this.lastActivity = Date.now();
             // Firebase reference object matching legacy v20 expectation
             this.firebase = {
                 auth: null,
@@ -194,6 +196,38 @@ showCooldownCountdown: true,
                 }
             }
         }
+        _resetSessionTimer() {
+    if (!this.config.enableAutoLogout) return;
+
+    if (this.sessionTimer) {
+        clearTimeout(this.sessionTimer);
+    }
+
+    this.lastActivity = Date.now();
+
+    this.sessionTimer = setTimeout(async () => {
+        if (!this.currentUser) return;
+
+        this.config.showToast(
+            "Session expired due to inactivity.",
+            "warning"
+        );
+
+        await this.logout();
+    }, this.config.sessionTimeoutMs);
+}
+
+_clearSessionTimer() {
+    if (this.sessionTimer) {
+        clearTimeout(this.sessionTimer);
+        this.sessionTimer = null;
+    }
+}
+
+_trackActivity() {
+    this.lastActivity = Date.now();
+    this._resetSessionTimer();
+}
 
         // ========================================================
         // LIFECYCLE TRACKING & REQUIRE ASSERTIONS
