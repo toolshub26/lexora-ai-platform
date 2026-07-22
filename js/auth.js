@@ -730,6 +730,18 @@ if (passInput && strengthBox && !passInput.dataset.strengthBound) {
             this._auditLog(AuditEvents.LOGIN_ATTEMPT, { email: email });
             
             try {
+                const now = Date.now();
+
+if (this.loginBlockedUntil && now < this.loginBlockedUntil) {
+    const seconds = Math.ceil((this.loginBlockedUntil - now) / 1000);
+
+    this.config.showToast(
+        `Too many failed attempts. Try again in ${seconds} seconds.`,
+        "error"
+    );
+
+    return null;
+}
                 const validation = this.validateCredentials(email, password);
                 if (!validation.valid) {
                     this.config.showToast(validation.message, "error");
@@ -749,6 +761,8 @@ if (rememberMe) {
 }
                 const userCredential = await FirebaseSdkAdapter.signIn(authInstance, validation.email, validation.password);
                 this.currentUser = userCredential.user;
+                this.failedLoginAttempts = 0;
+this.loginBlockedUntil = null;
                 if (!userCredential.user.emailVerified) {
     await FirebaseSdkAdapter.sendEmailVerification(userCredential.user);
 
@@ -772,6 +786,14 @@ if (rememberMe) {
                 return userCredential;
             } catch (error) {
                 console.error("Login error:", error.message);
+                this.failedLoginAttempts = (this.failedLoginAttempts || 0) + 1;
+
+if (this.failedLoginAttempts >= this.config.maxLoginAttempts) {
+    this.loginBlockedUntil =
+        Date.now() + this.config.loginCooldownMs;
+
+    this.failedLoginAttempts = 0;
+}
                 this.config.showToast(this._getFriendlyErrorMessage(error), "error");
                 this._auditLog(AuditEvents.LOGIN_FAILURE, { code: error.code, message: error.message });
                 throw error;
