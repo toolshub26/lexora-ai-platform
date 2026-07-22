@@ -1020,7 +1020,60 @@ if (confirmPassword) confirmPassword.value = "";
                 this._releaseLock('verify');
             }
         }
+        requireAuth(callback) {
+    this._requireInit();
 
+    if (this.currentUser) {
+        if (typeof callback === "function") {
+            callback(this.currentUser);
+        }
+        return true;
+    }
+
+    if (
+        window.Lexora &&
+        typeof window.Lexora.openModal === "function"
+    ) {
+        window.Lexora.openModal("loginModal");
+    }
+
+    this.config.showToast(
+        "Please login to continue.",
+        "warning"
+    );
+
+    return false;
+}
+guardRoute(routeName, callback) {
+    return this.requireAuth(() => {
+        this.config.logger.info(
+            `Protected route accessed: ${routeName}`
+        );
+
+        if (typeof callback === "function") {
+            callback(this.currentUser);
+        }
+    });
+}
+        guardRole(requiredRole, callback) {
+    return this.requireAuth((user) => {
+        const role = user?.role || "user";
+
+        if (role !== requiredRole) {
+            this.config.showToast(
+                "You don't have permission to access this page.",
+                "error"
+            );
+            return false;
+        }
+
+        if (typeof callback === "function") {
+            callback(user);
+        }
+
+        return true;
+    });
+}
         onAuthStateChanged(callback) {
             try {
                 this._requireInit();
