@@ -104,6 +104,11 @@ async sendEmailVerification(user) {
         requireLowercase: true,
         requireNumber: true,
         debug: false,
+        
+        maxLoginAttempts: 5,
+loginCooldownMs: 30000,
+showCooldownCountdown: true,
+        
         persistence: "local", 
         googleScopes: [],
         googleCustomParams: { prompt: "select_account" },
