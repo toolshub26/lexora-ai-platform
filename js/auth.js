@@ -624,6 +624,9 @@ if (forgotPasswordBtn) {
             if (signupForm) {
                 signupForm.addEventListener("submit", async (e) => {
                     e.preventDefault();
+                    const submitBtn = signupForm.querySelector('button[type="submit"]');
+submitBtn.disabled = true;
+submitBtn.textContent = "Creating Account...";
                     try {
                         const emailInput = document.getElementById("signupEmail");
                         const passInput = document.getElementById("signupPassword");
@@ -686,6 +689,10 @@ if (passInput && strengthBox) {
     console.error(error);
     
     this.config.showToast(this._getFriendlyErrorMessage(error), "error");
+}
+                    finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Create Account";
 }
                 }, { signal });
             }
