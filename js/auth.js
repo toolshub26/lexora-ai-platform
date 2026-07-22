@@ -526,7 +526,23 @@
                 state.abortController = new AbortController();
             }
             const signal = state && state.abortController ? state.abortController.signal : undefined;
+            const passwordToggles = document.querySelectorAll(".password-toggle");
 
+passwordToggles.forEach(toggle => {
+    toggle.addEventListener("click", () => {
+        const input = document.getElementById(toggle.dataset.target);
+
+        if (!input) return;
+
+        if (input.type === "password") {
+    input.type = "text";
+    toggle.textContent = "👁";
+} else {
+    input.type = "password";
+    toggle.textContent = "🙈";
+}
+    });
+});
             const loginForm = document.getElementById("loginForm");
             if (loginForm) {
                 loginForm.addEventListener("submit", async (e) => {
