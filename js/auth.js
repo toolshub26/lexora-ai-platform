@@ -586,6 +586,8 @@ submitBtn.textContent = "Signing in...";
             const googleLoginBtn = document.getElementById("googleLoginBtn");
             if (googleLoginBtn) {
                 googleLoginBtn.addEventListener("click", async () => {
+                    googleLoginBtn.disabled = true;
+googleLoginBtn.textContent = "Signing in...";
                     try {
                         await this.googleLogin();
                         if (window.Lexora && typeof window.Lexora.closeModal === 'function') {
@@ -596,6 +598,11 @@ submitBtn.textContent = "Signing in...";
     console.error(error);
     
     this.config.showToast(this._getFriendlyErrorMessage(error), "error");
+                      
+}
+                    finally {
+    googleLoginBtn.disabled = false;
+    googleLoginBtn.textContent = "Continue with Google";
 }
                 }, { signal });
             }
