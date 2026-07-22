@@ -756,6 +756,15 @@ if (passInput && strengthBox && !passInput.dataset.strengthBound) {
 }
                 }, { signal });
             }
+            const activityEvents = ["click", "keydown", "mousemove", "touchstart"];
+
+activityEvents.forEach(eventName => {
+    document.addEventListener(eventName, () => {
+        if (this.currentUser) {
+            this._trackActivity();
+        }
+    }, { signal });
+});
         }
 
         async login(email, password) {
@@ -797,6 +806,7 @@ if (rememberMe) {
                 this.currentUser = userCredential.user;
                 this.failedLoginAttempts = 0;
 this.loginBlockedUntil = null;
+                this._resetSessionTimer();
                 if (!userCredential.user.emailVerified) {
     await FirebaseSdkAdapter.sendEmailVerification(userCredential.user);
 
@@ -808,7 +818,7 @@ this.loginBlockedUntil = null;
     await FirebaseSdkAdapter.signOut(authInstance);
 
     this.currentUser = null;
-
+this._clearSessionTimer();
     return null;
 }
                 this.config.showToast("Login successful", "success");
@@ -852,6 +862,7 @@ if (this.failedLoginAttempts >= this.config.maxLoginAttempts) {
                 const authInstance = FirebaseSdkAdapter.getAuthInstance();
                 const userCredential = await FirebaseSdkAdapter.signUp(authInstance, validation.email, validation.password);
                 this.currentUser = userCredential.user;
+                this._resetSessionTimer();
                 await FirebaseSdkAdapter.sendEmailVerification(userCredential.user);
                 console.log("Account Created");
                 this.config.showToast("Account Created", "success");
@@ -878,6 +889,8 @@ if (this.failedLoginAttempts >= this.config.maxLoginAttempts) {
                 const authInstance = FirebaseSdkAdapter.getAuthInstance();
                 await FirebaseSdkAdapter.signOut(authInstance);
                 this.currentUser = null;
+                this._clearSessionTimer();
+                this.lastActivity = 0;
                 const loginPassword = document.getElementById("loginPassword");
 const signupPassword = document.getElementById("signupPassword");
 const confirmPassword = document.getElementById("confirmPassword");
@@ -1026,6 +1039,12 @@ if (confirmPassword) confirmPassword.value = "";
 
             const handleUserChange = (user) => {
                 this.currentUser = user;
+                if (user) {
+    this._resetSessionTimer();
+} else {
+    this._clearSessionTimer();
+    this.lastActivity = 0;
+}
                 if (user) {
     if (window.Lexora && Lexora.session && typeof Lexora.session.save === "function") {
         Lexora.session.save({
