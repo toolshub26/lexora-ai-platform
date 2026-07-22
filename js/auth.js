@@ -690,8 +690,7 @@ submitBtn.textContent = "Creating Account...";
                         const passInput = document.getElementById("signupPassword");
                         const confirmInput = document.getElementById("confirmPassword");
                         const strengthBox = document.getElementById("passwordStrength");
-
-if (passInput && strengthBox && !passInput.dataset.strengthBound) {
+                        if (passInput && strengthBox && !passInput.dataset.strengthBound) {
     passInput.dataset.strengthBound = "true";
 
     passInput.addEventListener("input", () => {
@@ -729,6 +728,8 @@ if (passInput && strengthBox && !passInput.dataset.strengthBound) {
         `;
     });
 }
+
+
                         if (
     passInput &&
     confirmInput &&
@@ -737,7 +738,7 @@ if (passInput && strengthBox && !passInput.dataset.strengthBound) {
     this.config.showToast("Passwords do not match.", "error");
     return;
 }
-                        await this.signUp(
+}                     await this.signUp(
                             emailInput ? emailInput.value : "",
                             passInput ? passInput.value : ""
                         );
