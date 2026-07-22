@@ -709,7 +709,20 @@ if (rememberMe) {
 }
                 const userCredential = await FirebaseSdkAdapter.signIn(authInstance, validation.email, validation.password);
                 this.currentUser = userCredential.user;
-                
+                if (!userCredential.user.emailVerified) {
+    await FirebaseSdkAdapter.sendEmailVerification(userCredential.user);
+
+    this.config.showToast(
+        "Please verify your email. A new verification email has been sent.",
+        "warning"
+    );
+
+    await FirebaseSdkAdapter.signOut(authInstance);
+
+    this.currentUser = null;
+
+    return null;
+}
                 this.config.showToast("Login successful", "success");
                 this._auditLog(AuditEvents.LOGIN_SUCCESS, { uid: userCredential.user ? userCredential.user.uid : "unknown" });
                 
