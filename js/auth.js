@@ -621,10 +621,22 @@ if (forgotPasswordBtn) {
         }
 
         try {
+            const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
+
+if (forgotPasswordBtn) {
+    forgotPasswordBtn.disabled = true;
+    forgotPasswordBtn.textContent = "Sending...";
+}
             await this.resetPassword(email);
         } catch (error) {
             console.error(error);
         }
+        finally {
+    if (forgotPasswordBtn) {
+        forgotPasswordBtn.disabled = false;
+        forgotPasswordBtn.textContent = "Forgot Password?";
+    }
+}
     }, { signal });
 }
             const signupForm = document.getElementById("signupForm");
