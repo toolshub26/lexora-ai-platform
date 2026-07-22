@@ -557,6 +557,9 @@ passwordToggles.forEach(toggle => {
             if (loginForm) {
                 loginForm.addEventListener("submit", async (e) => {
                     e.preventDefault();
+                    const submitBtn = loginForm.querySelector('button[type="submit"]');
+submitBtn.disabled = true;
+submitBtn.textContent = "Signing in...";
                     try {
                         const emailInput = document.getElementById("loginEmail");
                         const passInput = document.getElementById("loginPassword");
@@ -572,6 +575,10 @@ passwordToggles.forEach(toggle => {
     console.error(error);
     
     this.config.showToast(this._getFriendlyErrorMessage(error), "error");
+}
+                    finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Login";
 }
                 }, { signal });
             }
