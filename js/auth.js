@@ -640,7 +640,9 @@ submitBtn.textContent = "Creating Account...";
                         const confirmInput = document.getElementById("confirmPassword");
                         const strengthBox = document.getElementById("passwordStrength");
 
-if (passInput && strengthBox) {
+if (passInput && strengthBox && !passInput.dataset.strengthBound) {
+    passInput.dataset.strengthBound = "true";
+
     passInput.addEventListener("input", () => {
         const password = passInput.value;
 
