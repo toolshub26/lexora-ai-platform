@@ -87,7 +87,17 @@
             throw new Error("Firebase password reset system mapping unresolved.");
         }
     };
+async sendEmailVerification(user) {
+    if (typeof window !== "undefined" && typeof window.sendEmailVerification === "function") {
+        return window.sendEmailVerification(user);
+    }
 
+    if (user && typeof user.sendEmailVerification === "function") {
+        return user.sendEmailVerification();
+    }
+
+    throw new Error("Firebase email verification mapping unresolved.");
+},
     const DEFAULT_CONFIG = {
         minPasswordLength: 8,
         requireUppercase: true,
@@ -699,6 +709,7 @@ if (rememberMe) {
 }
                 const userCredential = await FirebaseSdkAdapter.signIn(authInstance, validation.email, validation.password);
                 this.currentUser = userCredential.user;
+                
                 this.config.showToast("Login successful", "success");
                 this._auditLog(AuditEvents.LOGIN_SUCCESS, { uid: userCredential.user ? userCredential.user.uid : "unknown" });
                 
@@ -732,6 +743,7 @@ if (rememberMe) {
                 const authInstance = FirebaseSdkAdapter.getAuthInstance();
                 const userCredential = await FirebaseSdkAdapter.signUp(authInstance, validation.email, validation.password);
                 this.currentUser = userCredential.user;
+                await FirebaseSdkAdapter.sendEmailVerification(userCredential.user);
                 console.log("Account Created");
                 this.config.showToast("Account Created", "success");
                 this._auditLog(AuditEvents.SIGNUP_SUCCESS, { uid: userCredential.user ? userCredential.user.uid : "unknown" });
