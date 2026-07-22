@@ -817,6 +817,13 @@ if (rememberMe) {
                 const authInstance = FirebaseSdkAdapter.getAuthInstance();
                 await FirebaseSdkAdapter.signOut(authInstance);
                 this.currentUser = null;
+                const loginPassword = document.getElementById("loginPassword");
+const signupPassword = document.getElementById("signupPassword");
+const confirmPassword = document.getElementById("confirmPassword");
+
+if (loginPassword) loginPassword.value = "";
+if (signupPassword) signupPassword.value = "";
+if (confirmPassword) confirmPassword.value = "";
                 if (window.Lexora && window.Lexora.session) {
     window.Lexora.session.clear();
     }
