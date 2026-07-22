@@ -10,6 +10,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+sendEmailVerification,
   signOut,
   onAuthStateChanged,
   setPersistence,
@@ -63,6 +64,7 @@ window.onSnapshot = onSnapshot;
 window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
 window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 window.sendPasswordResetEmail = sendPasswordResetEmail;
+window.sendEmailVerification = sendEmailVerification;
 window.signOut = signOut;
 window.onAuthStateChanged = onAuthStateChanged;
 window.GoogleAuthProvider = GoogleAuthProvider;
