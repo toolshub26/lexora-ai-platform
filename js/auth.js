@@ -85,8 +85,8 @@
             if (typeof window !== 'undefined' && typeof window.sendPasswordResetEmail === 'function') return window.sendPasswordResetEmail(auth, email);
             if (auth && typeof auth.sendPasswordResetEmail === 'function') return auth.sendPasswordResetEmail(email);
             throw new Error("Firebase password reset system mapping unresolved.");
-        }
-    };
+            },
+    
 async sendEmailVerification(user) {
     if (typeof window !== "undefined" && typeof window.sendEmailVerification === "function") {
         return window.sendEmailVerification(user);
@@ -98,6 +98,8 @@ async sendEmailVerification(user) {
 
     throw new Error("Firebase email verification mapping unresolved.");
 },
+        
+};      
     const DEFAULT_CONFIG = {
         minPasswordLength: 8,
         requireUppercase: true,
