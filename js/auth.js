@@ -677,9 +677,9 @@ if (forgotPasswordBtn) {
         forgotPasswordBtn.disabled = false;
         forgotPasswordBtn.textContent = "Forgot Password?";
     }
-
-    }, { signal });
 }
+
+}, { signal });
             const signupForm = document.getElementById("signupForm");
             if (signupForm) {
                 signupForm.addEventListener("submit", async (e) => {
