@@ -33,7 +33,12 @@ exports.askAI = functions.https.onCall(async (data, context) => {
       "Prompt is required."
     );
   }
-
+if (prompt.length > 5000) {
+  throw new functions.https.HttpsError(
+    "invalid-argument",
+    "Prompt exceeds the maximum length of 5000 characters."
+  );
+}
   await db.collection("ai_logs").add({
     uid,
     prompt,
