@@ -4,8 +4,11 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
-const db = admin.firestore();
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 
+const db = admin.firestore();
 function requireAuth(context) {
   if (!context.auth) {
     throw new functions.https.HttpsError(
