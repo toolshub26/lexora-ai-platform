@@ -677,7 +677,7 @@ if (forgotPasswordBtn) {
         forgotPasswordBtn.disabled = false;
         forgotPasswordBtn.textContent = "Forgot Password?";
     }
-}
+
     }, { signal });
 }
             const signupForm = document.getElementById("signupForm");
@@ -740,7 +740,7 @@ submitBtn.textContent = "Creating Account...";
     this.config.showToast("Passwords do not match.", "error");
     return;
 }
-}                     await this.signUp(
+                     await this.signUp(
                             emailInput ? emailInput.value : "",
                             passInput ? passInput.value : ""
                         );
