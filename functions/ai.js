@@ -39,6 +39,20 @@ if (prompt.length > 5000) {
     "Prompt exceeds the maximum length of 5000 characters."
   );
 }
+  const oneMinuteAgo = Date.now() - 60 * 1000;
+
+const recentRequests = await db
+  .collection("ai_logs")
+  .where("uid", "==", uid)
+  .where("createdAt", ">=", new Date(oneMinuteAgo))
+  .get();
+
+if (recentRequests.size >= 10) {
+  throw new functions.https.HttpsError(
+    "resource-exhausted",
+    "Too many AI requests. Please wait a minute and try again."
+  );
+}
   await db.collection("ai_logs").add({
     uid,
     prompt,
