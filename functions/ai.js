@@ -2,13 +2,15 @@
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-
+const { GoogleGenAI } = require("@google/genai");
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
 const db = admin.firestore();
-
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 const MAX_PROMPT_LENGTH = 5000;
 const MAX_REQUESTS_PER_MINUTE = 10;
 
@@ -68,14 +70,19 @@ exports.askAI = functions.https.onCall(async (data, context) => {
     createdAt: admin.firestore.FieldValue.serverTimestamp()
   });
 
-  return {
-    success: true,
-    provider,
-    model,
-    message: "AI request received.",
-    response: "AI provider integration will generate the final response.",
-    timestamp: Date.now()
-  };
+  const result = await ai.models.generateContent({
+  model,
+  contents: prompt,
+});
+
+return {
+  success: true,
+  provider: "google",
+  model: "gemini-2.5-flash",
+  message: "AI response generated successfully.",
+  response: result.text,
+  timestamp: Date.now(),
+};
 });
 
 exports.getAIUsage = functions.https.onCall(async (data, context) => {
