@@ -3,7 +3,9 @@
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 const db = admin.firestore();
 
 function requireAuth(context) {
@@ -66,9 +68,9 @@ exports.getNotifications = functions.https.onCall(async (data, context) => {
 });
 
 exports.markNotificationRead = functions.https.onCall(async (data, context) => {
-  requireAuth(context);
+  const uid = requireAuth(context);
 
-  const id = String(data.id || "");
+const id = String(data.id || "");
 
   if (!id) {
     throw new functions.https.HttpsError(
@@ -76,8 +78,23 @@ exports.markNotificationRead = functions.https.onCall(async (data, context) => {
       "Notification ID is required."
     );
   }
+const docRef = db.collection("notifications").doc(id);
+const doc = await docRef.get();
 
-  await db.collection("notifications").doc(id).update({
+if (!doc.exists) {
+  throw new functions.https.HttpsError(
+    "not-found",
+    "Notification not found."
+  );
+}
+
+if (doc.data().uid !== uid) {
+  throw new functions.https.HttpsError(
+    "permission-denied",
+    "Unauthorized."
+  );
+}
+  await docRef.update({
     read: true,
     readAt: admin.firestore.FieldValue.serverTimestamp()
   });
