@@ -16,7 +16,16 @@ const razorpay = new Razorpay({
     key_id: functions.config().razorpay.key_id,
     key_secret: functions.config().razorpay.key_secret
 });
-
+const {
+  askAI,
+  getAIUsage,
+  clearAIHistory
+} = require("./ai");
+const {
+  sendNotification,
+  getNotifications,
+  markNotificationRead
+} = require("./notifications");
 exports.health = functions.https.onRequest((req, res) => {
     res.status(200).json({
         success: true,
@@ -248,3 +257,11 @@ if (
   updatedAt: sub.updatedAt || null
 };
 });
+
+exports.askAI = askAI;
+exports.getAIUsage = getAIUsage;
+exports.clearAIHistory = clearAIHistory;
+
+exports.sendNotification = sendNotification;
+exports.getNotifications = getNotifications;
+exports.markNotificationRead = markNotificationRead;
