@@ -1,4 +1,3 @@
-
 "use strict";
 
 const functions = require("firebase-functions");
@@ -9,6 +8,10 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
+
+const MAX_PROMPT_LENGTH = 5000;
+const MAX_REQUESTS_PER_MINUTE = 10;
+
 function requireAuth(context) {
   if (!context.auth) {
     throw new functions.https.HttpsError(
@@ -33,26 +36,29 @@ exports.askAI = functions.https.onCall(async (data, context) => {
       "Prompt is required."
     );
   }
-if (prompt.length > 5000) {
-  throw new functions.https.HttpsError(
-    "invalid-argument",
-    "Prompt exceeds the maximum length of 5000 characters."
-  );
-}
+
+  if (prompt.length > MAX_PROMPT_LENGTH) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      `Prompt exceeds the maximum length of ${MAX_PROMPT_LENGTH} characters.`
+    );
+  }
+
   const oneMinuteAgo = Date.now() - 60 * 1000;
 
-const recentRequests = await db
-  .collection("ai_logs")
-  .where("uid", "==", uid)
-  .where("createdAt", ">=", new Date(oneMinuteAgo))
-  .get();
+  const recentRequests = await db
+    .collection("ai_logs")
+    .where("uid", "==", uid)
+    .where("createdAt", ">=", new Date(oneMinuteAgo))
+    .get();
 
-if (recentRequests.size >= 10) {
-  throw new functions.https.HttpsError(
-    "resource-exhausted",
-    "Too many AI requests. Please wait a minute and try again."
-  );
-}
+  if (recentRequests.size >= MAX_REQUESTS_PER_MINUTE) {
+    throw new functions.https.HttpsError(
+      "resource-exhausted",
+      "Too many AI requests. Please wait a minute and try again."
+    );
+  }
+
   await db.collection("ai_logs").add({
     uid,
     prompt,
@@ -67,8 +73,7 @@ if (recentRequests.size >= 10) {
     provider,
     model,
     message: "AI request received.",
-    response:
-      "AI provider integration will generate the final response.",
+    response: "AI provider integration will generate the final response.",
     timestamp: Date.now()
   };
 });
