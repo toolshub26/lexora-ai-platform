@@ -3,16 +3,20 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const { GoogleGenAI } = require("@google/genai");
+
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
 const db = admin.firestore();
+
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
+
 const MAX_PROMPT_LENGTH = 5000;
 const MAX_REQUESTS_PER_MINUTE = 10;
+const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
 
 function requireAuth(context) {
   if (!context.auth) {
@@ -30,7 +34,11 @@ exports.askAI = functions.https.onCall(async (data, context) => {
 
   const prompt = String(data.prompt || "").trim();
   const provider = String(data.provider || "openai");
-  const model = String(data.model || "gpt-4o");
+  const requestedModel = String(data.model || "").trim();
+
+  const model = requestedModel.startsWith("gemini-")
+    ? requestedModel
+    : DEFAULT_GEMINI_MODEL;
 
   if (!prompt) {
     throw new functions.https.HttpsError(
@@ -71,18 +79,18 @@ exports.askAI = functions.https.onCall(async (data, context) => {
   });
 
   const result = await ai.models.generateContent({
-  model,
-  contents: prompt,
-});
+    model,
+    contents: prompt
+  });
 
-return {
-  success: true,
-  provider: "google",
-  model: "gemini-2.5-flash",
-  message: "AI response generated successfully.",
-  response: result.text,
-  timestamp: Date.now(),
-};
+  return {
+    success: true,
+    provider: "google",
+    model,
+    message: "AI response generated successfully.",
+    response: result.text,
+    timestamp: Date.now()
+  };
 });
 
 exports.getAIUsage = functions.https.onCall(async (data, context) => {
