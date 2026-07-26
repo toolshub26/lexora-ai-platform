@@ -8,13 +8,16 @@ export default function LogoutPage() {
   const router = useRouter();
 
   useEffect(() => {
-    async function signOut() {
+  async function signOut() {
+    try {
       await logout();
+    } finally {
       router.replace("/login");
     }
+  }
 
-    signOut();
-  }, [router]);
+  signOut();
+}, [router]);
 
   return <p>Signing out...</p>;
 }
