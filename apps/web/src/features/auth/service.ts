@@ -73,7 +73,7 @@ export class AuthService {
       const credential =
         await signInWithEmailAndPassword(
           auth,
-          data.email.trim(),
+          data.email.trim().toLowerCase(),
           data.password,
         );
 
@@ -136,6 +136,12 @@ export class AuthService {
           message: "Password is required.",
         };
       }
+      if (data.password.length < 8) {
+    return {
+        success: false,
+        message: "Password must be at least 8 characters.",
+    };
+}
 
       if (data.password !== data.confirmPassword) {
         return {
@@ -147,7 +153,7 @@ export class AuthService {
       const credential =
         await createUserWithEmailAndPassword(
           auth,
-          data.email.trim(),
+          data.email.trim().toLowerCase(),
           data.password,
         );
 
