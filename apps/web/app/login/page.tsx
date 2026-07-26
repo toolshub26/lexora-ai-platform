@@ -9,7 +9,6 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -21,19 +20,23 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    const result = await login({
-      email,
-      password,
-    });
+    try {
+      const result = await login({
+        email,
+        password,
+      });
 
-    setLoading(false);
+      if (!result.success) {
+        setError(result.message);
+        return;
+      }
 
-    if (!result.success) {
-      setError(result.message);
-      return;
+      router.replace("/dashboard");
+    } catch {
+      setError("Unable to sign in. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    router.push("/dashboard");
   }
 
   return (
@@ -63,6 +66,7 @@ export default function LoginPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <input
@@ -70,6 +74,7 @@ export default function LoginPage() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
 
         {error && (
