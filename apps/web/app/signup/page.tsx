@@ -24,21 +24,27 @@ export default function SignupPage() {
     setLoading(true);
     setError("");
 
-    const result = await register({
-      name,
-      email,
-      password,
-      confirmPassword,
-    });
+    try {
+      const result = await register({
+        name,
+        email,
+        password,
+        confirmPassword,
+      });
 
-    setLoading(false);
+      if (!result.success) {
+        setError(result.message);
+        return;
+      }
 
-    if (!result.success) {
-      setError(result.message);
-      return;
+      router.replace("/login");
+    } catch {
+      setError(
+        "Unable to create your account. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
-
-    router.push("/login");
   }
 
   return (
@@ -68,6 +74,7 @@ export default function SignupPage() {
           placeholder="Full Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
         />
 
         <input
@@ -75,6 +82,7 @@ export default function SignupPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <input
@@ -82,17 +90,26 @@ export default function SignupPage() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
 
         <input
           type="password"
           placeholder="Confirm Password"
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e) =>
+            setConfirmPassword(e.target.value)
+          }
+          required
         />
 
         {error && (
-          <p style={{ color: "red" }}>
+          <p
+            style={{
+              color: "red",
+              margin: 0,
+            }}
+          >
             {error}
           </p>
         )}
@@ -101,10 +118,16 @@ export default function SignupPage() {
           type="submit"
           disabled={loading}
         >
-          {loading ? "Creating Account..." : "Create Account"}
+          {loading
+            ? "Creating Account..."
+            : "Create Account"}
         </button>
 
-        <p style={{ textAlign: "center" }}>
+        <p
+          style={{
+            textAlign: "center",
+          }}
+        >
           Already have an account?{" "}
           <Link href="/login">
             Login
