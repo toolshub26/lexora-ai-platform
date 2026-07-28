@@ -4,7 +4,7 @@
   "private": true,
   "description": "Lexora AI Platform - Enterprise Legal AI Ecosystem",
   "license": "UNLICENSED",
-  "packageManager": "pnpm@10.14.0"
+  "packageManager": "pnpm@10.14.0",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
