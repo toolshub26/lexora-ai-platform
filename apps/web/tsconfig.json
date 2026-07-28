@@ -19,11 +19,9 @@
   "@/*": ["src/*"]
 },
 "plugins": [
-    "plugins": [
       {
         "name": "next"
-      }
-    ]
+    }
   },
   "include": [
     "next-env.d.ts",
