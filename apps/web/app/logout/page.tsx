@@ -2,8 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { logout } from "@/src/features/auth";
-
+import { logout } from "@/features/auth";
 export default function LogoutPage() {
   const router = useRouter();
 
