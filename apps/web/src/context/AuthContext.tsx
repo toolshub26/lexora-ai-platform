@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from "react";
 
-import { authProvider } from "@/src/features/auth/provider";
+import { AuthProvider } from "@/context/AuthContext";
 
 type AuthContextType = {
   user: unknown;
