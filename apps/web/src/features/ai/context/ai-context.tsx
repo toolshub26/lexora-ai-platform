@@ -8,11 +8,11 @@ import React, {
   ReactNode,
 } from "react";
 
-import type { AIProvider } from "../types/provider";
+import type { AIProviderType } from "../types/provider";
 
 export interface AIContextValue {
-  provider: AIProvider;
-  setProvider: (provider: AIProvider) => void;
+  provider: AIProviderType;
+  setProvider: (provider: AIProviderType) => void;
 
   model: string;
   setModel: (model: string) => void;
@@ -31,7 +31,7 @@ interface Props {
 }
 
 export function AIProvider({ children }: Props) {
-  const [provider, setProvider] = useState<AIProvider>("openai");
+  const [provider, setProvider] = useState<AIProviderType>("openai");
   const [model, setModel] = useState("");
   const [loading, setLoading] = useState(false);
   const [streaming, setStreaming] = useState(false);
