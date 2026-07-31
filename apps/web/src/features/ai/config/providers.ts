@@ -1,7 +1,7 @@
-import type { AIProvider } from "../types/provider";
+import type { AIProviderType } from "../types/provider";
 
 export interface ProviderConfig {
-  id: AIProvider;
+  id: AIProviderType;
   name: string;
   enabled: boolean;
   supportsStreaming: boolean;
