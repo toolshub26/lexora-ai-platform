@@ -9,7 +9,7 @@ export * from "./store";
 export * from "./utils";
 
 // Explicit exports to avoid duplicate names
-export { Chat } from "./chat/chat";
+export { Chat as ChatUI } from "./chat/chat";
 export { ChatInput } from "./chat/chat-input";
 export { ChatMessage as ChatComponent } from "./chat/chat-message";
 
