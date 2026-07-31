@@ -1,9 +1,9 @@
-import type { AIProvider } from "../types/provider";
+import type { AIProviderType } from "../types/provider";
 
 export interface ModelConfig {
   id: string;
   name: string;
-  provider: AIProvider;
+  provider: AIProviderType;
   enabled: boolean;
   contextWindow: number;
   supportsVision: boolean;
