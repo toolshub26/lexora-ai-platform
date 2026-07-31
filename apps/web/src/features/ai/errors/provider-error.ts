@@ -10,7 +10,6 @@ export class ProviderError extends AIError {
   ) {
     super(message, options);
 
-    this.name = "ProviderError";
     this.provider = provider;
 
     Object.setPrototypeOf(this, new.target.prototype);
