@@ -1,15 +1,19 @@
 "use client";
 
 import { useCallback } from "react";
-
 import { useAI } from "../context";
-import type { AIProvider } from "../types/provider";
+import type { AIProviderType } from "../types/provider";
 
-export function useProvider() {
+export interface UseProviderResult {
+  provider: AIProviderType;
+  setProvider: (provider: AIProviderType) => void;
+}
+
+export function useProvider(): UseProviderResult {
   const { provider, setProvider } = useAI();
 
   const changeProvider = useCallback(
-    (nextProvider: AIProvider) => {
+    (nextProvider: AIProviderType) => {
       setProvider(nextProvider);
     },
     [setProvider]
@@ -20,3 +24,5 @@ export function useProvider() {
     setProvider: changeProvider,
   };
 }
+
+export default useProvider;
