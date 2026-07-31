@@ -1,4 +1,4 @@
-export type AIProvider =
+export type AIProviderType =
   | "openai"
   | "gemini"
   | "claude"
