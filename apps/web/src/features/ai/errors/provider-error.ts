@@ -1,8 +1,6 @@
 import { AIError } from "./ai-error";
 
 export class ProviderError extends AIError {
-  override readonly name = "ProviderError";
-
   readonly provider: string;
 
   constructor(
@@ -12,6 +10,7 @@ export class ProviderError extends AIError {
   ) {
     super(message, options);
 
+    this.name = "ProviderError";
     this.provider = provider;
 
     Object.setPrototypeOf(this, new.target.prototype);
