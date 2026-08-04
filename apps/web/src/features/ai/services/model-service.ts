@@ -1,18 +1,24 @@
-import { AIProvider } from "../types/provider";
+import type { AIProviderType } from "../types/provider";
 
 export class ModelService {
-  private provider: AIProvider = "openai";
+  private provider: AIProviderType = "openai";
 
-  setProvider(provider: AIProvider) {
+  setProvider(provider: AIProviderType) {
     this.provider = provider;
   }
 
-  getProvider(): AIProvider {
+  getProvider(): AIProviderType {
     return this.provider;
   }
 
-  getAvailableModels(): AIProvider[] {
-    return ["openai", "claude", "gemini", "grok", "deepseek"];
+  getAvailableModels(): AIProviderType[] {
+    return [
+      "openai",
+      "claude",
+      "gemini",
+      "grok",
+      "deepseek",
+    ];
   }
 }
 
