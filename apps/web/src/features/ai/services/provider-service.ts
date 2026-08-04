@@ -1,19 +1,19 @@
-import type { AIProvider } from "../types";
+import type { AIProviderType } from "../types/provider";
 import { modelService } from "./model-service";
 
 export class ProviderService {
-  private provider: AIProvider | null = null;
+  private provider: AIProviderType | null = null;
 
-  setProvider(provider: AIProvider) {
+  setProvider(provider: AIProviderType) {
     this.provider = provider;
     modelService.setProvider(provider);
   }
 
-  getProvider() {
+  getProvider(): AIProviderType | null {
     return this.provider;
   }
 
-  hasProvider() {
+  hasProvider(): boolean {
     return this.provider !== null;
   }
 
