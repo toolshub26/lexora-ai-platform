@@ -1,7 +1,7 @@
-import type { AIProvider } from "../types/provider";
+import type { AIProviderType } from "../types/provider";
 
 export interface AIState {
-  provider: AIProvider;
+  provider: AIProviderType;
   loading: boolean;
   model: string;
   initialized: boolean;
@@ -23,7 +23,7 @@ class AIStore {
     this.state.initialized = true;
   }
 
-  setProvider(provider: AIProvider): void {
+  setProvider(provider: AIProviderType): void {
     this.state.provider = provider;
   }
 
