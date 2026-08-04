@@ -1,10 +1,9 @@
-import type { AIProvider } from "../types";
-
+import type { AIProviderType } from "../types/provider";
 import { SUPPORTED_PROVIDERS } from "./constants";
 
 export function isSupportedProvider(
   provider: string
-): provider is AIProvider {
+): provider is AIProviderType {
   return (SUPPORTED_PROVIDERS as readonly string[]).includes(provider);
 }
 
