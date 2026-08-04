@@ -5,7 +5,7 @@ export type UserRole =
   | "admin"
   | "super-admin";
 
-export type AuthProvider =
+export type AuthProviderType =
   | "password"
   | "google"
   | "github"
@@ -24,7 +24,7 @@ export interface User {
 
   role: UserRole;
 
-  provider: AuthProvider;
+  provider: AuthProviderType;
 
   emailVerified: boolean;
 
