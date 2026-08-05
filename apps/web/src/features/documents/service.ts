@@ -19,8 +19,8 @@ import type {
   DocumentHistory,
   DocumentSearchResult,
   DocumentTemplate,
+  DocumentStatus,
 } from "./types";
-
 const DOCUMENTS = "documents";
 const TEMPLATES = "documentTemplates";
 const HISTORY = "documentHistory";
@@ -99,11 +99,17 @@ export class DocumentService {
       ),
     );
 
-    return snapshot.docs.map((d) => ({
-      id: d.id,
-      title: (d.data().title as string) ?? "",
-      matchedFields: ["title"],
-    }));
+  return snapshot.docs.map((d): DocumentSearchResult => {
+  const data = d.data();
+
+  return {
+    id: d.id,
+    title: String(data.title ?? ""),
+    type: String(data.type ?? "unknown"),
+    status: (data.status ?? "draft") as DocumentStatus,
+    matchedFields: ["title"],
+  };
+});
   }
 
   async getHistory(
