@@ -46,19 +46,36 @@ export class DocumentImportService {
     const now = new Date();
 
     const document: Document = {
-      id:
-        crypto.randomUUID?.() ??
-        `${Date.now()}-${Math.random()
-          .toString(36)
-          .substring(2, 10)}`,
-      title: file.name.replace(/\.[^/.]+$/, ""),
-      type:
-        file.name.split(".").pop()?.toLowerCase() ||
-        "unknown",
-      status: "draft",
-      createdAt: now,
-      updatedAt: now,
-    };
+  id:
+    crypto.randomUUID?.() ??
+    `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`,
+
+  title: file.name.replace(/\.[^/.]+$/, ""),
+
+  type:
+    file.name.split(".").pop()?.toLowerCase() ??
+    "unknown",
+
+  status: "draft",
+
+  content: "",
+
+  tags: [],
+
+  ownerId: "system",
+
+  metadata: {
+    version: 1,
+    language: "en",
+    country: "global",
+  },
+
+  isArchived: false,
+
+  createdAt: now,
+
+  updatedAt: now,
+};
 
     console.log("Document imported:", document);
 
