@@ -8,7 +8,8 @@ import {
   where,
   type DocumentData,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { db, firebaseApp } from "@/lib/firebase";
 import type {
   Organization,
   OrganizationContext,
@@ -56,6 +57,24 @@ function mapMembership(
 }
 
 export class OrganizationService {
+  async createOrganization(
+    name: string,
+    slug?: string,
+  ): Promise<{ success: boolean; organizationId: string; slug: string }> {
+    const functions = getFunctions(firebaseApp);
+    const callable = httpsCallable<
+      { name: string; slug?: string },
+      { success: boolean; organizationId: string; slug: string }
+    >(functions, "createOrganization");
+
+    const result = await callable({
+      name,
+      ...(slug?.trim() ? { slug: slug.trim() } : {}),
+    });
+
+    return result.data;
+  }
+
   async getOrganization(
     organizationId: string,
   ): Promise<Organization | null> {

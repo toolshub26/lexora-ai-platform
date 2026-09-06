@@ -18,6 +18,7 @@ import type {
 
 interface OrganizationContextState {
   isLoading: boolean;
+  error: string | null;
   active: OrganizationContext | null;
   organizations: OrganizationSummary[];
   setActiveOrganization: (
@@ -35,35 +36,58 @@ export function OrganizationProvider({
   children: ReactNode;
 }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [organizations, setOrganizations] = useState<
     OrganizationSummary[]
   >([]);
   const [active, setActive] =
     useState<OrganizationContext | null>(null);
 
-  const loadOrganizations = async (userId: string) => {
-    const items =
-      await organizationService.getUserOrganizations(userId);
+  const loadOrganizations = async (
+    userId: string,
+    preferredOrganizationId?: string | null,
+  ) => {
+    setError(null);
 
-    setOrganizations(items);
+    try {
+      const items =
+        await organizationService.getUserOrganizations(userId);
 
-    if (items.length === 0) {
+      setOrganizations(items);
+
+      if (items.length === 0) {
+        setActive(null);
+        return;
+      }
+
+      const current =
+        preferredOrganizationId &&
+        items.some((item) => item.id === preferredOrganizationId)
+          ? preferredOrganizationId
+          : items[0].id;
+
+      const context =
+        await organizationService.getOrganizationContext(
+          current,
+          userId,
+        );
+
+      if (!context) {
+        throw new Error(
+          "Unable to load the active organization.",
+        );
+      }
+
+      setActive(context);
+    } catch (cause) {
+      setOrganizations([]);
       setActive(null);
-      return;
-    }
-
-    const current =
-      active && items.some((item) => item.id === active.organization.id)
-        ? active.organization.id
-        : items[0].id;
-
-    const context =
-      await organizationService.getOrganizationContext(
-        current,
-        userId,
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "Unable to load organization data.",
       );
-
-    setActive(context);
+    }
   };
 
   useEffect(() => {
@@ -71,6 +95,7 @@ export function OrganizationProvider({
       auth,
       async (user) => {
         setIsLoading(true);
+        setError(null);
 
         try {
           if (!user) {
@@ -79,7 +104,7 @@ export function OrganizationProvider({
             return;
           }
 
-          await loadOrganizations(user.uid);
+          await loadOrganizations(user.uid, null);
         } finally {
           setIsLoading(false);
         }
@@ -122,18 +147,22 @@ export function OrganizationProvider({
       return;
     }
 
-    await loadOrganizations(user.uid);
+    await loadOrganizations(
+      user.uid,
+      active?.organization.id ?? null,
+    );
   };
 
   const value = useMemo(
     () => ({
       isLoading,
+      error,
       active,
       organizations,
       setActiveOrganization,
       refresh,
     }),
-    [isLoading, active, organizations],
+    [isLoading, error, active, organizations],
   );
 
   return (

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import WorkspaceShell from "@/components/workspace-shell";
+import OrganizationGuard from "@/components/organization/organization-guard";
 
 const modules = [
   ["AI Assistant", "/ai-assistant", "Ask Lexora, analyze legal information and work with AI."],
@@ -34,7 +35,8 @@ function Metric({
 
 export default function DashboardPage() {
   return (
-    <WorkspaceShell>
+    <OrganizationGuard>
+      <WorkspaceShell>
       <div className="mb-7">
         <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-indigo-400">
           Enterprise Legal Intelligence
@@ -181,6 +183,7 @@ export default function DashboardPage() {
           </Link>
         </div>
       </section>
-    </WorkspaceShell>
+      </WorkspaceShell>
+    </OrganizationGuard>
   );
 }
