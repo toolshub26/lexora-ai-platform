@@ -1,10 +1,10 @@
 export * from "./components";
 export * from "./config";
 export * from "./constants";
+export { AIProvider, useAI } from "./context";
 export * from "./context";
 export * from "./hooks";
 export * from "./lib";
-export * from "./providers";
 export * from "./services";
 export * from "./store";
 export * from "./types";

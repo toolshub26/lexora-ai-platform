@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { forgotPassword } from "@/features/auth";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(
@@ -14,15 +16,24 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
 
     setLoading(true);
+    setMessage("");
+    setError("");
 
-    // TODO: Connect forgot password service
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      await forgotPassword(email);
 
-    setMessage(
-      "If an account exists, a password reset email has been sent.",
-    );
-
-    setLoading(false);
+      setMessage(
+        "If an account exists, a password reset email has been sent.",
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unable to send password reset email.",
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -52,19 +63,26 @@ export default function ForgotPasswordPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <button
           type="submit"
           disabled={loading}
         >
-          {loading
-            ? "Sending..."
-            : "Send Reset Link"}
+          {loading ? "Sending..." : "Send Reset Link"}
         </button>
 
         {message && (
-          <p>{message}</p>
+          <p style={{ color: "green" }}>
+            {message}
+          </p>
+        )}
+
+        {error && (
+          <p style={{ color: "red" }}>
+            {error}
+          </p>
         )}
 
         <p style={{ textAlign: "center" }}>

@@ -1,5 +1,5 @@
 export * from "./api";
 export * from "./firebase";
 export * from "./logger";
-export * from "./storage";
+export { storage as localStorage } from "./storage";
 export * from "./ai";

@@ -37,7 +37,7 @@ export default function SignupPage() {
         return;
       }
 
-      router.replace("/login");
+      router.replace("/verify-email");
     } catch {
       setError(
         "Unable to create your account. Please try again."

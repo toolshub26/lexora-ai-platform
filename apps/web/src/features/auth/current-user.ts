@@ -1,5 +1,28 @@
+import {
+  getAdditionalUserInfo,
+  type User as FirebaseUser,
+} from "firebase/auth";
+
 import { auth } from "./firebase";
 import type { User } from "./types";
+
+function getProvider(user: FirebaseUser): User["provider"] {
+  const additionalInfo = getAdditionalUserInfo({
+    user,
+    providerId: user.providerData[0]?.providerId ?? "",
+  } as never);
+
+  const providerId =
+    additionalInfo?.providerId ??
+    user.providerData[0]?.providerId ??
+    "password";
+
+  if (providerId === "google.com") return "google";
+  if (providerId === "github.com") return "github";
+  if (providerId === "microsoft.com") return "microsoft";
+
+  return "password";
+}
 
 export function getCurrentUser(): User | null {
   const currentUser = auth.currentUser;
@@ -15,7 +38,7 @@ export function getCurrentUser(): User | null {
     avatar: currentUser.photoURL ?? undefined,
     phone: currentUser.phoneNumber ?? undefined,
     role: "user",
-    provider: "password",
+    provider: getProvider(currentUser),
     emailVerified: currentUser.emailVerified,
     disabled: false,
     lastLoginAt: new Date().toISOString(),

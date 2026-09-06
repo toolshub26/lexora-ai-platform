@@ -35,3 +35,5 @@ export * from "./roles";
 export * from "./permissions";
 export * from "./authorization";
 export * from "./guards";
+
+export * from "./google-login";

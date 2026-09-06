@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { login } from "@/features/auth";
+import {
+  login,
+  loginWithGoogle,
+} from "@/features/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,7 +17,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   async function handleSubmit(
-    e: React.FormEvent<HTMLFormElement>
+    e: React.FormEvent<HTMLFormElement>,
   ) {
     e.preventDefault();
 
@@ -34,6 +38,28 @@ export default function LoginPage() {
       router.replace("/dashboard");
     } catch {
       setError("Unable to sign in. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGoogleLogin() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await loginWithGoogle();
+
+      if (!result.success) {
+        setError(result.message);
+        return;
+      }
+
+      router.replace("/dashboard");
+    } catch {
+      setError(
+        "Unable to sign in with Google. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -77,6 +103,12 @@ export default function LoginPage() {
           required
         />
 
+        <div style={{ textAlign: "right" }}>
+          <Link href="/forgot-password">
+            Forgot Password?
+          </Link>
+        </div>
+
         {error && (
           <p style={{ color: "red" }}>
             {error}
@@ -89,6 +121,21 @@ export default function LoginPage() {
         >
           {loading ? "Signing In..." : "Login"}
         </button>
+
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+        >
+          Continue with Google
+        </button>
+
+        <div style={{ textAlign: "center" }}>
+          <span>Don&apos;t have an account? </span>
+          <Link href="/signup">
+            Create Account
+          </Link>
+        </div>
       </form>
     </main>
   );

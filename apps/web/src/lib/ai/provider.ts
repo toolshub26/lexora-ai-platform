@@ -1,26 +1,26 @@
 import type {
-  AIProviderType,
+  AIProvider,
   AIProviderClient,
 } from "./types";
 
 export class AIProviderRegistry {
   private readonly providers = new Map<
-    AIProviderType,
+    AIProvider,
     AIProviderClient
   >();
 
   register(
-    provider: AIProviderType,
+    provider: AIProvider,
     client: AIProviderClient,
   ): void {
     this.providers.set(provider, client);
   }
 
-  has(provider: AIProviderType): boolean {
+  has(provider: AIProvider): boolean {
     return this.providers.has(provider);
   }
 
-  get(provider: AIProviderType): AIProviderClient {
+  get(provider: AIProvider): AIProviderClient {
     const client = this.providers.get(provider);
 
     if (!client) {
@@ -32,7 +32,7 @@ export class AIProviderRegistry {
     return client;
   }
 
-  list(): AIProviderType[] {
+  list(): AIProvider[] {
     return [...this.providers.keys()];
   }
 
