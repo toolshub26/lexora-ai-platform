@@ -265,3 +265,9 @@ exports.clearAIHistory = clearAIHistory;
 exports.sendNotification = sendNotification;
 exports.getNotifications = getNotifications;
 exports.markNotificationRead = markNotificationRead;
+
+const {
+  createOrganization
+} = require("./organization");
+
+exports.createOrganization = createOrganization;

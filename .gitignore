@@ -1,1 +1,37 @@
+# Dependencies
+node_modules/
+.pnpm-store/
 
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Next.js
+.next/
+out/
+
+# Turbo
+.turbo/
+
+# TypeScript generated files
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Coverage
+coverage/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local development backups
+*.before-*
+*.invalid-*

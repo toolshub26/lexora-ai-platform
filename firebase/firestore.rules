@@ -3,6 +3,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ============================================================
+    // Authentication helpers
+    // ============================================================
+
     function signedIn() {
       return request.auth != null;
     }
@@ -11,104 +15,229 @@ service cloud.firestore {
       return signedIn() && request.auth.uid == uid;
     }
 
-    // ==========================
-    // USERS
-    // ==========================
+    // ============================================================
+    // Organization authorization helpers
+    // ============================================================
+
+    function isActiveMember(organizationId) {
+      return signedIn()
+        && exists(
+          /databases/$(database)/documents/organizations/$(organizationId)/members/$(request.auth.uid)
+        )
+        && get(
+          /databases/$(database)/documents/organizations/$(organizationId)/members/$(request.auth.uid)
+        ).data.status == "active";
+    }
+
+    function isOrganizationAdmin(organizationId) {
+      return isActiveMember(organizationId)
+        && get(
+          /databases/$(database)/documents/organizations/$(organizationId)/members/$(request.auth.uid)
+        ).data.role in ["admin", "super-admin"];
+    }
+
+    // ============================================================
+    // Organizations
+    // ============================================================
+
+    match /organizations/{organizationId} {
+
+      allow read: if isActiveMember(organizationId);
+
+      // Organization creation is server-authorized.
+      allow create: if false;
+
+      // Organization metadata changes are admin-controlled.
+      // Owner transfer is not permitted from the client.
+      allow update: if isOrganizationAdmin(organizationId)
+        && request.resource.data.ownerId == resource.data.ownerId;
+
+      // Organization deletion is server-authorized.
+      allow delete: if false;
+
+      // ==========================================================
+      // Members
+      // ==========================================================
+
+      match /members/{userId} {
+
+        allow read: if signedIn()
+          && (
+            request.auth.uid == userId
+            || isOrganizationAdmin(organizationId)
+          );
+
+        // Membership provisioning and changes are server-authorized.
+        allow create, update, delete: if false;
+      }
+
+      // ==========================================================
+      // Invitations
+      // ==========================================================
+
+      match /invites/{inviteId} {
+        allow read: if isOrganizationAdmin(organizationId);
+        allow create, update, delete: if false;
+      }
+
+      // ==========================================================
+      // Teams
+      // ==========================================================
+
+      match /teams/{teamId} {
+        allow read: if isActiveMember(organizationId);
+        allow create, update, delete: if false;
+      }
+
+      // ==========================================================
+      // Organization Documents
+      // ==========================================================
+
+      match /documents/{documentId} {
+        allow read: if isActiveMember(organizationId);
+        allow create, update, delete: if false;
+      }
+
+      // ==========================================================
+      // Matters / Cases
+      // ==========================================================
+
+      match /matters/{matterId} {
+        allow read: if isActiveMember(organizationId);
+        allow create, update, delete: if false;
+      }
+
+      // ==========================================================
+      // Contracts
+      // ==========================================================
+
+      match /contracts/{contractId} {
+        allow read: if isActiveMember(organizationId);
+        allow create, update, delete: if false;
+      }
+
+      // ==========================================================
+      // Compliance
+      // ==========================================================
+
+      match /compliance/{itemId} {
+        allow read: if isActiveMember(organizationId);
+        allow create, update, delete: if false;
+      }
+
+      // ==========================================================
+      // AI Sessions
+      // ==========================================================
+
+      match /aiSessions/{sessionId} {
+        allow read: if isActiveMember(organizationId);
+        allow create, update, delete: if false;
+
+        match /messages/{messageId} {
+          allow read: if isActiveMember(organizationId);
+          allow create, update, delete: if false;
+        }
+      }
+
+      // ==========================================================
+      // Notifications
+      // ==========================================================
+
+      match /notifications/{notificationId} {
+        allow read: if isActiveMember(organizationId);
+        allow create, update, delete: if false;
+      }
+
+      // ==========================================================
+      // Audit Logs
+      // ==========================================================
+
+      match /auditLogs/{auditId} {
+        allow read: if isOrganizationAdmin(organizationId);
+        allow create, update, delete: if false;
+      }
+
+      // ==========================================================
+      // Reports
+      // ==========================================================
+
+      match /reports/{reportId} {
+        allow read: if isActiveMember(organizationId);
+        allow create, update, delete: if false;
+      }
+    }
+
+    // ============================================================
+    // Legacy user-scoped data
+    // ============================================================
+
     match /users/{userId} {
-
       allow read: if isOwner(userId);
-
       allow create: if isOwner(userId);
-
       allow update: if isOwner(userId);
-
       allow delete: if false;
     }
 
-    // ==========================
-    // DRAFTS
-    // ==========================
     match /drafts/{draftId} {
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid;
 
-      allow create: if signedIn() &&
-        request.resource.data.uid == request.auth.uid;
+      allow read: if signedIn()
+        && resource.data.uid == request.auth.uid;
 
-      allow read: if signedIn() &&
-        resource.data.uid == request.auth.uid;
+      allow update: if signedIn()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid;
 
-      allow update: if signedIn() &&
-        resource.data.uid == request.auth.uid &&
-        request.resource.data.uid == request.auth.uid;
-
-      allow delete: if signedIn() &&
-        resource.data.uid == request.auth.uid;
+      allow delete: if signedIn()
+        && resource.data.uid == request.auth.uid;
     }
 
-    // ==========================
-    // FINAL DOCUMENTS
-    // ==========================
     match /documents/{docId} {
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid;
 
-      allow create: if signedIn() &&
-        request.resource.data.uid == request.auth.uid;
+      allow read: if signedIn()
+        && resource.data.uid == request.auth.uid;
 
-      allow read: if signedIn() &&
-        resource.data.uid == request.auth.uid;
+      allow update: if signedIn()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid;
 
-      allow update: if signedIn() &&
-        resource.data.uid == request.auth.uid &&
-        request.resource.data.uid == request.auth.uid;
-
-      allow delete: if signedIn() &&
-        resource.data.uid == request.auth.uid;
+      allow delete: if signedIn()
+        && resource.data.uid == request.auth.uid;
     }
 
-    // ==========================
-    // ORDERS
-    // ==========================
+    // ============================================================
+    // Billing
+    // ============================================================
+
     match /orders/{orderId} {
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid;
 
-      allow create: if signedIn() &&
-        request.resource.data.uid == request.auth.uid;
-
-      allow read: if signedIn() &&
-        resource.data.uid == request.auth.uid;
+      allow read: if signedIn()
+        && resource.data.uid == request.auth.uid;
 
       allow update, delete: if false;
     }
 
-    // ==========================
-    // PAYMENTS
-    // ==========================
     match /payments/{paymentId} {
+      allow read: if signedIn()
+        && resource.data.uid == request.auth.uid;
 
-      allow read: if signedIn() &&
-        resource.data.uid == request.auth.uid;
-
-      allow create: if false;
-
-      allow update: if false;
-
-      allow delete: if false;
+      allow create, update, delete: if false;
     }
 
-    // ==========================
-    // SUBSCRIPTIONS
-    // ==========================
     match /subscriptions/{userId} {
-
       allow read: if isOwner(userId);
-
-      allow create: if false;
-
-      allow update: if false;
-
-      allow delete: if false;
+      allow create, update, delete: if false;
     }
 
-    // ==========================
-    // DEFAULT DENY
-    // ==========================
+    // ============================================================
+    // Default deny
+    // ============================================================
+
     match /{document=**} {
       allow read, write: if false;
     }
