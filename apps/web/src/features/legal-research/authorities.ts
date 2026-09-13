@@ -1,3 +1,5 @@
+import type {LegalJurisdictionRegistry} from "./jurisdictions";
+
 export type LegalAuthorityType =
   | "court"
   | "tribunal"
@@ -28,18 +30,39 @@ export class InMemoryLegalAuthorityRegistry
   implements LegalAuthorityRegistry
 {
   private readonly authorities: readonly LegalAuthority[];
+  private readonly jurisdictionRegistry?: LegalJurisdictionRegistry;
 
-  constructor(authorities: readonly LegalAuthority[] = []) {
+  constructor(
+    authorities: readonly LegalAuthority[] = [],
+    jurisdictionRegistry?: LegalJurisdictionRegistry,
+  ) {
+    this.jurisdictionRegistry = jurisdictionRegistry;
+
+    for (const authority of authorities) {
+      if (
+        authority.jurisdictionId &&
+        jurisdictionRegistry &&
+        !jurisdictionRegistry.getById(authority.jurisdictionId)
+      ) {
+        throw new Error(
+          `Legal authority "${authority.id}" references unknown jurisdiction "${authority.jurisdictionId}".`,
+        );
+      }
+    }
+
     this.authorities = authorities;
   }
 
   getById(id: string): LegalAuthority | undefined {
-    return this.authorities.find((authority) => authority.id === id);
+    return this.authorities.find(
+      (authority) => authority.id === id,
+    );
   }
 
   getByJurisdiction(jurisdictionId: string): LegalAuthority[] {
     return this.authorities.filter(
-      (authority) => authority.jurisdictionId === jurisdictionId,
+      (authority) =>
+        authority.jurisdictionId === jurisdictionId,
     );
   }
 
