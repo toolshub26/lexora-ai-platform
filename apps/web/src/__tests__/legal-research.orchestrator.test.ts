@@ -33,6 +33,10 @@ describe("LegalResearchOrchestrator contract", () => {
             citations: [],
           },
           retrieval,
+          verification: {
+            verifications: [],
+            citations: [],
+          },
         };
 
         return result;
@@ -69,6 +73,10 @@ describe("LegalResearchOrchestrator contract", () => {
             citations: [],
           },
           retrieval,
+          verification: {
+            verifications: [],
+            citations: [],
+          },
         };
       },
     };
