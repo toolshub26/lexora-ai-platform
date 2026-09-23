@@ -126,6 +126,15 @@ service cloud.firestore {
       }
 
       // ==========================================================
+      // Legal Research Sessions
+      // ==========================================================
+
+      match /legalResearchSessions/{sessionId} {
+        allow read: if isActiveMember(organizationId);
+        allow create, update, delete: if false;
+      }
+
+      // ==========================================================
       // AI Sessions
       // ==========================================================
 
@@ -170,6 +179,15 @@ service cloud.firestore {
     // ============================================================
     // Legacy user-scoped data
     // ============================================================
+
+    // Collection-group query support for authenticated active memberships.
+    // Access is restricted by the membership document's userId field.
+    match /{path=**}/members/{membershipId} {
+      allow read: if signedIn()
+        && resource.data.userId == request.auth.uid
+        && resource.data.status == "active";
+      allow create, update, delete: if false;
+    }
 
     match /users/{userId} {
       allow read: if isOwner(userId);
