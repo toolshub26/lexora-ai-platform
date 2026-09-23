@@ -1,7 +1,5 @@
 import {
   aiProviders,
-  createGeminiProvider,
-  createOpenAIProvider,
   type AIProvider,
   type AIProviderConfig,
   type AIRequest,
@@ -21,18 +19,26 @@ export class AIOrchestrator {
     if (this.configs.openai) {
       aiProviders.register(
         "openai",
-        createOpenAIProvider(
-          this.configs.openai,
-        ),
+        {
+          generate: async () => {
+            throw new Error(
+              "OpenAI provider is server-side only. Use the Lexora AI Cloud Function for AI generation.",
+            );
+          },
+        },
       );
     }
 
     if (this.configs.gemini) {
       aiProviders.register(
         "gemini",
-        createGeminiProvider(
-          this.configs.gemini,
-        ),
+        {
+          generate: async () => {
+            throw new Error(
+              "Gemini provider generation through orchestrator is not direct. Use the Lexora AI Cloud Function.",
+            );
+          },
+        },
       );
     }
   }
@@ -40,8 +46,7 @@ export class AIOrchestrator {
   async generate(
     request: AIRequest,
   ): Promise<AIResponse> {
-    const provider =
-      aiProviders.get(request.provider);
+    const provider = aiProviders.get(request.provider);
 
     return provider.generate(request);
   }

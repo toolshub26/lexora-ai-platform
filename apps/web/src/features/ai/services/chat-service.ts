@@ -1,52 +1,39 @@
-import { modelService } from "./model-service";
-import { openAIProvider } from "../providers/openai-provider";
-import { geminiProvider } from "../providers/gemini-provider";
-import { claudeProvider } from "../providers/claude-provider";
-import { grokProvider } from "../providers/grok-provider";
-import { deepSeekProvider } from "../providers/deepseek-provider";
+import { getFunctions, httpsCallable } from "firebase/functions";
+
+import { firebaseApp } from "@/lib/firebase";
+
+const functions = getFunctions(firebaseApp);
+
+interface AskAIRequest {
+  prompt: string;
+}
+
+interface AskAIResponse {
+  success: boolean;
+  response: string;
+  error?: string | null;
+}
 
 export class ChatService {
   async sendMessage(message: string): Promise<string> {
-    const provider = modelService.getProvider();
+    const callable = httpsCallable<AskAIRequest, AskAIResponse>(
+      functions,
+      "askAI",
+    );
 
-    switch (provider) {
-      case "openai":
-        return openAIProvider.generate({
-          instruction: message,
-          context: "",
-          system: "",
-        });
+    try {
+      const result = await callable({
+        prompt: message,
+      });
 
-      case "gemini":
-        return geminiProvider.generate({
-          instruction: message,
-          context: "",
-          system: "",
-        });
+      if (!result.data.success) {
+        return result.data.error ?? "Unable to generate AI response at this time.";
+      }
 
-      case "claude":
-        return claudeProvider.generate({
-          instruction: message,
-          context: "",
-          system: "",
-        });
-
-      case "grok":
-        return grokProvider.generate({
-          instruction: message,
-          context: "",
-          system: "",
-        });
-
-      case "deepseek":
-        return deepSeekProvider.generate({
-          instruction: message,
-          context: "",
-          system: "",
-        });
-
-      default:
-        throw new Error(`Unsupported provider: ${provider}`);
+      return result.data.response || "No response from AI.";
+    } catch (error) {
+      console.error("Chat service error:", error);
+      return "Unable to generate AI response at this time.";
     }
   }
 }

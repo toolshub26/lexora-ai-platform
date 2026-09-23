@@ -1,5 +1,6 @@
 import type { AIProviderType } from "../types/provider";
 import { modelService } from "./model-service";
+import { aiProviders } from "@/lib/ai";
 
 export class ProviderService {
   private provider: AIProviderType | null = null;
@@ -19,6 +20,7 @@ export class ProviderService {
 
   clearProvider() {
     this.provider = null;
+    aiProviders.clear();
   }
 }
 

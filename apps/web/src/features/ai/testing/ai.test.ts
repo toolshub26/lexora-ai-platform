@@ -14,9 +14,9 @@ describe("AIService", () => {
     expect(service.getModels().length).toBeGreaterThan(0);
   });
 
-  it("should use openai as default provider", () => {
+  it("should use gemini as default provider", () => {
     const service = new AIService();
 
-    expect(service.getProvider()).toBe("openai");
+    expect(service.getProvider()).toBe("gemini");
   });
 });
