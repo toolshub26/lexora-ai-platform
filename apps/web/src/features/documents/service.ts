@@ -38,10 +38,13 @@ export class DocumentService {
     return ref.id;
   }
 
-  async getDocuments(): Promise<Document[]> {
+  async getDocuments(
+    organizationId: string,
+  ): Promise<Document[]> {
     const snapshot = await getDocs(
       query(
         collection(db, DOCUMENTS),
+        where("organizationId", "==", organizationId),
         orderBy("updatedAt", "desc"),
       ),
     );

@@ -16,7 +16,6 @@ export interface DocumentMetadata {
   aiModel?: string;
   generatedBy?: string;
 }
-
 export interface Document {
   id: string;
   title: string;
@@ -32,11 +31,14 @@ export interface Document {
 
   ownerId: string;
 
+  organizationId: string;
+
   metadata: DocumentMetadata;
 
   isArchived: boolean;
 
   createdAt: Date;
+
   updatedAt: Date;
 }
 

@@ -13,10 +13,12 @@ const COLLECTION = "documents";
 export class DocumentSearchService {
   async search(
     searchText: string,
+    organizationId: string,
   ): Promise<DocumentSearchResult[]> {
     const snapshot = await getDocs(
       query(
         collection(db, COLLECTION),
+        where("organizationId", "==", organizationId),
         where("title", ">=", searchText),
         where("title", "<=", searchText + "\uf8ff"),
       ),
@@ -37,10 +39,12 @@ export class DocumentSearchService {
 
   async searchByCategory(
     category: string,
+    organizationId: string,
   ): Promise<DocumentSearchResult[]> {
     const snapshot = await getDocs(
       query(
         collection(db, COLLECTION),
+        where("organizationId", "==", organizationId),
         where("type", "==", category),
       ),
     );

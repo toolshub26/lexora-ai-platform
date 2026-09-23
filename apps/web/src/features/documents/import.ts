@@ -46,42 +46,42 @@ export class DocumentImportService {
     const now = new Date();
 
     const document: Document = {
-  id:
-    crypto.randomUUID?.() ??
-    `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`,
+      id:
+        crypto.randomUUID?.() ??
+        `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`,
 
-  title: file.name.replace(/\.[^/.]+$/, ""),
+      title: file.name.replace(/\.[^/.]+$/, ""),
 
-  type:
-    file.name.split(".").pop()?.toLowerCase() ??
-    "unknown",
+      type:
+        file.name.split(".").pop()?.toLowerCase() ??
+        "unknown",
 
-  status: "draft",
+      status: "draft",
 
-  content: "",
+      content: "",
 
-  tags: [],
+      tags: [],
 
-  ownerId: "system",
+      ownerId: "system",
 
-  metadata: {
-    version: 1,
-    language: "en",
-    country: "global",
-  },
+      organizationId: "",
 
-  isArchived: false,
+      metadata: {
+        version: 1,
+        language: "en",
+        country: "global",
+      },
 
-  createdAt: now,
+      isArchived: false,
 
-  updatedAt: now,
-};
+      createdAt: now,
 
-    console.log("Document imported:", document);
+      updatedAt: now,
+    };
 
     // TODO:
     // Upload original file to Firebase Storage
-    // Save metadata into Firestore
+    // Save metadata into Firestore (this document object)
     // Generate search index
     // Create history record
 

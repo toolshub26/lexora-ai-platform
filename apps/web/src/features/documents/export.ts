@@ -49,10 +49,17 @@ export class DocumentExportService {
           `Status: ${document.status}\n`;
         break;
 
-      case "docx":
       case "pdf":
         // TODO:
-        // Integrate DOCX/PDF generator
+        // Integrate DOCX/PDF generator (pdfmake, mozilla-pdfbuilder, etc.)
+        // For now, fall back to text content
+        content = JSON.stringify(document, null, 2);
+        break;
+
+      case "docx":
+        // TODO:
+        // Integrate DOCX generator
+        // For now, fall back to text content
         content = JSON.stringify(document, null, 2);
         break;
 
