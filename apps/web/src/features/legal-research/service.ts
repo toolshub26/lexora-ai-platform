@@ -18,6 +18,10 @@ import type {
   LegalResearchStatus,
   LegalSourceType,
 } from "./types";
+import type { LegalResearchEvidenceSet } from "./sources";
+import type { LegalRetrievalResult } from "./retrieval";
+import type { LegalVerificationResult } from "./verification";
+import type { LegalSynthesisResult } from "./synthesis";
 
 const functions = getFunctions(firebaseApp);
 const COLLECTION = "legalResearchSessions";
@@ -34,6 +38,14 @@ interface LegalResearchCallableRequest {
   sources?: LegalSourceType[];
 }
 
+export interface LegalResearchSearchResult {
+  research: LegalResearchResult;
+  evidenceSet: LegalResearchEvidenceSet;
+  retrieval: LegalRetrievalResult;
+  verification: LegalVerificationResult;
+  synthesis?: LegalSynthesisResult;
+}
+
 interface LegalResearchCallableResponse {
   success: boolean;
   sessionId: string;
@@ -43,6 +55,11 @@ interface LegalResearchCallableResponse {
   provider: string;
   model: string;
   timestamp: number;
+  research: LegalResearchResult;
+  evidenceSet: LegalResearchEvidenceSet;
+  retrieval: LegalRetrievalResult;
+  verification: LegalVerificationResult;
+  synthesis?: LegalSynthesisResult;
 }
 
 function sessionsCollection(organizationId: string) {
@@ -126,7 +143,7 @@ export class LegalResearchService {
   async search(
     organizationId: string,
     searchQuery: LegalResearchQuery,
-  ): Promise<LegalResearchResult> {
+  ): Promise<LegalResearchSearchResult> {
     const normalizedOrganizationId = organizationId.trim();
     const query = searchQuery.query.trim();
 
@@ -168,12 +185,15 @@ export class LegalResearchService {
     }
 
     return {
-      query: result.data.query,
-      sources: [],
-      totalResults: 0,
-      executionTimeMs: 0,
-      completedAt: new Date(result.data.timestamp),
-      summary: result.data.response,
+      research: {
+        ...result.data.research,
+        query: result.data.research.query || result.data.query,
+        summary: result.data.research.summary || result.data.response,
+      },
+      evidenceSet: result.data.evidenceSet,
+      retrieval: result.data.retrieval,
+      verification: result.data.verification,
+      synthesis: result.data.synthesis,
     };
   }
 

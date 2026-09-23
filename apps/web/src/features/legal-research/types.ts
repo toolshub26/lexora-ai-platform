@@ -54,6 +54,7 @@ export interface LegalResearchResult {
   executionTimeMs: number;
   completedAt: Date;
   summary?: string;
+  citations?: import("./sources").LegalCitation[];
 }
 
 export type LegalResearchStatus =

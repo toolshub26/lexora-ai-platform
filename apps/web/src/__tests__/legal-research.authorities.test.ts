@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import {
   InMemoryLegalAuthorityRegistry,
   type LegalAuthority,
@@ -6,67 +7,76 @@ import {
 describe("InMemoryLegalAuthorityRegistry", () => {
   const authorities: LegalAuthority[] = [
     {
-      id: "IN:SC",
-      name: "Supreme Court of India",
+      id: "authority:india:sc",
+      name: "Supreme Court",
       type: "court",
       countryCode: "IN",
+      jurisdictionId: "country:IN",
       active: true,
     },
     {
-      id: "IN:J&K:HC",
-      name: "High Court",
-      type: "court",
-      countryCode: "IN",
-      jurisdictionId: "IN:JAMMU-AND-KASHMIR",
-      active: true,
-    },
-    {
-      id: "IN:J&K:TRIBUNAL",
-      name: "Regional Tribunal",
+      id: "authority:india:tribunal",
+      name: "Example Tribunal",
       type: "tribunal",
       countryCode: "IN",
-      jurisdictionId: "IN:JAMMU-AND-KASHMIR",
+      jurisdictionId: "country:IN",
+      parentAuthorityId: "authority:india:sc",
+      active: true,
+    },
+    {
+      id: "authority:us:court",
+      name: "Example US Court",
+      type: "court",
+      countryCode: "US",
+      jurisdictionId: "country:US",
       active: true,
     },
   ];
 
-  it("should resolve an authority by ID", () => {
+  it("gets an authority by id", () => {
     const registry = new InMemoryLegalAuthorityRegistry(authorities);
 
-    expect(registry.getById("IN:SC")?.name).toBe(
-      "Supreme Court of India",
+    expect(registry.getById("authority:india:sc")?.name).toBe(
+      "Supreme Court",
     );
   });
 
-  it("should return authorities for a jurisdiction", () => {
+  it("returns undefined for an unknown authority", () => {
+    const registry = new InMemoryLegalAuthorityRegistry(authorities);
+
+    expect(registry.getById("missing")).toBeUndefined();
+  });
+
+  it("gets authorities by jurisdiction", () => {
+    const registry = new InMemoryLegalAuthorityRegistry(authorities);
+
+    expect(registry.getByJurisdiction("country:IN")).toHaveLength(2);
+  });
+
+  it("gets authorities by country case-insensitively", () => {
+    const registry = new InMemoryLegalAuthorityRegistry(authorities);
+
+    expect(registry.getByCountry("in")).toHaveLength(2);
+  });
+
+  it("does not return authorities from another country", () => {
+    const registry = new InMemoryLegalAuthorityRegistry(authorities);
+
+    expect(registry.getByCountry("US")).toHaveLength(1);
+  });
+
+  it("supports parent authority references", () => {
     const registry = new InMemoryLegalAuthorityRegistry(authorities);
 
     expect(
-      registry.getByJurisdiction("IN:JAMMU-AND-KASHMIR"),
-    ).toHaveLength(2);
+      registry.getById("authority:india:tribunal")?.parentAuthorityId,
+    ).toBe("authority:india:sc");
   });
 
-  it("should return authorities for a country", () => {
-    const registry = new InMemoryLegalAuthorityRegistry(authorities);
+  it("allows an empty registry", () => {
+    const registry = new InMemoryLegalAuthorityRegistry();
 
-    expect(registry.getByCountry("IN")).toHaveLength(3);
-  });
-
-  it("should normalize country codes", () => {
-    const registry = new InMemoryLegalAuthorityRegistry(authorities);
-
-    expect(registry.getByCountry("in")).toHaveLength(3);
-  });
-
-  it("should return an empty list for an unknown jurisdiction", () => {
-    const registry = new InMemoryLegalAuthorityRegistry(authorities);
-
-    expect(registry.getByJurisdiction("unknown")).toEqual([]);
-  });
-
-  it("should return undefined for an unknown authority", () => {
-    const registry = new InMemoryLegalAuthorityRegistry(authorities);
-
-    expect(registry.getById("unknown")).toBeUndefined();
+    expect(registry.getByCountry("IN")).toEqual([]);
+    expect(registry.getByJurisdiction("country:IN")).toEqual([]);
   });
 });

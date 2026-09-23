@@ -60,6 +60,36 @@ describe("LegalResearchService", () => {
         provider: "gemini",
         model: "gemini-2.5-flash",
         timestamp: Date.now(),
+        research: {
+          query: "test search",
+          sources: [],
+          totalResults: 0,
+          executionTimeMs: 10,
+          completedAt: new Date(),
+          summary: "Research summary",
+          citations: [],
+        },
+        evidenceSet: {
+          sources: [],
+          evidence: [],
+          verifications: [],
+          citations: [],
+        },
+        retrieval: {
+          sources: [],
+          evidence: [],
+          researchSources: [],
+          citations: [],
+          fetches: [],
+        },
+        verification: {
+          verifications: [],
+          citations: [],
+        },
+        synthesis: {
+          summary: "Research summary",
+          citationIds: [],
+        },
       },
     });
 
@@ -82,10 +112,141 @@ describe("LegalResearchService", () => {
     });
 
     expect(result).toBeDefined();
-    expect(result.query).toBe("test search");
-    expect(result.summary).toBe("Research summary");
-    expect(Array.isArray(result.sources)).toBe(true);
-    expect(result.sources).toHaveLength(0);
+    expect(result.research.query).toBe("test search");
+    expect(result.research.summary).toBe("Research summary");
+    expect(Array.isArray(result.research.sources)).toBe(true);
+    expect(result.research.sources).toHaveLength(0);
+    expect(result.evidenceSet).toBeDefined();
+    expect(result.evidenceSet.sources).toHaveLength(0);
+    expect(result.evidenceSet.evidence).toHaveLength(0);
+    expect(result.retrieval).toBeDefined();
+    expect(result.verification).toBeDefined();
+    expect(result.synthesis).toBeDefined();
+    expect(result.synthesis?.summary).toBe("Research summary");
+  });
+
+  it("search should preserve the verified backend research result", async () => {
+    const completedAt = new Date("2026-09-16T00:00:00.000Z");
+
+    mockCallable.mockResolvedValueOnce({
+      data: {
+        success: true,
+        sessionId: "session-rich-1",
+        organizationId: "test-org-id",
+        query: "What is Article 21?",
+        response: "Verified legal research summary.",
+        provider: "gemini",
+        model: "gemini-2.5-flash",
+        timestamp: completedAt.getTime(),
+        research: {
+          query: "What is Article 21?",
+          sources: [
+            {
+              id: "portal:in:supreme-court",
+              title: "Supreme Court of India",
+              citation: "Supreme Court of India",
+              sourceType: "official-publications",
+              jurisdictionId: "country:IN",
+              authorityId: "court:in:supreme-court",
+              authorityName: "Supreme Court of India",
+              sourceUrl: "https://www.sci.gov.in/",
+              snippet: "Verified legal evidence.",
+              relevance: 1,
+              verificationStatus: "verified",
+              retrievedAt: completedAt,
+            },
+          ],
+          totalResults: 1,
+          executionTimeMs: 42,
+          completedAt,
+          summary: "Verified legal research summary.",
+          citations: [
+            {
+              sourceId: "portal:in:supreme-court",
+              citation: "Supreme Court of India",
+              verificationStatus: "verified",
+            },
+          ],
+        },
+        evidenceSet: {
+          sources: [],
+          evidence: [
+            {
+              id: "evidence-1",
+              sourceId: "portal:in:supreme-court",
+              kind: "excerpt",
+              excerpt: "Verified legal evidence.",
+              retrievedAt: completedAt,
+            },
+          ],
+          verifications: [
+            {
+              sourceId: "portal:in:supreme-court",
+              status: "verified",
+              verifiedAt: completedAt,
+              authorityConfirmed: true,
+              jurisdictionConfirmed: true,
+            },
+          ],
+          citations: [],
+        },
+        retrieval: {
+          sources: [],
+          evidence: [],
+          researchSources: [],
+          citations: [],
+          fetches: [],
+        },
+        verification: {
+          verifications: [],
+          citations: [],
+        },
+        synthesis: {
+          summary: "Verified legal research summary.",
+          citationIds: ["portal:in:supreme-court"],
+        },
+      },
+    });
+
+    const result = await legalResearchService.search(
+      "test-org-id",
+      {
+        query: "What is Article 21?",
+        sources: ["official-publications"],
+      },
+    );
+
+    expect(result.research.summary).toBe(
+      "Verified legal research summary.",
+    );
+    expect(result.research.totalResults).toBe(1);
+    expect(result.research.executionTimeMs).toBe(42);
+    expect(result.research.completedAt).toEqual(completedAt);
+
+    expect(result.research.sources).toHaveLength(1);
+    expect(result.research.sources[0].id).toBe("portal:in:supreme-court");
+    expect(result.research.sources[0].verificationStatus).toBe("verified");
+
+    expect(result.research.citations).toHaveLength(1);
+    expect(result.research.citations?.[0].sourceId).toBe(
+      "portal:in:supreme-court",
+    );
+
+    expect(result.evidenceSet.sources).toHaveLength(0);
+    expect(result.evidenceSet.evidence).toHaveLength(1);
+    expect(result.evidenceSet.evidence[0].id).toBe("evidence-1");
+    expect(result.evidenceSet.verifications).toHaveLength(1);
+    expect(result.evidenceSet.verifications[0].status).toBe("verified");
+
+    expect(result.retrieval).toBeDefined();
+    expect(result.verification).toBeDefined();
+    expect(result.synthesis).toBeDefined();
+    expect(result.synthesis?.summary).toBe(
+      "Verified legal research summary.",
+    );
+    expect(result.synthesis?.citationIds).toEqual([
+      "portal:in:supreme-court",
+    ]);
   });
 
   it("getSession should retrieve an organization-scoped session", async () => {

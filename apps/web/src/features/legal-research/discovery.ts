@@ -20,6 +20,40 @@ export interface LegalSourceCandidate {
   relevance?: number;
 }
 
+export interface LegalDocumentCandidate {
+  id: string;
+  sourceId: string;
+  title: string;
+  documentUrl: string;
+  sourceType: LegalSourceType;
+
+  jurisdiction?: LegalJurisdictionRef;
+
+  authorityId?: string;
+  authorityName?: string;
+
+  citation?: string;
+  publishedAt?: Date;
+
+  relevance?: number;
+}
+
+
+export interface LegalDocumentDiscoveryRequest {
+  query: LegalResearchQuery;
+  sources: readonly LegalSourceCandidate[];
+}
+
+export interface LegalDocumentDiscoveryResult {
+  documents: LegalDocumentCandidate[];
+}
+
+export interface LegalDocumentDiscoveryProvider {
+  discover(
+    request: LegalDocumentDiscoveryRequest,
+  ): Promise<LegalDocumentDiscoveryResult>;
+}
+
 export interface LegalSourceDiscoveryRequest {
   query: LegalResearchQuery;
 }
