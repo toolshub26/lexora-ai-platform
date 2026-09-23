@@ -4,7 +4,7 @@ import { useEffect, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useOrganization } from "@/features/organization";
 
-export default function OrganizationGuard({
+export function OrganizationGuard({
   children,
 }: {
   children: ReactNode;

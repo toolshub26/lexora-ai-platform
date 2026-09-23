@@ -8,6 +8,7 @@ import {
   where,
   type DocumentData,
 } from "firebase/firestore";
+
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { db, firebaseApp } from "@/lib/firebase";
 import type {
@@ -20,7 +21,7 @@ import {
   ORGANIZATION_COLLECTION,
   ORGANIZATION_SUBCOLLECTIONS,
 } from "./constants";
-
+import { teamService } from "@/features/organization/team-service";
 function mapOrganization(
   id: string,
   data: DocumentData,

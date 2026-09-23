@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -43,7 +44,8 @@ export function OrganizationProvider({
   const [active, setActive] =
     useState<OrganizationContext | null>(null);
 
-  const loadOrganizations = async (
+  const loadOrganizations = useCallback(
+    async (
     userId: string,
     preferredOrganizationId?: string | null,
   ) => {
@@ -88,7 +90,9 @@ export function OrganizationProvider({
           : "Unable to load organization data.",
       );
     }
-  };
+    },
+    [],
+  );
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
@@ -112,9 +116,10 @@ export function OrganizationProvider({
     );
 
     return unsubscribe;
-  }, []);
+  }, [loadOrganizations]);
 
-  const setActiveOrganization = async (
+  const setActiveOrganization = useCallback(
+    async (
     organizationId: string,
   ) => {
     const user = auth.currentUser;
@@ -136,9 +141,11 @@ export function OrganizationProvider({
     }
 
     setActive(context);
-  };
+    },
+    [],
+  );
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     const user = auth.currentUser;
 
     if (!user) {
@@ -151,7 +158,9 @@ export function OrganizationProvider({
       user.uid,
       active?.organization.id ?? null,
     );
-  };
+    },
+    [active, loadOrganizations],
+  );
 
   const value = useMemo(
     () => ({
@@ -162,7 +171,7 @@ export function OrganizationProvider({
       setActiveOrganization,
       refresh,
     }),
-    [isLoading, error, active, organizations],
+    [isLoading, error, active, organizations, setActiveOrganization, refresh],
   );
 
   return (
