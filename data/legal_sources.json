@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0.0",
+  "source": {
+    "name": "official-government-and-court-portals",
+    "version": "1.0.0",
+    "standard": "Lexora Legal Source Dataset"
+  },
+  "generatedAt": "2026-09-16T00:00:00.000Z",
+  "sources": [
+    {
+      "id": "portal:in:supreme-court",
+      "title": "Supreme Court of India",
+      "citation": "Supreme Court of India — Official Portal",
+      "sourceType": "official-publications",
+      "authorityLevel": "primary",
+      "jurisdiction": {
+        "countryCode": "IN",
+        "jurisdictionId": "country:IN"
+      },
+      "authorityId": "court:in:supreme-court",
+      "authorityName": "Supreme Court of India",
+      "sourceUrl": "https://www.sci.gov.in/",
+      "canonicalUrl": "https://www.sci.gov.in/",
+      "availability": "available",
+      "retrievedAt": "2026-09-16T00:00:00.000Z"
+    },
+    {
+      "id": "portal:in:jk-ladakh-high-court",
+      "title": "High Court of Jammu and Kashmir and Ladakh",
+      "citation": "High Court of Jammu and Kashmir and Ladakh — Official Portal",
+      "sourceType": "official-publications",
+      "authorityLevel": "primary",
+      "jurisdiction": {
+        "countryCode": "IN",
+        "jurisdictionId": "IN-JK"
+      },
+      "authorityId": "court:in:jk-ladakh-high-court",
+      "authorityName": "High Court of Jammu and Kashmir and Ladakh",
+      "sourceUrl": "https://jkhighcourt.nic.in/",
+      "canonicalUrl": "https://jkhighcourt.nic.in/",
+      "availability": "available",
+      "retrievedAt": "2026-09-16T00:00:00.000Z"
+    },
+    {
+      "id": "portal:in:india-code",
+      "title": "India Code",
+      "citation": "India Code — Official Government of India Legal Repository",
+      "sourceType": "official-publications",
+      "authorityLevel": "primary",
+      "jurisdiction": {
+        "countryCode": "IN",
+        "jurisdictionId": "country:IN"
+      },
+      "sourceUrl": "https://www.indiacode.nic.in/",
+      "canonicalUrl": "https://www.indiacode.nic.in/",
+      "availability": "available",
+      "retrievedAt": "2026-09-16T00:00:00.000Z"
+    }
+  ]
+}

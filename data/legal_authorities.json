@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0.0",
+  "source": {
+    "name": "official-government-sources",
+    "version": "1.0.0",
+    "standard": "Lexora Legal Authority Dataset"
+  },
+  "generatedAt": "2026-09-16T00:00:00.000Z",
+  "authorities": [
+    {
+      "id": "court:in:supreme-court",
+      "name": "Supreme Court of India",
+      "type": "court",
+      "countryCode": "IN",
+      "jurisdictionId": "country:IN",
+      "officialName": "Supreme Court of India",
+      "officialUrl": "https://www.sci.gov.in/",
+      "active": true
+    },
+    {
+      "id": "court:in:jk-ladakh-high-court",
+      "name": "High Court of Jammu and Kashmir and Ladakh",
+      "type": "court",
+      "countryCode": "IN",
+      "jurisdictionId": "IN-JK",
+      "officialName": "High Court of Jammu and Kashmir and Ladakh",
+      "officialUrl": "https://hcservices.ecourts.gov.in/",
+      "active": true
+    }
+  ]
+}
