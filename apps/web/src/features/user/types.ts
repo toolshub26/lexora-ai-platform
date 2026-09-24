@@ -8,6 +8,7 @@ export interface UserProfile {
 }
 
 export interface UserPreferences {
+  userId: string;
   language: string;
   theme: "light" | "dark" | "system";
   notifications: boolean;
