@@ -1,8 +1,9 @@
 
 "use strict";
 
-const functions = require("firebase-functions");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+const { FieldValue } = require("firebase-admin/firestore");
 if (!admin.apps.length) {
   admin.initializeApp();
 }
@@ -10,7 +11,7 @@ const db = admin.firestore();
 
 function requireAuth(context) {
   if (!context.auth) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "unauthenticated",
       "Login required."
     );
@@ -19,14 +20,16 @@ function requireAuth(context) {
   return context.auth.uid;
 }
 
-exports.sendNotification = functions.https.onCall(async (data, context) => {
+exports.sendNotification = onCall(async (request) => {
+  const data = request.data;
+  const context = request;
   const uid = requireAuth(context);
 
   const title = String(data.title || "").trim();
   const body = String(data.body || "").trim();
 
   if (!title || !body) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "invalid-argument",
       "Title and body are required."
     );
@@ -37,7 +40,7 @@ exports.sendNotification = functions.https.onCall(async (data, context) => {
     title,
     body,
     read: false,
-    createdAt: admin.firestore.FieldValue.serverTimestamp()
+    createdAt: FieldValue.serverTimestamp()
   });
 
   return {
@@ -46,7 +49,9 @@ exports.sendNotification = functions.https.onCall(async (data, context) => {
   };
 });
 
-exports.getNotifications = functions.https.onCall(async (data, context) => {
+exports.getNotifications = onCall(async (request) => {
+  const data = request.data;
+  const context = request;
   const uid = requireAuth(context);
 
   const snapshot = await db
@@ -67,13 +72,15 @@ exports.getNotifications = functions.https.onCall(async (data, context) => {
   };
 });
 
-exports.markNotificationRead = functions.https.onCall(async (data, context) => {
+exports.markNotificationRead = onCall(async (request) => {
+  const data = request.data;
+  const context = request;
   const uid = requireAuth(context);
 
 const id = String(data.id || "");
 
   if (!id) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "invalid-argument",
       "Notification ID is required."
     );
@@ -82,21 +89,21 @@ const docRef = db.collection("notifications").doc(id);
 const doc = await docRef.get();
 
 if (!doc.exists) {
-  throw new functions.https.HttpsError(
+  throw new HttpsError(
     "not-found",
     "Notification not found."
   );
 }
 
 if (doc.data().uid !== uid) {
-  throw new functions.https.HttpsError(
+  throw new HttpsError(
     "permission-denied",
     "Unauthorized."
   );
 }
   await docRef.update({
     read: true,
-    readAt: admin.firestore.FieldValue.serverTimestamp()
+    readAt: FieldValue.serverTimestamp()
   });
 
   return {

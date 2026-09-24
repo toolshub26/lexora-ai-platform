@@ -5,6 +5,8 @@ const Razorpay = require("razorpay");
 
 const admin = require("firebase-admin");
 const functions = require("firebase-functions");
+const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https");
+const { FieldValue } = require("firebase-admin/firestore");
 
 if (!admin.apps.length) {
     admin.initializeApp();
@@ -12,10 +14,26 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-const razorpay = new Razorpay({
-    key_id: functions.config().razorpay.key_id,
-    key_secret: functions.config().razorpay.key_secret
-});
+function getRazorpayClient() {
+  const razorpayConfig = functions.config().razorpay || {};
+  const razorpayKeyId = String(razorpayConfig.key_id || "").trim();
+  const razorpayKeySecret = String(razorpayConfig.key_secret || "").trim();
+
+  if (!razorpayKeyId || !razorpayKeySecret) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Razorpay configuration is missing."
+    );
+  }
+
+  return {
+    client: new Razorpay({
+      key_id: razorpayKeyId,
+      key_secret: razorpayKeySecret
+    }),
+    keySecret: razorpayKeySecret
+  };
+}
 const {
   askAI,
   getAIUsage,
@@ -26,7 +44,12 @@ const {
   getNotifications,
   markNotificationRead
 } = require("./notifications");
-exports.health = functions.https.onRequest((req, res) => {
+const {
+  getPaymentHistory,
+  getSubscription,
+  cancelSubscription
+} = require("./payment");
+exports.health = onRequest((req, res) => {
     res.status(200).json({
         success: true,
         service: "Lexora Cloud Functions",
@@ -37,7 +60,7 @@ exports.health = functions.https.onRequest((req, res) => {
 });
 function getUserId(context) {
   if (!context.auth) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "unauthenticated",
       "Login required."
     );
@@ -50,13 +73,15 @@ function generateReceipt(uid) {
   return `LEXORA-${uid}-${Date.now()}`;
 }
 
-exports.createOrder = functions.https.onCall(async (data, context) => {
+exports.createOrder = onCall(async (request) => {
+  const data = request.data;
+  const context = request;
   const uid = getUserId(context);
 
   const { plan } = data;
 
   if (!plan) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "invalid-argument",
       "Plan is required."
     );
@@ -71,13 +96,14 @@ exports.createOrder = functions.https.onCall(async (data, context) => {
   };
 
   if (!(plan in plans)) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "invalid-argument",
       "Invalid plan."
     );
   }
 
   const amount = plans[plan];
+  const { client: razorpay } = getRazorpayClient();
 
   const order = await razorpay.orders.create({
     amount,
@@ -96,19 +122,20 @@ exports.createOrder = functions.https.onCall(async (data, context) => {
     currency: "INR",
     status: "created",
     razorpayOrderId: order.id,
-    createdAt: admin.firestore.FieldValue.serverTimestamp()
+    createdAt: FieldValue.serverTimestamp()
   });
 
   return {
     success: true,
     orderId: order.id,
     amount,
-    currency: "INR",
-    key: functions.config().razorpay.key_id
+    currency: "INR"
   };
 });
 
-exports.verifyPayment = functions.https.onCall(async (data, context) => {
+exports.verifyPayment = onCall(async (request) => {
+  const data = request.data;
+  const context = request;
   const uid = getUserId(context);
 
   const {
@@ -122,7 +149,7 @@ exports.verifyPayment = functions.https.onCall(async (data, context) => {
     !razorpay_payment_id ||
     !razorpay_signature
   ) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "invalid-argument",
       "Missing payment details."
     );
@@ -131,49 +158,39 @@ exports.verifyPayment = functions.https.onCall(async (data, context) => {
   const body =
     razorpay_order_id + "|" + razorpay_payment_id;
 
+  const { keySecret: razorpayKeySecret } = getRazorpayClient();
+
   const expectedSignature = crypto
     .createHmac(
       "sha256",
-      functions.config().razorpay.key_secret
+      razorpayKeySecret
     )
     .update(body)
     .digest("hex");
 
   if (expectedSignature !== razorpay_signature) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "permission-denied",
       "Invalid payment signature."
     );
   }
 
-  const orderRef = db
-    .collection("orders")
-    .doc(razorpay_order_id);
+  const orderRef = db.collection("orders").doc(razorpay_order_id);
+  const paymentRef = db.collection("payments").doc(razorpay_payment_id);
 
   const orderDoc = await orderRef.get();
 
   if (!orderDoc.exists) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "not-found",
       "Order not found."
     );
   }
 
   const order = orderDoc.data();
-const paymentRef = db
-  .collection("payments")
-  .doc(razorpay_payment_id);
 
-const paymentDoc = await paymentRef.get();
-
-if (paymentDoc.exists) {
-  return {
-    success: true,
-    alreadyProcessed: true
-  };
-}
   if (order.uid !== uid) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "permission-denied",
       "Unauthorized."
     );
@@ -186,36 +203,90 @@ if (paymentDoc.exists) {
     };
   }
 
-    await paymentRef.set({
-  uid,
-  orderId: razorpay_order_id,
-  paymentId: razorpay_payment_id,
-  plan: order.plan,
-  amount: order.amount,
-  currency: order.currency,
-  createdAt: admin.firestore.FieldValue.serverTimestamp()
-});
+  return await db.runTransaction(async (transaction) => {
+    const orderDoc = await transaction.get(orderRef);
 
-await orderRef.update({
-  status: "paid",
-  razorpayPaymentId: razorpay_payment_id,
-  verifiedAt: admin.firestore.FieldValue.serverTimestamp()
-});
+    if (!orderDoc.exists) {
+      throw new HttpsError(
+        "not-found",
+        "Order not found."
+      );
+    }
 
-await db.collection("subscriptions").doc(uid).set({
-  plan: order.plan,
-  active: order.plan !== "FREE",
-  updatedAt: admin.firestore.FieldValue.serverTimestamp()
-}, { merge: true });
+    const orderData = orderDoc.data();
 
-return {
-  success: true,
-  plan: order.plan
-};
+    if (orderData.uid !== uid) {
+      throw new HttpsError(
+        "permission-denied",
+        "Unauthorized."
+      );
+    }
 
+    if (orderData.status === "paid") {
+      return {
+        success: true,
+        alreadyVerified: true
+      };
+    }
+
+    const paymentDoc = await transaction.get(paymentRef);
+
+    if (paymentDoc.exists) {
+      const paymentData = paymentDoc.data();
+
+      if (
+        paymentData.uid !== uid ||
+        paymentData.orderId !== razorpay_order_id
+      ) {
+        throw new HttpsError(
+          "permission-denied",
+          "Payment is already associated with another order or user."
+        );
+      }
+
+      return {
+        success: true,
+        alreadyVerified: true,
+        plan: orderData.plan
+      };
+    }
+
+    transaction.update(orderRef, {
+      status: "paid",
+      razorpayPaymentId: razorpay_payment_id,
+      verifiedAt: FieldValue.serverTimestamp()
+    });
+
+    transaction.create(paymentRef, {
+      uid,
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+      plan: orderData.plan,
+      amount: orderData.amount,
+      currency: orderData.currency,
+      createdAt: FieldValue.serverTimestamp()
+    });
+
+    transaction.set(
+      db.collection("subscriptions").doc(uid),
+      {
+        plan: orderData.plan,
+        active: orderData.plan !== "FREE",
+        updatedAt: FieldValue.serverTimestamp()
+      },
+      { merge: true }
+    );
+
+    return {
+      success: true,
+      plan: orderData.plan
+    };
+  });
 });                                               
 
-exports.checkPremium = functions.https.onCall(async (data, context) => {
+exports.checkPremium = onCall(async (request) => {
+  const data = request.data;
+  const context = request;
   const uid = getUserId(context);
 
   const subRef = db.collection("subscriptions").doc(uid);
@@ -265,9 +336,15 @@ exports.clearAIHistory = clearAIHistory;
 exports.sendNotification = sendNotification;
 exports.getNotifications = getNotifications;
 exports.markNotificationRead = markNotificationRead;
+exports.getPaymentHistory = getPaymentHistory;
+exports.getSubscription = getSubscription;
+exports.cancelSubscription = cancelSubscription;
 
 const {
   createOrganization
 } = require("./organization");
 
 exports.createOrganization = createOrganization;
+
+const { legalResearch } = require("./legal-research");
+exports.legalResearch = legalResearch;

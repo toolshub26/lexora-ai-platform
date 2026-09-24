@@ -1,8 +1,9 @@
 
 "use strict";
 
-const functions = require("firebase-functions");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+const { FieldValue } = require("firebase-admin/firestore");
 
 if (!admin.apps.length) {
   admin.initializeApp();
@@ -12,7 +13,7 @@ const db = admin.firestore();
 
 function requireAuth(context) {
   if (!context.auth) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "unauthenticated",
       "Login required."
     );
@@ -21,7 +22,9 @@ function requireAuth(context) {
   return context.auth.uid;
 }
 
-exports.getPaymentHistory = functions.https.onCall(async (data, context) => {
+exports.getPaymentHistory = onCall(async (request) => {
+  const data = request.data;
+  const context = request;
   const uid = requireAuth(context);
 
   const snapshot = await db
@@ -42,7 +45,9 @@ exports.getPaymentHistory = functions.https.onCall(async (data, context) => {
   };
 });
 
-exports.getSubscription = functions.https.onCall(async (data, context) => {
+exports.getSubscription = onCall(async (request) => {
+  const data = request.data;
+  const context = request;
   const uid = requireAuth(context);
 
   const doc = await db.collection("subscriptions").doc(uid).get();
@@ -61,14 +66,16 @@ exports.getSubscription = functions.https.onCall(async (data, context) => {
   };
 });
 
-exports.cancelSubscription = functions.https.onCall(async (data, context) => {
+exports.cancelSubscription = onCall(async (request) => {
+  const data = request.data;
+  const context = request;
   const uid = requireAuth(context);
 
   await db.collection("subscriptions").doc(uid).set(
     {
       plan: "FREE",
       active: false,
-      cancelledAt: admin.firestore.FieldValue.serverTimestamp()
+      cancelledAt: FieldValue.serverTimestamp()
     },
     { merge: true }
   );

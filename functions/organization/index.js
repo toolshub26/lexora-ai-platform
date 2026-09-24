@@ -1,7 +1,8 @@
 "use strict";
 
 const admin = require("firebase-admin");
-const functions = require("firebase-functions");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { FieldValue } = require("firebase-admin/firestore");
 
 const db = admin.firestore();
 
@@ -78,7 +79,7 @@ const ORGANIZATION_SLUG_MAX_LENGTH = 63;
 
 function requireAuth(context) {
   if (!context.auth || !context.auth.uid) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "unauthenticated",
       "Authentication is required."
     );
@@ -104,14 +105,14 @@ function createSlug(value) {
 
 function validateOrganizationName(name) {
   if (!name) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "invalid-argument",
       "Organization name is required."
     );
   }
 
   if (name.length > ORGANIZATION_NAME_MAX_LENGTH) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "invalid-argument",
       "Organization name is too long."
     );
@@ -120,22 +121,24 @@ function validateOrganizationName(name) {
 
 function validateSlug(slug) {
   if (!slug || slug.length > ORGANIZATION_SLUG_MAX_LENGTH) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "invalid-argument",
       "Invalid organization slug."
     );
   }
 
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "invalid-argument",
       "Organization slug contains invalid characters."
     );
   }
 }
 
-exports.createOrganization = functions.https.onCall(
-  async (data, context) => {
+exports.createOrganization = onCall(
+  async (request) => {
+    const data = request.data;
+    const context = request;
     const uid = requireAuth(context);
 
     const name = normalizeOrganizationName(data && data.name);
@@ -165,14 +168,14 @@ exports.createOrganization = functions.https.onCall(
       db.collection("organizationSlugs").doc(slug);
 
     const now =
-      admin.firestore.FieldValue.serverTimestamp();
+      FieldValue.serverTimestamp();
 
     await db.runTransaction(async (transaction) => {
       const existingSlug =
         await transaction.get(slugRef);
 
       if (existingSlug.exists) {
-        throw new functions.https.HttpsError(
+        throw new HttpsError(
           "already-exists",
           "Organization slug is already in use."
         );
