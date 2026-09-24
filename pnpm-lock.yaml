@@ -11,6 +11,9 @@ importers:
       '@biomejs/biome':
         specifier: ^2.2.4
         version: 2.5.12
+      firebase:
+        specifier: 12.18.0
+        version: 12.18.0
       turbo:
         specifier: ^2.10.13
         version: 2.10.13
