@@ -35,3 +35,7 @@ Thumbs.db
 # Local development backups
 *.before-*
 *.invalid-*
+
+# Local investigation captures
+functions/india-code-*
+functions/sci-1196-test.pdf
