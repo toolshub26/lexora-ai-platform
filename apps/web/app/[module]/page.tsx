@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import WorkspaceShell from "@/components/workspace-shell";
+import LegalResearchWorkspace from "@/features/legal-research/components/legal-research-workspace";
 import ModuleWorkspace, {
   type ModuleConfig,
 } from "@/components/module-workspace";
@@ -123,6 +124,14 @@ export default async function ModulePage({
 
   if (!page) {
     notFound();
+  }
+
+  if (module === "legal-research") {
+    return (
+      <WorkspaceShell>
+        <LegalResearchWorkspace />
+      </WorkspaceShell>
+    );
   }
 
   return (

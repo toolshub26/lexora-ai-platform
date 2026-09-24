@@ -1,6 +1,6 @@
 import Link from "next/link";
 import WorkspaceShell from "@/components/workspace-shell";
-import OrganizationGuard from "@/components/organization/organization-guard";
+import { OrganizationGuard } from "@/components/organization/organization-guard";
 
 const modules = [
   ["AI Assistant", "/ai-assistant", "Ask Lexora, analyze legal information and work with AI."],
@@ -49,8 +49,8 @@ export default function DashboardPage() {
             <p className="mt-2 max-w-2xl text-[11px] leading-6 text-slate-500">
               Your centralized environment for legal research, documents,
               matters, drafting, AI and organizational operations.
-            </p>
-          </div>
+              </p>
+        </div>
 
           <div className="flex gap-2">
             <Link
@@ -181,6 +181,72 @@ export default function DashboardPage() {
           >
             Manage users & teams →
           </Link>
+        </div>
+      </section>
+
+      <section className="mt-4">
+        <div className="mb-3">
+          <div className="text-sm font-bold">Matters & Cases</div>
+          <div className="mt-1 text-[10px] text-slate-600">
+            Organize legal matters, clients, cases and activity.
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {modules.map(([title, href, description]) => (
+            <Link
+              key={href}
+              href={href}
+              className="group rounded-2xl border border-white/[0.07] bg-[#0b1120] p-5 transition hover:-translate-y-0.5 hover:border-indigo-400/30 hover:bg-[#0d1425]"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-300">
+                  ✦
+                </div>
+                <span className="text-slate-700 transition group-hover:text-indigo-300">
+                  →
+                </span>
+              </div>
+              <h2 className="mt-5 text-sm font-bold text-white">{title}</h2>
+              <p className="mt-2 text-[10px] leading-5 text-slate-600">
+                {description}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-4">
+        <div className="mb-3">
+          <div className="text-sm font-bold">Contracts</div>
+          <div className="mt-1 text-[10px] text-slate-600">
+            Review, manage and analyze contractual work.
+            </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[["AI Assistant", "/ai-assistant", "Ask Lexora, analyze legal information and work with AI."], ["Legal Research", "/legal-research", "Research cases, authorities, precedents and legal issues."], ["Drafting", "/drafting", "Create and manage professional legal drafts."], ["Matters & Cases", "/matters", "Organize legal matters, clients, cases and activity."], ["Contracts", "/contracts", "Review, manage and analyze contractual work."], ["Compliance", "/compliance", "Track compliance obligations and organizational controls."], ["Analytics", "/analytics", "Understand legal operations and AI usage."]].map(
+            ([title, href, description]) => (
+              <Link
+                key={href}
+                href={href}
+                className="group rounded-2xl border border-white/[0.07] bg-[#0b1120] p-5 transition hover:-translate-y-0.5 hover:border-indigo-400/30 hover:bg-[#0d1425]"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-300">
+                    ✦
+                  </div>
+                  <span className="text-slate-700 transition group-hover:text-indigo-300">
+                    →
+                  </span>
+                </div>
+                <h2 className="mt-5 text-sm font-bold text-white">{title}</h2>
+                <p className="mt-2 text-[10px] leading-5 text-slate-600">
+                  {description}
+                </p>
+              </Link>
+            )
+          )}
         </div>
       </section>
       </WorkspaceShell>
