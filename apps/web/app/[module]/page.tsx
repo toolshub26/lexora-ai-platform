@@ -114,6 +114,10 @@ const pages: Record<string, ModuleConfig> = {
   },
 };
 
+export function generateStaticParams() {
+  return Object.keys(pages).map((module) => ({ module }));
+}
+
 export default async function ModulePage({
   params,
 }: {
