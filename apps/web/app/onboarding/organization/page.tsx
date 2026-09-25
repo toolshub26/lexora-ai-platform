@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/features/auth";
+import { auth, logout } from "@/features/auth";
 import { useOrganization } from "@/features/organization";
 
 export default function OrganizationOnboardingPage() {
@@ -155,6 +155,7 @@ export default function OrganizationOnboardingPage() {
           >
             {submitting ? "Creating organization..." : "Create organization"}
           </button>
+              <button type="button" onClick={() => logout()} className="mt-3 w-full rounded-xl border border-white/[0.08] px-4 py-3 text-xs font-semibold text-slate-400 transition hover:bg-white/[0.04] hover:text-white">Sign out</button>
         </form>
       </section>
     </main>
