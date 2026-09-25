@@ -39,3 +39,6 @@ Thumbs.db
 # Local investigation captures
 functions/india-code-*
 functions/sci-1196-test.pdf
+
+# Firebase local state
+firebase/.firebase/
