@@ -45,12 +45,13 @@ function normalizeModel(model?: string): AIModel {
     case "gpt-5":
     case "gemini-2.5-pro":
     case "gemini-2.5-flash":
+    case "gemini-3.8-flash":
     case "claude-4-sonnet":
     case "grok-4":
     case "deepseek-chat":
       return model;
     default:
-      return "gemini-2.5-flash";
+      return "gemini-3.8-flash";
   }
 }
 

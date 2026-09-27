@@ -20,7 +20,7 @@ export class ModelService {
         return ["gpt-4.1", "gpt-4o", "gpt-4o-mini", "gpt-5"];
 
       case "gemini":
-        return ["gemini-2.5-pro", "gemini-2.5-flash"];
+        return ["gemini-2.5-pro", "gemini-2.5-flash", "gemini-3.8-flash"];
 
       case "claude":
         return ["claude-4-sonnet"];

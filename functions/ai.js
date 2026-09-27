@@ -17,10 +17,11 @@ const ai = geminiApiKey
 
 const MAX_PROMPT_LENGTH = 5000;
 const MAX_REQUESTS_PER_MINUTE = 10;
-const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
+const DEFAULT_GEMINI_MODEL = "gemini-3.8-flash";
 const ALLOWED_GEMINI_MODELS = new Set([
   "gemini-2.5-pro",
-  "gemini-2.5-flash"
+  "gemini-2.5-flash",
+  "gemini-3.8-flash"
 ]);
 
 function requireAuth(context) {

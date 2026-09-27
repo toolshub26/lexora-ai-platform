@@ -17,6 +17,7 @@ export type AIModel =
   | "gpt-5"
   | "gemini-2.5-pro"
   | "gemini-2.5-flash"
+  | "gemini-3.8-flash"
   | "claude-4-sonnet"
   | "grok-4"
   | "deepseek-chat";

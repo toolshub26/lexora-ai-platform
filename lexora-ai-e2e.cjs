@@ -50,6 +50,15 @@ connectFunctionsEmulator(functions, "127.0.0.1", 5001);
 
   console.log("ORGANIZATION ID:", organizationId);
 
+  const askAI = httpsCallable(functions, "askAI");
+  const aiResult = await askAI({
+    organizationId,
+    provider: "gemini",
+    model: "gemini-3.8-flash",
+    prompt: "Reply with exactly: Lexora AI E2E PASS",
+  });
+  console.log("ASK AI:", aiResult.data);
+
   const getAIUsage = httpsCallable(functions, "getAIUsage");
 
   const usageResult = await getAIUsage({
