@@ -63,6 +63,18 @@ test("legal research composition creates a service with the verified pipeline", 
   assert.equal(calls[0].query.query, "Test legal research");
 });
 
+
+test("legal research composition gives legal-source retrieval a 16 MB response budget", () => {
+  const {
+    DEFAULT_LEGAL_RESEARCH_MAX_RESPONSE_BYTES,
+  } = require("./composition");
+
+  assert.equal(
+    DEFAULT_LEGAL_RESEARCH_MAX_RESPONSE_BYTES,
+    16 * 1024 * 1024,
+  );
+});
+
 test("legal research composition allows injected orchestrator without requiring Gemini configuration", async () => {
   const fakeOrchestrator = {
     async execute(request) {

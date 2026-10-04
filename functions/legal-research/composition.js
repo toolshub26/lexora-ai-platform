@@ -68,6 +68,7 @@ const {
 } = require("./gemini-synthesis");
 
 const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
+const DEFAULT_LEGAL_RESEARCH_MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
 
 function createLegalResearchService(options = {}) {
   let synthesis = options.synthesis;
@@ -112,7 +113,11 @@ function createLegalResearchService(options = {}) {
 
   const sourceFetcher =
     options.sourceFetcher ||
-    new ServerLegalSourceFetcher();
+    new ServerLegalSourceFetcher({
+      maxResponseBytes:
+        options.maxResponseBytes ||
+        DEFAULT_LEGAL_RESEARCH_MAX_RESPONSE_BYTES,
+    });
 
   const discovery =
     options.discovery ||
@@ -199,4 +204,5 @@ function createLegalResearchService(options = {}) {
 module.exports = {
   createLegalResearchService,
   DEFAULT_GEMINI_MODEL,
+  DEFAULT_LEGAL_RESEARCH_MAX_RESPONSE_BYTES,
 };
