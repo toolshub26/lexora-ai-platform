@@ -6,6 +6,7 @@ const assert = require("node:assert/strict");
 const {
   ServerSupremeCourtDocumentSearcher,
   parseSupremeCourtSearchResults,
+  parseSupremeCourtJudgmentId,
 } = require("./supreme-court-discovery");
 
 const SAMPLE_HTML = `
@@ -59,6 +60,56 @@ test("parses official SUPLIS case result", () => {
     "1973 ( 0 ) Suppl. SCR 1",
     "1973 ( 4 ) SCC 225",
   ]);
+});
+
+
+test("extracts the authoritative SCI judgment ID from a SUPLIS detail page", () => {
+  const html = `
+    <a href="http://judis.nic.in/supremecourt/imgs1.aspx?filename=29981">
+      JUDGEMENT
+    </a>
+  `;
+
+  assert.equal(
+    parseSupremeCourtJudgmentId(html),
+    "29981",
+  );
+});
+
+test("searcher carries the authoritative SCI judgment ID into the document metadata", async () => {
+  const searcher = new ServerSupremeCourtDocumentSearcher({
+    fetch: async () => {
+      throw new Error("fetch should not be called directly");
+    },
+    session: {
+      search: async () => ({
+        statusCode: 200,
+        contentType: "text/html",
+        body: SAMPLE_HTML,
+      }),
+      getDetail: async () => ({
+        statusCode: 200,
+        contentType: "text/html",
+        body: `
+          Case No.: W.P.(C) 135 OF 1970
+          Date Of Judgement: 24/04/1973
+          <a href="http://judis.nic.in/supremecourt/imgs1.aspx?filename=29981">
+            JUDGEMENT
+          </a>
+        `,
+      }),
+    },
+  });
+
+  const results = await searcher.search({
+    query: "Kesavananda Bharati",
+    source: {
+      id: "portal:in:supreme-court",
+    },
+  });
+
+  assert.equal(results.length, 1);
+  assert.equal(results[0].metadata.sciJudgmentId, "29981");
 });
 
 test("returns no documents when SUPLIS reports no results", () => {

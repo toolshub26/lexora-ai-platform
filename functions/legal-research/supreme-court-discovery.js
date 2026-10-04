@@ -90,6 +90,15 @@ class ServerSupremeCourtDocumentSearcher {
             if (caseNumber) {
               result.metadata.caseNumber = caseNumber;
             }
+
+            const sciJudgmentId =
+              parseSupremeCourtJudgmentId(
+                String(detailResponse.body || ""),
+              );
+
+            if (sciJudgmentId) {
+              result.metadata.sciJudgmentId = sciJudgmentId;
+            }
           }
         }
 
@@ -155,6 +164,26 @@ function parseSupremeCourtCaseNumber(html) {
     .trim();
 }
 
+function parseSupremeCourtJudgmentId(html) {
+  const source = String(html || "");
+
+  const patterns = [
+    /(?:https?:\/\/[^"'\s]+)?\/jonew\/judis\/(\d+)\.pdf(?:[?#"'\s]|$)/i,
+    /(?:https?:\/\/[^"'\s]+)?\/judgment\/judis\/(\d+)\.pdf(?:[?#"'\s]|$)/i,
+    /imgs1\.aspx\?[^"'\s>]*\bfilename=(\d+)\b/i,
+    /(?:^|[?&])filename=(\d+)\b/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = source.match(pattern);
+    if (match) {
+      return match[1];
+    }
+  }
+
+  return undefined;
+}
+
 function extractCitations(html) {
   const citations = [];
 
@@ -214,4 +243,5 @@ module.exports = {
   ServerSupremeCourtDocumentSearcher,
   parseSupremeCourtSearchResults,
   parseSupremeCourtCaseNumber,
+  parseSupremeCourtJudgmentId,
 };
