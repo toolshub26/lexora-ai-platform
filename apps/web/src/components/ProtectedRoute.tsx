@@ -1,7 +1,9 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+
 import { useAuth } from "@/context/AuthContext";
 
 type ProtectedRouteProps = {
@@ -21,7 +23,7 @@ export default function ProtectedRoute({
   }, [loading, user, router]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return null;
   }
 
   if (!user) {
