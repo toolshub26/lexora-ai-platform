@@ -1,39 +1,59 @@
-import type { AuthState } from "./state";
-import { initialAuthState } from "./state";
+export type UserRole =
+  | "user"
+  | "editor"
+  | "manager"
+  | "admin"
+  | "super-admin";
 
-export class AuthSessionManager {
-  private state: AuthState = {
-    ...initialAuthState,
-  };
+export type AuthProviderType =
+  | "password"
+  | "google"
+  | "github"
+  | "microsoft";
 
-  getSession(): AuthState {
-    return this.state;
-  }
-
-  saveSession(state: AuthState): void {
-    this.state = {
-      ...state,
-    };
-  }
-
-  clearSession(): void {
-    this.state = {
-      ...initialAuthState,
-      isLoading: false,
-    };
-  }
-
-  isAuthenticated(): boolean {
-    return this.state.isAuthenticated;
-  }
-
-  hasValidSession(): boolean {
-    return (
-      this.state.isAuthenticated &&
-      this.state.user !== null
-    );
-  }
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string;
+  phone?: string;
+  role: UserRole;
+  provider: AuthProviderType;
+  emailVerified: boolean;
+  disabled: boolean;
+  lastLoginAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export const authSession =
-  new AuthSessionManager();
+export interface Session {
+  user: User;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+}
+
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  session?: Session;
+  errorCode?: string;
+}
+
+export interface PasswordResetRequest {
+  email: string;
+}
+
+export interface VerifyEmailRequest {
+  token: string;
+}
