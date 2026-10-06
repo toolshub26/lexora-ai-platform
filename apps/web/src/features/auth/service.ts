@@ -1,57 +1,66 @@
 import {
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  updateProfile,
   sendEmailVerification,
+  signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
-  User as FirebaseUser,
+  updateProfile,
+  type User as FirebaseUser,
 } from "firebase/auth";
 
 import { auth } from "./firebase";
 import { authSession } from "./session";
-
 import type {
+  AuthResponse,
   LoginRequest,
   RegisterRequest,
-  AuthResponse,
-  User,
   Session,
+  User,
 } from "./types";
 
+function mapFirebaseUser(firebaseUser: FirebaseUser): User {
+  const createdAt =
+    firebaseUser.metadata.creationTime ??
+    new Date().toISOString();
+
+  const lastLoginAt =
+    firebaseUser.metadata.lastSignInTime ??
+    createdAt;
+
+  const providerId =
+    firebaseUser.providerData[0]?.providerId ?? "password";
+
+  const provider =
+    providerId === "google.com"
+      ? "google"
+      : providerId === "github.com"
+        ? "github"
+        : providerId === "microsoft.com"
+          ? "microsoft"
+          : "password";
+
+  return {
+    id: firebaseUser.uid,
+    email: firebaseUser.email ?? "",
+    name: firebaseUser.displayName ?? "",
+    avatar: firebaseUser.photoURL ?? undefined,
+    phone: firebaseUser.phoneNumber ?? undefined,
+    role: "user",
+    provider,
+    emailVerified: firebaseUser.emailVerified,
+    disabled: firebaseUser.disabled,
+    lastLoginAt,
+    createdAt,
+    updatedAt: lastLoginAt,
+  };
+}
+
+function buildSession(firebaseUser: FirebaseUser): Session {
+  return {
+    user: mapFirebaseUser(firebaseUser),
+  };
+}
+
 export class AuthService {
-  private mapUser(user: FirebaseUser): User {
-    return {
-      id: user.uid,
-      email: user.email ?? "",
-      name: user.displayName ?? "",
-      avatar: user.photoURL ?? undefined,
-      phone: user.phoneNumber ?? undefined,
-      role: "user",
-      provider: "password",
-      emailVerified: user.emailVerified,
-      disabled: false,
-      lastLoginAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-  }
-
-  private async buildSession(
-    user: FirebaseUser,
-  ): Promise<Session> {
-    const accessToken =
-      await user.getIdToken();
-
-    return {
-      accessToken,
-      refreshToken: user.refreshToken,
-      expiresAt:
-        Date.now() + 60 * 60 * 1000,
-      user: this.mapUser(user),
-    };
-  }
-
   async login(
     data: LoginRequest,
   ): Promise<AuthResponse> {
@@ -63,7 +72,7 @@ export class AuthService {
         };
       }
 
-      if (!data.password.trim()) {
+      if (!data.password) {
         return {
           success: false,
           message: "Password is required.",
@@ -77,20 +86,13 @@ export class AuthService {
           data.password,
         );
 
-      const session =
-        await this.buildSession(
-          credential.user,
-        );
+      const session = buildSession(
+        credential.user,
+      );
 
       authSession.saveSession({
         isAuthenticated: true,
         isLoading: false,
-        accessToken:
-          session.accessToken,
-        refreshToken:
-          session.refreshToken,
-        expiresAt:
-          session.expiresAt,
         userId: session.user.id,
         user: session.user,
         error: null,
@@ -130,20 +132,25 @@ export class AuthService {
         };
       }
 
-      if (!data.password.trim()) {
+      if (!data.password) {
         return {
           success: false,
           message: "Password is required.",
         };
       }
-      if (data.password.length < 8) {
-    return {
-        success: false,
-        message: "Password must be at least 8 characters.",
-    };
-}
 
-      if (data.password !== data.confirmPassword) {
+      if (data.password.length < 8) {
+        return {
+          success: false,
+          message:
+            "Password must be at least 8 characters.",
+        };
+      }
+
+      if (
+        data.password !==
+        data.confirmPassword
+      ) {
         return {
           success: false,
           message: "Passwords do not match.",
@@ -157,28 +164,24 @@ export class AuthService {
           data.password,
         );
 
-      await updateProfile(credential.user, {
-        displayName: data.name.trim(),
-      });
+      await updateProfile(
+        credential.user,
+        {
+          displayName: data.name.trim(),
+        },
+      );
 
       await sendEmailVerification(
         credential.user,
       );
 
-      const session =
-        await this.buildSession(
-          credential.user,
-        );
+      const session = buildSession(
+        credential.user,
+      );
 
       authSession.saveSession({
         isAuthenticated: true,
         isLoading: false,
-        accessToken:
-          session.accessToken,
-        refreshToken:
-          session.refreshToken,
-        expiresAt:
-          session.expiresAt,
         userId: session.user.id,
         user: session.user,
         error: null,
@@ -203,58 +206,37 @@ export class AuthService {
 
   async logout(): Promise<void> {
     await signOut(auth);
-
     authSession.clearSession();
   }
 
   async refreshSession(): Promise<AuthResponse> {
-    return new Promise((resolve) => {
-      const unsubscribe =
-        onAuthStateChanged(
-          auth,
-          async (user) => {
-            unsubscribe();
+    const firebaseUser = auth.currentUser;
 
-            if (!user) {
-              authSession.clearSession();
+    if (!firebaseUser) {
+      authSession.clearSession();
 
-              resolve({
-                success: false,
-                message:
-                  "No active session.",
-              });
+      return {
+        success: false,
+        message: "No active session.",
+      };
+    }
 
-              return;
-            }
+    const session =
+      buildSession(firebaseUser);
 
-            const session =
-              await this.buildSession(
-                user,
-              );
-
-            authSession.saveSession({
-              isAuthenticated: true,
-              isLoading: false,
-              accessToken:
-                session.accessToken,
-              refreshToken:
-                session.refreshToken,
-              expiresAt:
-                session.expiresAt,
-              userId: session.user.id,
-              user: session.user,
-              error: null,
-            });
-
-            resolve({
-              success: true,
-              message:
-                "Session refreshed.",
-              session,
-            });
-          },
-        );
+    authSession.saveSession({
+      isAuthenticated: true,
+      isLoading: false,
+      userId: session.user.id,
+      user: session.user,
+      error: null,
     });
+
+    return {
+      success: true,
+      message: "Session refreshed.",
+      session,
+    };
   }
 }
 
