@@ -1,25 +1,23 @@
-import {
-  getAdditionalUserInfo,
-  type User as FirebaseUser,
-} from "firebase/auth";
+import type { User as FirebaseUser } from "firebase/auth";
 
 import { auth } from "./firebase";
 import type { User } from "./types";
 
 function getProvider(user: FirebaseUser): User["provider"] {
-  const additionalInfo = getAdditionalUserInfo({
-    user,
-    providerId: user.providerData[0]?.providerId ?? "",
-  } as never);
-
   const providerId =
-    additionalInfo?.providerId ??
-    user.providerData[0]?.providerId ??
-    "password";
+    user.providerData[0]?.providerId ?? "password";
 
-  if (providerId === "google.com") return "google";
-  if (providerId === "github.com") return "github";
-  if (providerId === "microsoft.com") return "microsoft";
+  if (providerId === "google.com") {
+    return "google";
+  }
+
+  if (providerId === "github.com") {
+    return "github";
+  }
+
+  if (providerId === "microsoft.com") {
+    return "microsoft";
+  }
 
   return "password";
 }
@@ -31,6 +29,14 @@ export function getCurrentUser(): User | null {
     return null;
   }
 
+  const createdAt =
+    currentUser.metadata.creationTime ??
+    new Date().toISOString();
+
+  const lastLoginAt =
+    currentUser.metadata.lastSignInTime ??
+    createdAt;
+
   return {
     id: currentUser.uid,
     email: currentUser.email ?? "",
@@ -40,10 +46,10 @@ export function getCurrentUser(): User | null {
     role: "user",
     provider: getProvider(currentUser),
     emailVerified: currentUser.emailVerified,
-    disabled: false,
-    lastLoginAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    disabled: currentUser.disabled,
+    lastLoginAt,
+    createdAt,
+    updatedAt: lastLoginAt,
   };
 }
 
