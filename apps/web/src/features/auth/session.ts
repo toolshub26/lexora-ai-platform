@@ -1,48 +1,37 @@
 import type { AuthState } from "./state";
-import {
-  loadAuthState,
-  saveAuthState,
-  clearAuthState,
-} from "./storage";
+import { initialAuthState } from "./state";
 
 export class AuthSessionManager {
-  getSession(): AuthState | null {
-    const session = loadAuthState();
+  private state: AuthState = {
+    ...initialAuthState,
+  };
 
-    if (!session) {
-      return null;
-    }
-
-    if (
-      session.expiresAt &&
-      session.expiresAt <= Date.now()
-    ) {
-      this.clearSession();
-      return null;
-    }
-
-    return session;
+  getSession(): AuthState {
+    return this.state;
   }
 
   saveSession(state: AuthState): void {
-    saveAuthState(state);
+    this.state = {
+      ...state,
+    };
   }
 
   clearSession(): void {
-    clearAuthState();
+    this.state = {
+      ...initialAuthState,
+      isLoading: false,
+    };
   }
 
   isAuthenticated(): boolean {
-    const session = this.getSession();
-
-    return (
-      session?.isAuthenticated === true &&
-      !!session.accessToken
-    );
+    return this.state.isAuthenticated;
   }
 
   hasValidSession(): boolean {
-    return this.getSession() !== null;
+    return (
+      this.state.isAuthenticated &&
+      this.state.user !== null
+    );
   }
 }
 
