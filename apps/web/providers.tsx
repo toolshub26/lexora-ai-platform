@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import { AuthProvider } from "./src/context/AuthContext";
 import { OrganizationProvider } from "./src/features/organization";
 
 type ProvidersProps = {
@@ -11,8 +12,10 @@ export default function Providers({
   children,
 }: ProvidersProps) {
   return (
-    <OrganizationProvider>
-      {children}
-    </OrganizationProvider>
+    <AuthProvider>
+      <OrganizationProvider>
+        {children}
+      </OrganizationProvider>
+    </AuthProvider>
   );
 }
