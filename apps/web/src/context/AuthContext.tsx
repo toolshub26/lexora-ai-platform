@@ -5,7 +5,7 @@ import {
   useContext,
   useEffect,
   useState,
-  ReactNode,
+  type ReactNode,
 } from "react";
 
 import { authProvider } from "@/features/auth/provider";
@@ -30,25 +30,25 @@ export function AuthProvider({
   const [user, setUser] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
 
-  const refresh = () => {
-    const state = authProvider.getState();
-    setUser(state?.user ?? null);
-  };
-
   useEffect(() => {
-    authProvider.initialize();
-
     const unsubscribe = authProvider.subscribe((state) => {
-      setUser(state?.user ?? null);
-      setLoading(false);
+      setUser(state.user);
+      setLoading(state.isLoading);
     });
 
-    refresh();
+    authProvider.initialize();
 
     return () => {
       unsubscribe();
     };
   }, []);
+
+  const refresh = () => {
+    const state = authProvider.getState();
+
+    setUser(state.user);
+    setLoading(state.isLoading);
+  };
 
   return (
     <AuthContext.Provider
