@@ -1,6 +1,7 @@
 import {
   GoogleAuthProvider,
   signInWithPopup,
+  type User as FirebaseUser,
 } from "firebase/auth";
 
 import { auth } from "./firebase";
@@ -12,8 +13,16 @@ import type {
 } from "./types";
 
 function mapGoogleUser(
-  firebaseUser: import("firebase/auth").User,
+  firebaseUser: FirebaseUser,
 ): User {
+  const createdAt =
+    firebaseUser.metadata.creationTime ??
+    new Date().toISOString();
+
+  const lastLoginAt =
+    firebaseUser.metadata.lastSignInTime ??
+    createdAt;
+
   return {
     id: firebaseUser.uid,
     email: firebaseUser.email ?? "",
@@ -24,9 +33,9 @@ function mapGoogleUser(
     provider: "google",
     emailVerified: firebaseUser.emailVerified,
     disabled: false,
-    lastLoginAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    lastLoginAt,
+    createdAt,
+    updatedAt: lastLoginAt,
   };
 }
 
@@ -43,25 +52,17 @@ export async function loginWithGoogle(): Promise<AuthResponse> {
       provider,
     );
 
-    const firebaseUser = credential.user;
-
-    const accessToken = await firebaseUser.getIdToken();
+    const user = mapGoogleUser(credential.user);
 
     const session: Session = {
-      accessToken,
-      refreshToken: firebaseUser.refreshToken,
-      expiresAt: Date.now() + 60 * 60 * 1000,
-      user: mapGoogleUser(firebaseUser),
+      user,
     };
 
     authSession.saveSession({
       isAuthenticated: true,
       isLoading: false,
-      accessToken: session.accessToken,
-      refreshToken: session.refreshToken,
-      expiresAt: session.expiresAt,
-      userId: session.user.id,
-      user: session.user,
+      userId: user.id,
+      user,
       error: null,
     });
 
