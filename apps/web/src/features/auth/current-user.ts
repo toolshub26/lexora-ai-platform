@@ -46,7 +46,7 @@ export function getCurrentUser(): User | null {
     role: "user",
     provider: getProvider(currentUser),
     emailVerified: currentUser.emailVerified,
-    disabled: currentUser.disabled,
+    
     lastLoginAt,
     createdAt,
     updatedAt: lastLoginAt,
