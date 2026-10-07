@@ -48,6 +48,7 @@ export function getCurrentUser(): User | null {
     emailVerified: currentUser.emailVerified,
     
     lastLoginAt,
+    disabled: false,
     createdAt,
     updatedAt: lastLoginAt,
   };
